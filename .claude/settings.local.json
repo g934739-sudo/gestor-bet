@@ -3,7 +3,12 @@
     "allow": [
       "Bash(wc -l \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/gestorbet_v3 \\(1\\).html\")",
       "Bash(open /Users/lucaendrigo/Documents/Projetos/gestor-bet/tela-login-cadastro.html)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(mkdir -p _archive)",
+      "Bash(mv site.html saas.html tela-login-cadastro.html _archive/)",
+      "Bash(mv \"email boas-vindas.html\" emails/email-boas-vindas-v1.html)",
+      "Bash(mv \"email primeira compra.html\" emails/email-primeira-compra-v1.html)",
+      "Bash(git add:*)"
     ]
   }
 }
