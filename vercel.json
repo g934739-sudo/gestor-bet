@@ -1,6 +1,6 @@
 {
-  "cleanUrls": true,
   "trailingSlash": false,
+  "cleanUrls": true,
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
     { "source": "/app", "destination": "/app.html" },
