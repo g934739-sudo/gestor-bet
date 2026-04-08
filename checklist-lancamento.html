@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GestorBet — Checklist de Lançamento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #09090f;
+      color: #ededf5;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 52px;
+      background: #0f0f18;
+      border-bottom: 1px solid #2a2a3c;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      gap: 14px;
+    }
+    .logo { font-size: 17px; font-weight: 900; }
+    .logo span { color: #f0c040; }
+    .logo-sep { width: 1px; height: 20px; background: #2a2a3c; }
+    .logo-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6a6a85; letter-spacing: 1.5px; text-transform: uppercase; }
+    .progress-wrap { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .progress-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6a6a85; }
+    .progress-bar { width: 120px; height: 6px; background: #2a2a3c; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #1fd97a, #17b564); border-radius: 3px; transition: width .4s; }
+    .progress-pct { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #1fd97a; font-weight: 700; min-width: 32px; }
+
+    .wrap { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .hero { margin-bottom: 48px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f0c04015; border: 1px solid #f0c04040;
+      border-radius: 20px; padding: 5px 14px; margin-bottom: 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: #f0c040; text-transform: uppercase; letter-spacing: 1.5px;
+    }
+    .hero h1 { font-size: 32px; font-weight: 900; margin-bottom: 8px; }
+    .hero p { font-size: 14px; color: #6a6a85; line-height: 1.7; }
+
+    /* SEÇÃO */
+    .section { margin-bottom: 32px; }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .section-title { font-size: 15px; font-weight: 800; }
+    .section-sub { font-size: 11px; color: #6a6a85; margin-top: 1px; }
+    .section-count {
+      margin-left: auto; font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: #6a6a85;
+    }
+    .section-count span { color: #1fd97a; font-weight: 700; }
+
+    /* ITEMS */
+    .items { display: flex; flex-direction: column; gap: 6px; }
+    .item {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: #0f0f18; border: 1px solid #2a2a3c;
+      border-radius: 10px; padding: 13px 16px;
+      cursor: pointer; transition: border-color .15s, background .15s;
+      user-select: none;
+    }
+    .item:hover { border-color: #363650; background: #13131e; }
+    .item.done { background: #0d140d; border-color: #1fd97a30; }
+    .item.done .item-text { color: #6a6a85; text-decoration: line-through; }
+
+    .checkbox {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid #2a2a3c; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; background: transparent;
+    }
+    .item.done .checkbox {
+      background: #1fd97a; border-color: #1fd97a;
+    }
+    .checkmark { font-size: 11px; color: #fff; opacity: 0; transition: opacity .15s; }
+    .item.done .checkmark { opacity: 1; }
+
+    .item-body { flex: 1; }
+    .item-text { font-size: 13px; font-weight: 600; color: #ededf5; line-height: 1.4; }
+    .item-note { font-size: 11px; color: #6a6a85; margin-top: 3px; line-height: 1.5; }
+    .item-link {
+      display: inline-block; margin-top: 5px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: #5b9bf5; text-decoration: none; letter-spacing: 0.3px;
+    }
+    .item-link:hover { text-decoration: underline; }
+    .item-tag {
+      flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; padding: 3px 8px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
+    }
+    .tag-free { background: #1fd97a15; color: #1fd97a; border: 1px solid #1fd97a30; }
+    .tag-paid { background: #f0c04015; color: #f0c040; border: 1px solid #f0c04030; }
+    .tag-required { background: #f5445f15; color: #f5445f; border: 1px solid #f5445f30; }
+
+    /* CELEBRATE */
+    .celebrate {
+      display: none; margin-top: 40px;
+      background: linear-gradient(135deg, #0d1a0d, #0a150a);
+      border: 1px solid #1fd97a40; border-radius: 14px;
+      padding: 32px; text-align: center;
+    }
+    .celebrate.show { display: block; }
+    .celebrate .ico { font-size: 48px; margin-bottom: 12px; }
+    .celebrate h2 { font-size: 22px; font-weight: 900; color: #1fd97a; margin-bottom: 8px; }
+    .celebrate p { font-size: 14px; color: #b0b0c8; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid #2a2a3c; margin: 8px 0 32px; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="logo">Gestor<span>Bet</span></span>
+    <div class="logo-sep"></div>
+    <span class="logo-sub">Checklist de Lançamento</span>
+    <div class="progress-wrap">
+      <span class="progress-label">Progresso</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="hero-badge">🚀 Fora do Claude</div>
+      <h1>Checklist de Lançamento</h1>
+      <p>Tudo que precisa ser feito fora do Claude para colocar o GestorBet no ar. Clique nos itens para marcar como concluído.</p>
+    </div>
+
+    <!-- DOMÍNIO -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f0c04015;border:1px solid #f0c04030;">🌐</div>
+        <div>
+          <div class="section-title">1. Domínio</div>
+          <div class="section-sub">Endereço do seu site na internet</div>
+        </div>
+        <div class="section-count"><span class="sec-done">0</span>/1</div>
+      </div>
+      <div class="items">
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Comprar domínio (ex: gestorbet.com)</div>
+            <div class="item-note">Registro.br para .com.br · GoDaddy ou Namecheap para .com</div>
+            <a class="item-link" href="https://registro.br" target="_blank">→ registro.br</a>
+          </div>
+          <span class="item-tag tag-paid">Pago</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- HOSPEDAGEM -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#5b9bf515;border:1px solid #5b9bf530;">☁️</div>
+        <div>
+          <div class="section-title">2. Hospedagem</div>
+          <div class="section-sub">Onde os arquivos HTML ficam online</div>
+        </div>
+        <div class="section-count"><span class="sec-done">0</span>/3</div>
+      </div>
+      <div class="items">
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Criar conta no Netlify</div>
+            <div class="item-note">Gratuito para sites estáticos</div>
+            <a class="item-link" href="https://netlify.com" target="_blank">→ netlify.com</a>
+          </div>
+          <span class="item-tag tag-free">Grátis</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Fazer upload da pasta gestor-bet</div>
+            <div class="item-note">Arrastar a pasta direto no painel do Netlify</div>
+          </div>
+          <span class="item-tag tag-free">Grátis</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Apontar o domínio comprado para o Netlify</div>
+            <div class="item-note">DNS: adicionar os nameservers do Netlify no painel do seu domínio</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- PAGAMENTO -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#1fd97a15;border:1px solid #1fd97a30;">💳</div>
+        <div>
+          <div class="section-title">3. Plataforma de Pagamento</div>
+          <div class="section-sub">Para processar as assinaturas</div>
+        </div>
+        <div class="section-count"><span class="sec-done">0</span>/3</div>
+      </div>
+      <div class="items">
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Criar conta na Kiwify ou Hotmart</div>
+            <div class="item-note">Kiwify é mais simples para SaaS · Hotmart tem mais alcance</div>
+            <a class="item-link" href="https://kiwify.com.br" target="_blank">→ kiwify.com.br</a>
+          </div>
+          <span class="item-tag tag-free">Grátis</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Cadastrar os 3 planos (R$49 / R$99 / R$297)</div>
+            <div class="item-note">Mensal · Trimestral · Anual — configurar como assinatura recorrente</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Substituir os botões "Assinar" no site.html pelos links de pagamento</div>
+            <div class="item-note">Copiar o link de checkout gerado e colar nos botões do site</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- EMAIL MARKETING -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#e040fb15;border:1px solid #e040fb30;">✉️</div>
+        <div>
+          <div class="section-title">4. E-mail Marketing</div>
+          <div class="section-sub">Disparos automáticos e campanhas</div>
+        </div>
+        <div class="section-count"><span class="sec-done">0</span>/4</div>
+      </div>
+      <div class="items">
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Criar conta no Brevo</div>
+            <div class="item-note">Gratuito até 300 e-mails/dia · sem limite de contatos</div>
+            <a class="item-link" href="https://brevo.com" target="_blank">→ brevo.com</a>
+          </div>
+          <span class="item-tag tag-free">Grátis</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Importar os templates de e-mail no Brevo</div>
+            <div class="item-note">email-deploy · email-boas-vindas · email-primeira-compra · email-recuperacao · email-cobranca</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Configurar automações</div>
+            <div class="item-note">Cadastro → boas-vindas · Compra → primeira compra · Renovação → cobrança</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Configurar domínio de e-mail</div>
+            <div class="item-note">Ex: contato@gestorbet.com — autenticar SPF e DKIM para não cair em spam</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- AUTENTICAÇÃO -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f5445f15;border:1px solid #f5445f30;">🔐</div>
+        <div>
+          <div class="section-title">5. Autenticação de Usuários</div>
+          <div class="section-sub">Login e cadastro reais</div>
+        </div>
+        <div class="section-count"><span class="sec-done">0</span>/2</div>
+      </div>
+      <div class="items">
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Criar conta no Supabase</div>
+            <div class="item-note">Backend gratuito com autenticação pronta (e-mail + senha)</div>
+            <a class="item-link" href="https://supabase.com" target="_blank">→ supabase.com</a>
+          </div>
+          <span class="item-tag tag-free">Grátis</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Conectar formulário de login ao Supabase</div>
+            <div class="item-note">Substituir o JS dummy da tela-login-cadastro.html pela SDK do Supabase</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ANTES DE LANÇAR -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f0c04015;border:1px solid #f0c04030;">✅</div>
+        <div>
+          <div class="section-title">6. Antes de Lançar</div>
+          <div class="section-sub">Testes finais e detalhes</div>
+        </div>
+        <div class="section-count"><span class="sec-done">0</span>/5</div>
+      </div>
+      <div class="items">
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Testar fluxo completo: site → cadastro → login → app → pagamento</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Testar os 5 e-mails automáticos</div>
+            <div class="item-note">Verificar se chegam na caixa de entrada (não spam)</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Adicionar links de termos e privacidade no site e no login</div>
+            <div class="item-note">termos.html e privacidade.html já estão prontos</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Testar no celular (responsividade)</div>
+            <div class="item-note">Verificar site.html, tela-login-cadastro.html e saas.html no mobile</div>
+          </div>
+          <span class="item-tag tag-required">Obrigatório</span>
+        </div>
+        <div class="item" onclick="toggle(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="item-body">
+            <div class="item-text">Publicar e divulgar 🚀</div>
+          </div>
+          <span class="item-tag tag-free">Go live</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CELEBRAÇÃO -->
+    <div class="celebrate" id="celebrate">
+      <div class="ico">🏆</div>
+      <h2>GestorBet está no ar!</h2>
+      <p>Todos os passos concluídos. Hora de jogar com estratégia — e lucrar.</p>
+    </div>
+
+  </div>
+
+  <script>
+    function toggle(el) {
+      el.classList.toggle('done');
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const all = document.querySelectorAll('.item');
+      const done = document.querySelectorAll('.item.done');
+      const pct = Math.round((done.length / all.length) * 100);
+
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressPct').textContent = pct + '%';
+
+      // atualiza contadores por seção
+      document.querySelectorAll('.section').forEach(sec => {
+        const total = sec.querySelectorAll('.item').length;
+        const doneCount = sec.querySelectorAll('.item.done').length;
+        sec.querySelector('.sec-done').textContent = doneCount;
+        // atualiza total também
+        sec.querySelector('.section-count').innerHTML =
+          `<span class="sec-done">${doneCount}</span>/${total}`;
+      });
+
+      // celebração
+      if (pct === 100) {
+        document.getElementById('celebrate').classList.add('show');
+        document.getElementById('celebrate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        document.getElementById('celebrate').classList.remove('show');
+      }
+    }
+
+    // salva estado no localStorage
+    document.querySelectorAll('.item').forEach((item, i) => {
+      if (localStorage.getItem('chk-' + i) === '1') item.classList.add('done');
+      item.addEventListener('click', () => {
+        setTimeout(() => {
+          localStorage.setItem('chk-' + i, item.classList.contains('done') ? '1' : '0');
+        }, 0);
+      });
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GestorBet — Jogue com estratégia. Ganhe com inteligência.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS — Dark velvet + gold + neon
+═══════════════════════════════════════════ */
+:root{
+  --bg:    #060409;
+  --bg2:   #0C0910;
+  --bg3:   #120F18;
+  --bg4:   #1A1624;
+  --bg5:   #221E2E;
+  --gold:  #F5C842;
+  --gold2: #C9951A;
+  --gold3: #FDE68A;
+  --goldf: rgba(245,200,66,0.12);
+  --text:  #F0EAD6;
+  --muted: #5A5270;
+  --dim:   #2A2438;
+  --green: #00E676;
+  --red:   #FF1744;
+  --neon:  #E040FB;   /* jackpot accent */
+  --teal:  #00BCD4;
+  --border:rgba(245,200,66,0.14);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ── GRAIN ── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:8500;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.7;mix-blend-mode:overlay;
+}
+
+/* ── CURSOR ── */
+#cur,#cur-r{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;}
+#cur{
+  width:8px;height:8px;background:var(--gold);top:0;left:0;
+  box-shadow:0 0 12px var(--gold),0 0 24px rgba(245,200,66,.4);
+  transition:transform .1s,background .2s;
+}
+#cur-r{
+  width:34px;height:34px;border:1px solid rgba(245,200,66,.5);top:0;left:0;
+  transition:width .2s,height .2s,border-color .2s,background .2s;
+}
+#cur-r.h{width:60px;height:60px;border-color:rgba(245,200,66,.15);background:rgba(245,200,66,.04);}
+#cur-r.win{border-color:var(--green);box-shadow:0 0 20px rgba(0,230,118,.4);}
+body:active #cur{transform:scale(.5);}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:400;
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  transition:background .5s,border-color .5s,backdrop-filter .5s;
+  border-bottom:1px solid transparent;
+}
+#nav.on{
+  background:rgba(6,4,9,.94);
+  backdrop-filter:blur(28px);
+  border-bottom-color:var(--border);
+}
+.nl{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.nl-hex{
+  width:32px;height:32px;background:var(--gold);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',cursive;font-size:14px;color:var(--bg);
+}
+.nl-text{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;}
+.nl-text em{color:var(--gold);font-style:normal;}
+.nlinks{display:flex;gap:30px;}
+.nlinks a{font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;text-transform:uppercase;letter-spacing:.08em;transition:color .2s;}
+.nlinks a:hover{color:var(--text);}
+.nbtn{
+  padding:11px 24px;background:var(--gold);color:var(--bg);
+  font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.06em;
+  border-radius:3px;text-decoration:none;transition:all .2s;
+  box-shadow:0 0 20px rgba(245,200,66,.25);
+}
+.nbtn:hover{background:var(--gold2);box-shadow:0 0 30px rgba(245,200,66,.4);}
+
+/* ═══════════════════════════════════════════
+   HERO — FULLSCREEN CASINO STAGE
+═══════════════════════════════════════════ */
+#hero{
+  position:relative;height:100vh;min-height:640px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;text-align:center;
+}
+#hero-canvas{position:absolute;inset:0;z-index:0;}
+
+/* layered vignettes for depth */
+.h-vig{
+  position:absolute;inset:0;z-index:1;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 50%,transparent 30%,rgba(6,4,9,.65) 75%,rgba(6,4,9,.98) 100%),
+    linear-gradient(0deg,rgba(6,4,9,1) 0%,transparent 40%);
+}
+
+/* Jackpot light beams from top */
+.light-beams{
+  position:absolute;top:0;left:0;right:0;height:60%;
+  z-index:1;pointer-events:none;overflow:hidden;
+}
+.beam{
+  position:absolute;top:0;width:2px;
+  background:linear-gradient(180deg,rgba(245,200,66,.18),transparent);
+  transform-origin:top center;
+  animation:beamSway 4s ease-in-out infinite;
+}
+@keyframes beamSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+/* Chip rain canvas */
+#chip-canvas{position:absolute;inset:0;z-index:2;pointer-events:none;}
+
+.h-content{position:relative;z-index:3;max-width:900px;padding:0 24px;}
+
+.h-live{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 18px;
+  border:1px solid rgba(0,230,118,.3);
+  background:rgba(0,230,118,.06);
+  border-radius:2px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--green);margin-bottom:24px;
+  box-shadow:0 0 20px rgba(0,230,118,.1);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
+
+.h-title{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(64px,11vw,160px);
+  line-height:.84;letter-spacing:3px;
+  margin-bottom:16px;
+  perspective:800px;
+}
+.h-title .row{display:block;overflow:hidden;}
+.h-title .char{display:inline-block;}
+.h-title .g{color:var(--gold);text-shadow:0 0 60px rgba(245,200,66,.5),0 0 120px rgba(245,200,66,.2);}
+.h-title .r{color:var(--red);}
+
+/* Cormorant italic subtitle — luxury serif */
+.h-sub-serif{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,2.5vw,28px);
+  font-style:italic;color:rgba(240,234,214,.6);
+  letter-spacing:.06em;margin-bottom:32px;
+  opacity:0;
+}
+
+.h-stats{
+  display:flex;justify-content:center;gap:40px;
+  margin-bottom:40px;opacity:0;
+}
+.h-stat{text-align:center;}
+.h-stat-n{
+  font-family:'Bebas Neue',cursive;
+  font-size:42px;letter-spacing:1px;color:var(--gold);
+  line-height:1;
+  text-shadow:0 0 30px rgba(245,200,66,.4);
+}
+.h-stat-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:3px;}
+
+.h-btns{display:flex;gap:14px;justify-content:center;opacity:0;}
+.btn-jackpot{
+  position:relative;overflow:hidden;
+  padding:20px 52px;background:var(--gold);color:var(--bg);
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:17px;
+  border-radius:4px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:12px;
+  transition:all .25s;
+  box-shadow:0 0 0 0 rgba(245,200,66,.5);
+  animation:jackpotPulse 2.5s ease-in-out infinite;
+}
+@keyframes jackpotPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,200,66,.5),0 8px 30px rgba(245,200,66,.3)}
+  50%{box-shadow:0 0 0 16px rgba(245,200,66,0),0 8px 30px rgba(245,200,66,.5)}
+}
+.btn-jackpot:hover{background:var(--gold2);transform:translateY(-2px);animation:none;box-shadow:0 12px 40px rgba(245,200,66,.5);}
+.btn-jackpot::before{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  transition:left .5s;
+}
+.btn-jackpot:hover::before{left:100%;}
+.btn-ghost{
+  padding:20px 36px;background:transparent;color:var(--text);
+  border:1px solid rgba(255,255,255,.1);border-radius:4px;
+  text-decoration:none;font-weight:500;font-size:15px;
+  display:inline-flex;align-items:center;gap:8px;transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+.h-scroll{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  z-index:3;display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0;
+}
+.scroll-chip{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid rgba(245,200,66,.4);
+  display:flex;align-items:center;justify-content:center;
+  animation:chipBounce 2s ease-in-out infinite;
+}
+@keyframes chipBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.scroll-txt{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;}
+
+/* ═══════════════════════════════════════════
+   ROULETTE TICKER — horizontal spin
+═══════════════════════════════════════════ */
+.roulette-ticker{
+  background:var(--bg2);
+  border-top:1px solid rgba(245,200,66,.12);
+  border-bottom:1px solid rgba(245,200,66,.12);
+  padding:0;overflow:hidden;position:relative;
+}
+.roulette-ticker::before,.roulette-ticker::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
+}
+.roulette-ticker::before{left:0;background:linear-gradient(90deg,var(--bg2),transparent);}
+.roulette-ticker::after{right:0;background:linear-gradient(-90deg,var(--bg2),transparent);}
+
+.rt-track{
+  display:flex;white-space:nowrap;padding:14px 0;
+  animation:rtScroll 18s linear infinite;
+}
+@keyframes rtScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.rt-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;margin:0 6px;
+  font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;
+  flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+.rt-red{background:#C0392B;color:#fff;}
+.rt-black{background:#1a1a1a;color:#fff;border:1px solid rgba(255,255,255,.1);}
+.rt-green{background:#1a7a32;color:#fff;}
+
+/* ═══════════════════════════════════════════
+   SECTION BASE
+═══════════════════════════════════════════ */
+.sec{padding:110px 48px;position:relative;}
+.si{max-width:1100px;margin:0 auto;}
+.ey{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--gold);text-transform:uppercase;letter-spacing:.2em;
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.ey::before{content:'';width:22px;height:1px;background:var(--gold);}
+.st{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(44px,5.5vw,80px);
+  letter-spacing:1px;line-height:.92;margin-bottom:16px;
+}
+.st .g{color:var(--gold);}
+/* Cormorant italic for luxury subtitles */
+.st-serif{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,2vw,24px);
+  font-style:italic;color:var(--muted);
+  line-height:1.6;font-weight:400;max-width:520px;
+}
+
+/* ═══════════════════════════════════════════
+   JACKPOT COUNTER STRIP
+═══════════════════════════════════════════ */
+.jackpot-strip{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border-top:1px solid rgba(224,64,251,.2);
+  border-bottom:1px solid rgba(224,64,251,.2);
+  padding:36px 48px;
+  display:flex;align-items:center;justify-content:center;gap:64px;
+  position:relative;overflow:hidden;
+}
+.jackpot-strip::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 100% at 50% 0%,rgba(224,64,251,.06),transparent);
+  pointer-events:none;
+}
+/* neon glow lines */
+.jackpot-strip::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(224,64,251,.5),var(--gold),rgba(224,64,251,.5),transparent);
+  animation:neonScan 3s ease-in-out infinite;
+}
+@keyframes neonScan{0%,100%{opacity:.6}50%{opacity:1}}
+
+.jstat{text-align:center;position:relative;}
+.jstat-n{
+  font-family:'Bebas Neue',cursive;
+  font-size:52px;letter-spacing:1px;
+  background:linear-gradient(180deg,var(--gold3),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+  text-shadow:none;
+  filter:drop-shadow(0 0 20px rgba(245,200,66,.4));
+}
+.jstat-l{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-top:4px;
+}
+.jstat-div{width:1px;height:50px;background:linear-gradient(transparent,rgba(245,200,66,.2),transparent);}
+
+/* ═══════════════════════════════════════════
+   PROBLEMA — felt table style
+═══════════════════════════════════════════ */
+#problema{
+  background:var(--bg);
+  position:relative;overflow:hidden;
+}
+/* Casino felt texture pattern */
+#problema::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 2px 2px,rgba(245,200,66,.03) 1px,transparent 0);
+  background-size:32px 32px;
+  pointer-events:none;
+}
+
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:56px;}
+.prob-card{
+  padding:34px 30px;
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid rgba(255,68,68,.12);
+  border-radius:6px;position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.prob-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--red),#ff6b6b);
+  opacity:.4;transition:opacity .3s;
+}
+.prob-card:hover{border-color:rgba(255,68,68,.3);transform:translateX(5px);box-shadow:-6px 0 30px rgba(255,0,0,.08);}
+.prob-card:hover::before{opacity:1;}
+.pc-n{font-family:'Bebas Neue',cursive;font-size:68px;color:rgba(255,68,68,.05);position:absolute;right:16px;top:6px;line-height:1;}
+.pc-ico{font-size:28px;margin-bottom:12px;}
+.pc-h{font-size:16px;font-weight:700;margin-bottom:7px;line-height:1.3;}
+.pc-p{font-size:12px;color:var(--muted);line-height:1.65;}
+.prob-bridge{
+  grid-column:1/-1;padding:44px 48px;
+  background:linear-gradient(135deg,rgba(245,200,66,.07),rgba(245,200,66,.02));
+  border:1px solid var(--border);border-radius:6px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  position:relative;overflow:hidden;
+}
+.prob-bridge::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.pb-h{font-family:'Bebas Neue',cursive;font-size:clamp(24px,3vw,44px);letter-spacing:1px;line-height:1;}
+.pb-h .g{color:var(--gold);}
+
+/* ═══════════════════════════════════════════
+   ESTRATÉGIAS — casino card style
+═══════════════════════════════════════════ */
+#estrategias{
+  background:var(--bg2);
+  position:relative;overflow:hidden;
+}
+/* Diagonal green felt hint */
+#estrategias::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(0,50,20,.4),transparent);
+  pointer-events:none;
+}
+
+.estr-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:56px;}
+.estr-header-r{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--muted);line-height:1.75;}
+
+.scatter-wrap{
+  background:rgba(0,0,0,.3);border:1px solid var(--border);
+  border-radius:10px;padding:22px;margin-bottom:12px;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.4);
+}
+.scatter-title{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--gold);text-transform:uppercase;letter-spacing:.18em;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.scatter-title::before{content:'';width:16px;height:1px;background:var(--gold);}
+#scat{width:100%;height:210px;display:block;}
+
+/* Casino-card style strategy grid */
+.strat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.strat-card{
+  background:linear-gradient(160deg,var(--bg3),var(--bg4));
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:8px;padding:20px 16px;
+  transition:all .3s;position:relative;overflow:hidden;
+  cursor:default;
+}
+/* Playing card corner mark */
+.strat-card::before{
+  content:attr(data-ico);
+  position:absolute;top:8px;right:10px;
+  font-size:22px;opacity:.15;
+  transition:opacity .3s;
+}
+.strat-card:hover{
+  border-color:var(--sc-col);
+  transform:translateY(-4px) scale(1.02);
+  box-shadow:0 16px 40px rgba(0,0,0,.5),0 0 20px rgba(0,0,0,.3);
+}
+.strat-card:hover::before{opacity:.35;}
+/* Bottom glow line */
+.strat-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--sc-col);
+  transform:scaleX(0);transform-origin:left;transition:transform .35s;
+  border-radius:0 0 8px 8px;
+}
+.strat-card:hover::after{transform:scaleX(1);}
+.sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sc-ico{font-size:22px;}
+.sc-badge{font-family:'JetBrains Mono',monospace;font-size:7px;text-transform:uppercase;letter-spacing:.1em;padding:3px 8px;border-radius:2px;}
+.bmin{background:rgba(0,230,118,.1);color:var(--green);}
+.blow{background:rgba(0,230,118,.08);color:#69f0ae;}
+.bmed{background:rgba(245,200,66,.1);color:var(--gold);}
+.bhi{background:rgba(255,23,68,.1);color:var(--red);}
+.sc-name{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.5px;margin-bottom:4px;color:var(--sc-col);}
+.sc-sub{font-size:10px;color:var(--muted);line-height:1.4;margin-bottom:10px;}
+.sc-meters{display:flex;flex-direction:column;gap:5px;}
+.sc-m{display:flex;align-items:center;gap:6px;}
+.sc-ml{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--muted);width:34px;flex-shrink:0;}
+.sc-mt{flex:1;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.sc-mf{height:100%;border-radius:2px;background:var(--sc-col);}
+
+/* ═══════════════════════════════════════════
+   COMO FUNCIONA — casino table steps
+═══════════════════════════════════════════ */
+#como{background:var(--bg);position:relative;overflow:hidden;}
+/* Dark felt dots */
+#como::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.015) 1px,transparent 0);
+  background-size:24px 24px;pointer-events:none;
+}
+
+.steps{display:flex;flex-direction:column;gap:0;margin-top:60px;}
+.step{
+  display:grid;grid-template-columns:88px 1fr 1fr;
+  gap:48px;align-items:center;
+  padding:48px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .2s;
+}
+.step:first-child{border-top:1px solid rgba(255,255,255,.04);}
+.step:hover{background:rgba(245,200,66,.02);}
+.step-idx{
+  font-family:'Bebas Neue',cursive;font-size:72px;
+  color:rgba(245,200,66,.08);line-height:1;text-align:center;
+  transition:color .3s,text-shadow .3s;
+}
+.step:hover .step-idx{color:rgba(245,200,66,.22);text-shadow:0 0 30px rgba(245,200,66,.2);}
+.step-h{font-family:'Bebas Neue',cursive;font-size:clamp(28px,3.5vw,46px);letter-spacing:.5px;line-height:1;margin-bottom:10px;}
+.step-p{font-size:14px;color:var(--muted);line-height:1.75;font-weight:300;}
+.step-feats{display:flex;flex-direction:column;gap:7px;margin-top:16px;}
+.sf{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);}
+.sf::before{content:'◆';color:var(--gold);font-size:7px;flex-shrink:0;}
+/* Mocks */
+.step-vis{background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.6);}
+.sv-bar{padding:10px 14px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:7px;}
+.sv-d{width:8px;height:8px;border-radius:50%;}
+.sv-d1{background:#FF5F57;}.sv-d2{background:#FEBC2E;}.sv-d3{background:#28C840;}
+.sv-url{flex:1;margin:0 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:3px;padding:4px 9px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);}
+.sv-body{padding:14px;}
+.msg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+.msg-c{background:var(--bg4);border:1px solid rgba(255,255,255,.04);border-radius:5px;padding:8px;text-align:center;}
+.msg-c.on{border-color:var(--gold);background:rgba(245,200,66,.07);}
+.msg-n{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text);margin-bottom:4px;}
+.msg-r{display:flex;gap:2px;justify-content:center;}
+.mr{width:6px;height:4px;border-radius:1px;background:rgba(255,255,255,.06);}
+.mr-g{background:var(--gold);}.mr-gr{background:var(--green);}.mr-r{background:var(--red);}
+.cfg{display:flex;flex-direction:column;gap:7px;}
+.cfg-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.cfg-f{background:var(--bg4);border:1px solid rgba(255,255,255,.05);border-radius:5px;padding:9px 11px;}
+.cfg-f.rb{border-color:rgba(255,68,68,.2);} .cfg-f.gb{border-color:rgba(0,230,118,.2);}
+.cfg-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px;}
+.cfg-v{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text);}
+.cfg-m{display:flex;gap:4px;margin-top:5px;}
+.cfg-mi{flex:1;padding:6px;text-align:center;font-size:9px;background:var(--bg4);border:1px solid rgba(255,255,255,.04);border-radius:3px;color:var(--muted);}
+.cfg-mi.on{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,.06);}
+.lm{display:flex;flex-direction:column;gap:8px;}
+.lm-bet{background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(245,200,66,.03));border:1px solid rgba(245,200,66,.25);border-radius:7px;padding:12px 14px;position:relative;}
+.lm-bet::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);border-radius:7px 7px 0 0;}
+.lm-l{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px;}
+.lm-v{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);}
+.lm-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.lm-w{padding:10px;border-radius:5px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.25);color:var(--green);font-weight:700;font-size:11px;font-family:'DM Sans',sans-serif;}
+.lm-ll{padding:10px;border-radius:5px;background:rgba(255,23,68,.07);border:1px solid rgba(255,23,68,.18);color:var(--red);font-weight:700;font-size:11px;font-family:'DM Sans',sans-serif;}
+.lm-bars{display:flex;flex-direction:column;gap:5px;}
+.lm-br{display:flex;align-items:center;gap:7px;}
+.lm-bl{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--muted);width:46px;flex-shrink:0;text-transform:uppercase;}
+.lm-bt{flex:1;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.lm-bfr{height:100%;background:linear-gradient(90deg,var(--red),#ff6b6b);border-radius:2px;}
+.lm-bfg{height:100%;background:linear-gradient(90deg,#00695c,var(--green));border-radius:2px;}
+.lm-bp{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--muted);width:22px;text-align:right;}
+
+/* ═══════════════════════════════════════════
+   BENEFÍCIOS — bento with casino glow
+═══════════════════════════════════════════ */
+#beneficios{background:var(--bg2);position:relative;overflow:hidden;}
+#beneficios::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,200,66,.2),transparent);
+}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:52px;}
+.bc{
+  background:linear-gradient(160deg,var(--bg3),var(--bg4));
+  border:1px solid rgba(255,255,255,.04);
+  border-radius:8px;padding:24px 20px;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.bc::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at top left,rgba(245,200,66,.04),transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.bc:hover{border-color:rgba(245,200,66,.22);transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.5),0 0 0 1px rgba(245,200,66,.06);}
+.bc:hover::before{opacity:1;}
+.bc.s2{grid-column:span 2;}
+.bc.s3{grid-column:span 3;}
+.bc.feat{
+  background:linear-gradient(135deg,rgba(245,200,66,.1),var(--bg3) 60%);
+  border-color:rgba(245,200,66,.2);
+}
+.bc.feat::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+}
+.btag{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:.15em;margin-bottom:10px;}
+.bico{font-size:30px;margin-bottom:12px;}
+.bh{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.5px;margin-bottom:7px;}
+.bp2{font-size:12px;color:var(--muted);line-height:1.65;}
+.bc-big{font-family:'Bebas Neue',cursive;font-size:80px;color:rgba(245,200,66,.07);line-height:1;margin-top:auto;align-self:flex-end;}
+
+/* ═══════════════════════════════════════════
+   DEPOIMENTOS — velvet card style
+═══════════════════════════════════════════ */
+#prova{background:var(--bg);overflow:hidden;}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:52px;}
+.tc{
+  background:linear-gradient(160deg,var(--bg2),var(--bg3));
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:8px;padding:28px;transition:all .3s;position:relative;
+}
+.tc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .35s;border-radius:8px 8px 0 0;}
+.tc:hover{border-color:rgba(245,200,66,.18);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 30px rgba(245,200,66,.05);}
+.tc:hover::before{transform:scaleX(1);}
+/* Quote mark in Cormorant */
+.tc-q{font-family:'Cormorant Garamond',serif;font-size:60px;color:rgba(245,200,66,.2);line-height:.8;margin-bottom:8px;font-style:italic;}
+.tc-text{font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.75;color:var(--text);margin-bottom:22px;font-style:italic;}
+.tc-author{display:flex;align-items:center;gap:12px;}
+.tc-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:var(--bg);flex-shrink:0;}
+.tc-name{font-weight:600;font-size:13px;}
+.tc-role{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.tc-result{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--green);margin-top:12px;
+  background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.15);
+  padding:5px 12px;border-radius:2px;
+}
+
+/* ═══════════════════════════════════════════
+   SESSION RESULTS — casino scoreboard
+═══════════════════════════════════════════ */
+.results-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.res-card{
+  background:var(--bg2);border:1px solid rgba(0,230,118,.12);
+  border-radius:6px;overflow:hidden;
+}
+.res-h{
+  padding:10px 14px;background:rgba(0,230,118,.05);
+  border-bottom:1px solid rgba(0,230,118,.1);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.res-sess{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);}
+.res-pl{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--green);text-shadow:0 0 10px rgba(0,230,118,.3);}
+.res-body{padding:12px 14px;}
+.res-seq{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px;}
+.rr2{width:20px;height:20px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.rr-w{background:rgba(0,230,118,.15);color:var(--green);}
+.rr-l{background:rgba(255,23,68,.1);color:var(--red);}
+.res-stats{display:flex;gap:10px;}
+.rstat{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);}
+
+/* ═══════════════════════════════════════════
+   PREÇOS
+═══════════════════════════════════════════ */
+#precos{background:var(--bg2);}
+.price-center{text-align:center;margin-bottom:52px;}
+.price-anchor{max-width:520px;margin:0 auto 44px;padding:18px 26px;background:var(--bg3);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--muted);line-height:1.7;}
+.price-anchor strong{color:var(--text);font-style:normal;}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start;}
+.pcard{
+  background:linear-gradient(160deg,var(--bg3),var(--bg4));
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:10px;padding:30px;transition:all .3s;position:relative;
+}
+.pcard:hover{border-color:rgba(245,200,66,.2);box-shadow:0 0 40px rgba(245,200,66,.04);}
+.pcard.pop{
+  border-color:var(--gold);
+  background:linear-gradient(160deg,rgba(245,200,66,.07),var(--bg3) 50%);
+  transform:scale(1.04);
+}
+.pcard.pop::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px 10px 0 0;}
+.pop-tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);padding:4px 16px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;box-shadow:0 4px 16px rgba(245,200,66,.3);}
+.pl2{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:12px;}
+.pp2{font-family:'Bebas Neue',cursive;font-size:58px;line-height:1;color:var(--text);}
+.pp2 sup{font-size:20px;vertical-align:top;margin-top:11px;margin-right:2px;color:var(--muted);}
+.pper2{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:24px;}
+.plist{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+.plist li{font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:8px;line-height:1.4;}
+.plist .ck{color:var(--green);font-size:10px;flex-shrink:0;margin-top:2px;}
+.plist li.hi{color:var(--text);} .plist li.hi .ck{color:var(--gold);}
+.pbtn2{width:100%;padding:13px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;transition:all .22s;border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text);}
+.pbtn2:hover{border-color:var(--gold);color:var(--gold);}
+.pbtn2.g{background:var(--gold);color:var(--bg);border:none;box-shadow:0 8px 30px rgba(245,200,66,.28);}
+.pbtn2.g:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 12px 40px rgba(245,200,66,.4);}
+.garantia{margin-top:26px;padding:22px 28px;background:var(--bg3);border:1px solid rgba(245,200,66,.18);border-radius:6px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;}
+.g-ico{font-size:32px;}
+.g-h{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.5px;color:var(--gold);}
+.g-p{font-size:12px;color:var(--muted);line-height:1.5;}
+.g-badge{padding:9px 18px;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.22);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);text-align:center;white-space:nowrap;font-weight:600;line-height:1.4;}
+
+/* ═══════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════ */
+#faq{background:var(--bg);}
+.faq-wrap{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:52px;align-items:start;}
+.faq-list{display:flex;flex-direction:column;gap:3px;}
+.fi{border-bottom:1px solid rgba(255,255,255,.04);}
+.fi.open{border-bottom-color:rgba(245,200,66,.14);}
+.fq{padding:17px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;font-weight:500;font-size:14px;user-select:none;transition:color .2s;}
+.fq:hover,.fi.open .fq{color:var(--gold);}
+.ftog{width:22px;height:22px;border-radius:50%;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--muted);transition:all .3s;}
+.fi.open .ftog{transform:rotate(45deg);border-color:var(--gold);color:var(--gold);}
+.fa{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+.fa-i{padding-bottom:16px;font-size:13px;color:var(--muted);line-height:1.75;}
+.faq-card{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:10px;padding:36px;position:sticky;top:88px;}
+.fc-title{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:1px;margin-bottom:6px;}
+.fc-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--muted);margin-bottom:22px;line-height:1.6;}
+.fc-feats{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.ff2{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);}
+.ff2::before{content:'◆';color:var(--gold);font-size:8px;flex-shrink:0;}
+
+/* ═══════════════════════════════════════════
+   CTA FINAL — Jackpot stage
+═══════════════════════════════════════════ */
+#cta-final{
+  position:relative;overflow:hidden;
+  background:var(--bg2);padding:130px 48px;text-align:center;
+}
+/* Casino ceiling lights effect */
+.cta-lights{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    var(--neon) 10%,var(--gold) 20%,
+    transparent 25%,
+    var(--gold) 40%,var(--neon) 50%,
+    transparent 55%,
+    var(--gold) 70%,var(--neon) 80%,
+    transparent 85%,
+    var(--gold) 95%,transparent 100%
+  );
+  animation:lightsScan 3s linear infinite;
+  opacity:.7;
+}
+@keyframes lightsScan{from{background-position:0 0}to{background-position:200% 0}}
+
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(245,200,66,.07),transparent 65%);pointer-events:none;}
+.cta-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(245,200,66,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(245,200,66,.02) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
+
+/* Jackpot number display */
+.cta-jackpot{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:8px 20px;
+  background:linear-gradient(135deg,rgba(224,64,251,.1),rgba(245,200,66,.08));
+  border:1px solid rgba(224,64,251,.3);
+  border-radius:3px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--neon);letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:24px;
+  box-shadow:0 0 30px rgba(224,64,251,.15);
+}
+.jdot{width:6px;height:6px;border-radius:50%;background:var(--neon);animation:blink .8s infinite;box-shadow:0 0 8px var(--neon);}
+
+.cta-in{position:relative;z-index:1;max-width:720px;margin:0 auto;}
+.cta-h{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(52px,8vw,112px);line-height:.87;letter-spacing:3px;
+  margin-bottom:20px;
+}
+.cta-h .g{color:var(--gold);text-shadow:0 0 60px rgba(245,200,66,.4);}
+.cta-sub-serif{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(18px,2.2vw,26px);color:rgba(240,234,214,.5);
+  margin-bottom:44px;letter-spacing:.04em;
+}
+.cta-badges{display:flex;justify-content:center;gap:10px;margin-top:24px;flex-wrap:wrap;}
+.ctabdg{display:flex;align-items:center;gap:6px;padding:7px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:52px 48px 36px;}
+.ft{max-width:1100px;margin:0 auto;}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:24px;}
+.ft-logo{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:3px;margin-bottom:9px;}
+.ft-logo em{color:var(--gold);font-style:normal;}
+.ft-desc{font-size:11px;color:var(--muted);line-height:1.7;max-width:210px;}
+.ft-col-t{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:.15em;margin-bottom:11px;}
+.ft-links{display:flex;flex-direction:column;gap:7px;}
+.ft-links a{font-size:11px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.ft-links a:hover{color:var(--text);}
+.ft-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.ft-legal{font-size:10px;color:var(--muted);line-height:1.5;max-width:460px;}
+.ft-copy{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);}
+
+/* REVEALS */
+[data-r]{will-change:transform,opacity;}
+
+@media(max-width:960px){
+  #nav{padding:0 20px;} .nlinks{display:none;}
+  .sec{padding:80px 20px;}
+  #cta-final{padding:80px 20px;} footer{padding:48px 20px 32px;}
+  .h-title{font-size:clamp(56px,14vw,90px);}
+  .h-stats{gap:24px;}
+  .prob-grid{grid-template-columns:1fr;}
+  .estr-header{grid-template-columns:1fr;}
+  .strat-grid{grid-template-columns:1fr 1fr;}
+  .bento{grid-template-columns:1fr 1fr;} .bc.s3,.bc.s4{grid-column:span 2;}
+  .test-grid,.results-strip,.price-grid{grid-template-columns:1fr;}
+  .pcard.pop{transform:scale(1);}
+  .faq-wrap{grid-template-columns:1fr;}
+  .ft-top{grid-template-columns:1fr 1fr;}
+  .garantia{grid-template-columns:1fr;}
+  .step{grid-template-columns:64px 1fr;} .step-vis{display:none;}
+  .jackpot-strip{gap:28px;flex-wrap:wrap;}
+  .prob-bridge{flex-direction:column;}
+}
+@media(max-width:520px){
+  .strat-grid{grid-template-columns:1fr;} .bento{grid-template-columns:1fr;}
+  .bc.s2,.bc.s3{grid-column:span 1;} .ft-top{grid-template-columns:1fr;}
+  .h-stats{flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nl">
+    <div class="nl-hex">G</div>
+    <div class="nl-text">Gestor<em>Bet</em></div>
+  </a>
+  <div class="nlinks">
+    <a href="#como">Como Funciona</a>
+    <a href="#estrategias">Estratégias</a>
+    <a href="#precos">Planos</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a href="login.html" class="nbtn">Entrar na plataforma</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     HERO — CASINO STAGE
+═══════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <canvas id="chip-canvas"></canvas>
+  <div class="h-vig"></div>
+
+  <!-- Light beams from ceiling -->
+  <div class="light-beams" id="beams"></div>
+
+  <div class="h-content">
+    <div class="h-live" id="h-live">
+      <div class="live-dot"></div>
+      +500 apostadores ativos agora
+    </div>
+
+    <h1 class="h-title" id="h-title">
+      <span class="row">JOGUE COM</span>
+      <span class="row"><span class="g">ESTRATÉGIA.</span></span>
+      <span class="row">GANHE COM</span>
+      <span class="row"><span class="g">INTELIGÊNCIA.</span></span>
+    </h1>
+
+    <p class="h-sub-serif" id="h-serif">
+      O sistema que calcula cada aposta e encerra a sessão no momento certo.
+    </p>
+
+    <div class="h-stats" id="h-stats">
+      <div class="h-stat"><div class="h-stat-n" id="cnt-1">0</div><div class="h-stat-l">Apostadores</div></div>
+      <div class="h-stat"><div class="h-stat-n">9</div><div class="h-stat-l">Estratégias</div></div>
+      <div class="h-stat"><div class="h-stat-n">7</div><div class="h-stat-l">Dias de Garantia</div></div>
+      <div class="h-stat"><div class="h-stat-n">3</div><div class="h-stat-l">Modos de Jogo</div></div>
+    </div>
+
+    <div class="h-btns" id="h-btns">
+      <a href="login.html" class="btn-jackpot">🎰 Quero jogar com estratégia</a>
+      <a href="#como" class="btn-ghost">Ver como funciona ↓</a>
+    </div>
+  </div>
+
+  <div class="h-scroll" id="h-scroll">
+    <div class="scroll-chip"><div style="color:var(--gold);font-size:10px;">↓</div></div>
+    <div class="scroll-txt">scroll</div>
+  </div>
+</section>
+
+<!-- ROULETTE NUMBERS TICKER -->
+<div class="roulette-ticker">
+  <div class="rt-track" id="rt-track">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- JACKPOT STATS STRIP -->
+<div class="jackpot-strip">
+  <div class="jstat"><div class="jstat-n" id="jn1">+500</div><div class="jstat-l">Apostadores Ativos</div></div>
+  <div class="jstat-div"></div>
+  <div class="jstat"><div class="jstat-n">R$0</div><div class="jstat-l">Custo de Erro Evitado</div></div>
+  <div class="jstat-div"></div>
+  <div class="jstat"><div class="jstat-n">9</div><div class="jstat-l">Estratégias Profissionais</div></div>
+  <div class="jstat-div"></div>
+  <div class="jstat"><div class="jstat-n">100%</div><div class="jstat-l">Garantia de Reembolso</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PROBLEMA
+═══════════════════════════════════════════ -->
+<section class="sec" id="problema">
+  <div class="si">
+    <div data-r="left">
+      <div class="ey">O Problema</div>
+      <h2 class="st">Você sabe a estratégia.<br><span class="g">Só falha na execução.</span></h2>
+      <p class="st-serif">Todo apostador profissional sabe: a diferença entre ganhar e perder está na disciplina, não na sorte.</p>
+    </div>
+    <div class="prob-grid">
+      <div class="prob-card" data-r><div class="pc-n">01</div><div class="pc-ico">💸</div><div class="pc-h">Aposta o valor errado na pressão.</div><div class="pc-p">Cálculo mental falha quando mais importa. Você entra com valor errado e o prejuízo aparece.</div></div>
+      <div class="prob-card" data-r><div class="pc-n">02</div><div class="pc-ico">🎲</div><div class="pc-h">Começou bem. Ficou ganancioso.</div><div class="pc-p">Sem limite automático você continua até virar red. Sempre. O cassino conta com isso.</div></div>
+      <div class="prob-card" data-r><div class="pc-n">03</div><div class="pc-ico">🛑</div><div class="pc-h">Não sabe o momento certo de parar.</div><div class="pc-p">Você para no achismo. Nem cedo, nem tarde. Sempre na hora errada.</div></div>
+      <div class="prob-card" data-r><div class="pc-n">04</div><div class="pc-ico">🔄</div><div class="pc-h">Começa com disciplina. Termina no vermelho.</div><div class="pc-p">O problema nunca foi a estratégia. Foi a falta de um sistema que a execute sem emoção.</div></div>
+      <div class="prob-bridge" data-r>
+        <div>
+          <div class="pb-h">E se existisse um sistema que fizesse<br>tudo isso por você — <span class="g">automaticamente?</span></div>
+        </div>
+        <a href="#como" class="btn-jackpot" style="flex-shrink:0;padding:16px 32px;font-size:14px;animation:none;box-shadow:0 8px 24px rgba(245,200,66,.25);">Ver a solução →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     ESTRATÉGIAS
+═══════════════════════════════════════════ -->
+<section class="sec" id="estrategias">
+  <div class="si">
+    <div class="estr-header">
+      <div data-r="left">
+        <div class="ey">9 Estratégias</div>
+        <h2 class="st">Ordenadas por risco<br><span class="g">e potencial de retorno.</span></h2>
+      </div>
+      <div class="estr-header-r" data-r="right">
+        Das mais conservadoras às mais agressivas. Cada uma com progressão automática calculada pelo sistema — sem erro, sem improviso.
+      </div>
+    </div>
+    <div class="scatter-wrap" data-r>
+      <div class="scatter-title">Mapa Risco × Retorno — posição de cada estratégia</div>
+      <canvas id="scat"></canvas>
+    </div>
+    <div class="strat-grid" id="strat-grid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     COMO FUNCIONA
+═══════════════════════════════════════════ -->
+<section class="sec" id="como">
+  <div class="si">
+    <div data-r>
+      <div class="ey">Como Funciona</div>
+      <h2 class="st">Dois cliques por rodada.<br><span class="g">O sistema faz o resto.</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step" data-r>
+        <div class="step-idx">01</div>
+        <div>
+          <h3 class="step-h">Escolha sua estratégia</h3>
+          <p class="step-p">9 estratégias profissionais com indicador de risco e retorno. Da mais segura à mais agressiva — você decide.</p>
+          <div class="step-feats">
+            <div class="sf">Fibonacci, Martingale, D'Alembert e mais 6</div>
+            <div class="sf">Mapa visual de risco × retorno</div>
+            <div class="sf">Ordenadas do menor ao maior risco</div>
+          </div>
+        </div>
+        <div class="step-vis">
+          <div class="sv-bar"><div style="display:flex;gap:4px"><div class="sv-d sv-d1"></div><div class="sv-d sv-d2"></div><div class="sv-d sv-d3"></div></div><div class="sv-url">app.gestorbet.com</div></div>
+          <div class="sv-body">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;">Escolha a estratégia</div>
+            <div class="msg">
+              <div class="msg-c on"><div class="msg-n">Flat Bet</div><div class="msg-r"><div class="mr mr-gr"></div><div class="mr"></div><div class="mr"></div><div class="mr"></div></div></div>
+              <div class="msg-c"><div class="msg-n">Paroli</div><div class="msg-r"><div class="mr mr-g"></div><div class="mr"></div><div class="mr"></div><div class="mr"></div></div></div>
+              <div class="msg-c"><div class="msg-n">D'Alembert</div><div class="msg-r"><div class="mr mr-g"></div><div class="mr mr-g"></div><div class="mr"></div><div class="mr"></div></div></div>
+              <div class="msg-c"><div class="msg-n">Fibonacci</div><div class="msg-r"><div class="mr mr-g"></div><div class="mr mr-g"></div><div class="mr mr-g"></div><div class="mr"></div></div></div>
+              <div class="msg-c"><div class="msg-n">Anti-Mart.</div><div class="msg-r"><div class="mr mr-g"></div><div class="mr mr-g"></div><div class="mr"></div><div class="mr"></div></div></div>
+              <div class="msg-c"><div class="msg-n">Martingale</div><div class="msg-r"><div class="mr mr-r"></div><div class="mr mr-r"></div><div class="mr mr-r"></div><div class="mr mr-r"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step" data-r>
+        <div class="step-idx">02</div>
+        <div>
+          <h3 class="step-h">Configure sua sessão</h3>
+          <p class="step-p">Banca, Stop Loss, Stop Win e modo de jogo. Presets prontos para conservador, moderado e agressivo.</p>
+          <div class="step-feats">
+            <div class="sf">Stake Fixa, Meta de Ganho ou Nº de Rodadas</div>
+            <div class="sf">Presets de perfil prontos</div>
+            <div class="sf">Stop automático configurável em reais</div>
+          </div>
+        </div>
+        <div class="step-vis">
+          <div class="sv-bar"><div style="display:flex;gap:4px"><div class="sv-d sv-d1"></div><div class="sv-d sv-d2"></div><div class="sv-d sv-d3"></div></div><div class="sv-url">app.gestorbet.com/config</div></div>
+          <div class="sv-body">
+            <div class="cfg">
+              <div class="cfg-row"><div class="cfg-f"><div class="cfg-l">Banca</div><div class="cfg-v">R$ 200</div></div><div class="cfg-f"><div class="cfg-l">Stake</div><div class="cfg-v">R$ 5</div></div></div>
+              <div class="cfg-row"><div class="cfg-f rb"><div class="cfg-l" style="color:var(--red)">Stop Loss</div><div class="cfg-v">R$ 60</div></div><div class="cfg-f gb"><div class="cfg-l" style="color:var(--green)">Stop Win</div><div class="cfg-v">R$ 80</div></div></div>
+              <div class="cfg-m"><div class="cfg-mi">Conservador</div><div class="cfg-mi on">Moderado</div><div class="cfg-mi">Agressivo</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step" data-r>
+        <div class="step-idx">03</div>
+        <div>
+          <h3 class="step-h">Jogue e registre</h3>
+          <p class="step-p">Um clique por rodada. O sistema recalcula a próxima aposta e encerra sozinho no stop. Sem emoção. Sem erro.</p>
+          <div class="step-feats">
+            <div class="sf">GANHEI ou PERDI — um clique</div>
+            <div class="sf">Próxima aposta calculada instantaneamente</div>
+            <div class="sf">Sessão encerra sozinha no limite configurado</div>
+          </div>
+        </div>
+        <div class="step-vis">
+          <div class="sv-bar"><div style="display:flex;gap:4px"><div class="sv-d sv-d1"></div><div class="sv-d sv-d2"></div><div class="sv-d sv-d3"></div></div><div class="sv-url">app.gestorbet.com/sessao</div><span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--green);display:flex;align-items:center;gap:3px;margin-left:auto;"><span style="width:4px;height:4px;border-radius:50%;background:var(--green);animation:blink 1.2s infinite;display:inline-block;"></span>AO VIVO</span></div>
+          <div class="sv-body">
+            <div class="lm">
+              <div class="lm-bet"><div class="lm-l">Próxima Aposta</div><div class="lm-v">R$ 13,00</div></div>
+              <div class="lm-btns"><div class="lm-w">✓ GANHEI</div><div class="lm-ll">✕ PERDI</div></div>
+              <div class="lm-bars">
+                <div class="lm-br"><div class="lm-bl">Stop Loss</div><div class="lm-bt"><div class="lm-bfr" style="width:28%"></div></div><div class="lm-bp">28%</div></div>
+                <div class="lm-br"><div class="lm-bl">Stop Win</div><div class="lm-bt"><div class="lm-bfg" style="width:71%"></div></div><div class="lm-bp">71%</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     BENEFÍCIOS
+═══════════════════════════════════════════ -->
+<section class="sec" id="beneficios">
+  <div class="si">
+    <div data-r>
+      <div class="ey">Por que o GestorBet</div>
+      <h2 class="st">Não joga por você.<br><span class="g">Garante que você jogue com inteligência.</span></h2>
+    </div>
+    <div class="bento">
+      <div class="bc s3 feat" data-r><div class="btag">Stop inteligente</div><div class="bico">🔒</div><div class="bh">Stop Loss &amp; Stop Win Automático</div><div class="bp2">A sessão encerra sozinha no limite. Sem exceções. Sem "só mais uma rodada". O sistema protege sua banca quando a emoção fala mais alto.</div></div>
+      <div class="bc s3" data-r><div class="btag">Cálculo em tempo real</div><div class="bico">⚡</div><div class="bh">Próxima Aposta Sempre Calculada</div><div class="bp2">Zero cálculo mental, zero erro. O sistema recalcula a cada rodada com base na estratégia e no histórico da sessão.</div></div>
+      <div class="bc s2" data-r><div class="bico">📊</div><div class="bh">Dashboard ao Vivo</div><div class="bp2">Banca, P&L e win rate — visível a cada rodada. Decisões com dados, nunca com feeling.</div></div>
+      <div class="bc s2" data-r><div class="bico">💻</div><div class="bh">Acesso pelo Navegador</div><div class="bp2">Sem instalar nada. Funciona no celular ou computador, em qualquer plataforma de cassino.</div></div>
+      <div class="bc s2" data-r><div class="bico">🎰</div><div class="bh">3 Modos de Jogo</div><div class="bp2">Stake Fixa, Meta de Ganho ou Nº de Rodadas.</div></div>
+      <div class="bc s3" data-r style="display:flex;flex-direction:column;justify-content:space-between;min-height:180px;">
+        <div><div class="btag">Compatibilidade</div><div class="bh">Qualquer Plataforma</div><div class="bp2" style="font-size:11px">Roleta, Crash, Aviator, Bacará, Bac Bo — onde você já joga.</div></div>
+        <div class="bc-big">∞</div>
+      </div>
+      <div class="bc s3" data-r style="display:flex;flex-direction:column;justify-content:space-between;min-height:180px;">
+        <div><div class="btag">Comunidade</div><div class="bh">+500 Apostadores Ativos</div><div class="bp2" style="font-size:11px">Que pararam de apostar no feeling e passaram a usar disciplina.</div></div>
+        <div class="bc-big">500+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     DEPOIMENTOS
+═══════════════════════════════════════════ -->
+<section class="sec" id="prova">
+  <div class="si">
+    <div data-r>
+      <div class="ey">Resultados Reais</div>
+      <h2 class="st">Quem usa, não volta<br><span class="g">para o achismo.</span></h2>
+      <p class="st-serif">Apostadores de verdade. Resultados de verdade.</p>
+    </div>
+    <div class="test-grid">
+      <div class="tc" data-r>
+        <div class="tc-q">"</div>
+        <p class="tc-text">Antes eu perdia minha banca em 20 minutos. Agora termino no green — o Stop Win automático faz toda a diferença.</p>
+        <div class="tc-author"><div class="tc-av" style="background:linear-gradient(135deg,var(--gold),var(--gold2))">J</div><div><div class="tc-name">João M.</div><div class="tc-role">Blaze · 3 meses de uso</div></div></div>
+        <div class="tc-result">+R$ 87 na última sessão</div>
+      </div>
+      <div class="tc" data-r>
+        <div class="tc-q">"</div>
+        <p class="tc-text">O stop automático me salvou várias vezes. Eu teria continuado e perdido tudo. O sistema decide quando parar.</p>
+        <div class="tc-author"><div class="tc-av" style="background:linear-gradient(135deg,#00e676,#00695c)">C</div><div><div class="tc-name">Carlos R.</div><div class="tc-role">Betano · 5 meses de uso</div></div></div>
+        <div class="tc-result">Win rate médio de 64%</div>
+      </div>
+      <div class="tc" data-r>
+        <div class="tc-q">"</div>
+        <p class="tc-text">Fibonacci no modo Meta de Ganho é o que mais funciona pra mim. O dashboard deixa tudo claríssimo. Virou rotina.</p>
+        <div class="tc-author"><div class="tc-av" style="background:linear-gradient(135deg,#e040fb,#7b1fa2)">R</div><div><div class="tc-name">Rafael S.</div><div class="tc-role">Apostador · 2 meses de uso</div></div></div>
+        <div class="tc-result">+R$ 122 na última sessão</div>
+      </div>
+    </div>
+    <div class="results-strip">
+      <div class="res-card" data-r><div class="res-h"><div class="res-sess">Fibonacci · Meta de Ganho</div><div class="res-pl">+R$87</div></div><div class="res-body"><div class="res-seq"><div class="rr2 rr-w">W</div><div class="rr2 rr-l">L</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-l">L</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div></div><div class="res-stats"><div class="rstat">8 rodadas</div><div class="rstat">WR: <b style="color:var(--text)">62%</b></div><div class="rstat" style="color:var(--green)">Stop Win ✓</div></div></div></div>
+      <div class="res-card" data-r><div class="res-h"><div class="res-sess">Paroli · Stake Fixa</div><div class="res-pl">+R$45</div></div><div class="res-body"><div class="res-seq"><div class="rr2 rr-l">L</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-l">L</div><div class="rr2 rr-w">W</div></div><div class="res-stats"><div class="rstat">6 rodadas</div><div class="rstat">WR: <b style="color:var(--text)">67%</b></div><div class="rstat" style="color:var(--green)">Meta ✓</div></div></div></div>
+      <div class="res-card" data-r><div class="res-h"><div class="res-sess">D'Alembert · Nº Rodadas</div><div class="res-pl">+R$122</div></div><div class="res-body"><div class="res-seq"><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-l">L</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div><div class="rr2 rr-l">L</div><div class="rr2 rr-w">W</div><div class="rr2 rr-w">W</div></div><div class="res-stats"><div class="rstat">9 rodadas</div><div class="rstat">WR: <b style="color:var(--text)">78%</b></div><div class="rstat" style="color:var(--green)">Encerrado ✓</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     PREÇOS
+═══════════════════════════════════════════ -->
+<section class="sec" id="precos">
+  <div class="si">
+    <div class="price-center" data-r>
+      <div class="ey" style="justify-content:center">Planos</div>
+      <h2 class="st" style="text-align:center">Menos que o custo de<br><span class="g">uma aposta mal feita.</span></h2>
+    </div>
+    <div class="price-anchor" data-r>Uma única aposta errada por falta de gestão pode custar <strong>R$50, R$100 ou mais</strong>. O GestorBet custa menos que isso por mês — e te ajuda a nunca mais cometer esse erro.</div>
+    <div class="price-grid">
+      <div class="pcard" data-r><div class="pl2">Mensal</div><div class="pp2"><sup>R$</sup>49</div><div class="pper2">/mês · cobrado mensalmente</div><ul class="plist"><li><span class="ck">✓</span>Acesso completo à plataforma</li><li><span class="ck">✓</span>9 estratégias profissionais</li><li><span class="ck">✓</span>3 modos de jogo</li><li><span class="ck">✓</span>Stop Loss e Stop Win automáticos</li><li><span class="ck">✓</span>Dashboard em tempo real</li></ul><button class="pbtn2">Assinar por R$49/mês</button></div>
+      <div class="pcard pop" data-r><div class="pop-tag">🎰 MAIS POPULAR</div><div class="pl2">Trimestral</div><div class="pp2"><sup>R$</sup>99</div><div class="pper2">/3 meses · economia de R$48</div><ul class="plist"><li class="hi"><span class="ck">✓</span>Tudo do plano mensal</li><li class="hi"><span class="ck">✓</span>Economia de R$48</li><li><span class="ck">✓</span>Acesso prioritário a novas funções</li><li><span class="ck">✓</span>Funcionalidades em beta</li><li><span class="ck">✓</span>Suporte prioritário</li></ul><button class="pbtn2 g">Começar com garantia de 7 dias</button></div>
+      <div class="pcard" data-r><div class="pl2">Anual</div><div class="pp2" style="font-size:44px"><sup>R$</sup>297</div><div class="pper2">/ano · R$24,75/mês</div><ul class="plist"><li class="hi"><span class="ck">✓</span>Tudo do plano trimestral</li><li class="hi"><span class="ck">✓</span>Melhor custo-benefício</li><li><span class="ck">✓</span>Todas funcionalidades futuras</li><li><span class="ck">✓</span>Suporte VIP</li><li><span class="ck">✓</span>1 mês grátis incluso</li></ul><button class="pbtn2">Assinar plano anual</button></div>
+    </div>
+    <div class="garantia" data-r><div class="g-ico">🔒</div><div><div class="g-h">Garantia de 7 dias</div><div class="g-p">Se o GestorBet não te ajudar a manter a disciplina na banca, devolvemos 100% do valor. Sem perguntas, sem burocracia.</div></div><div class="g-badge">7 DIAS<br>GARANTIA<br>TOTAL</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FAQ
+═══════════════════════════════════════════ -->
+<section class="sec" id="faq">
+  <div class="si">
+    <div data-r><div class="ey">FAQ</div><h2 class="st">Dúvidas<br><span class="g">Frequentes</span></h2></div>
+    <div class="faq-wrap">
+      <div class="faq-list" data-r>
+        <div class="fi"><div class="fq" onclick="faq(this)"><span>Precisa instalar algum aplicativo?</span><div class="ftog">+</div></div><div class="fa"><div class="fa-i">Não. O GestorBet é um software web — basta acessar pelo navegador do celular ou computador. Sem download, sem instalação.</div></div></div>
+        <div class="fi"><div class="fq" onclick="faq(this)"><span>Funciona em qual plataforma de cassino?</span><div class="ftog">+</div></div><div class="fa"><div class="fa-i">Em qualquer uma. Você usa o GestorBet ao lado da plataforma que já usa — Blaze, Betano, Bet365, Pixbet e qualquer outra. Funciona para Roleta, Crash, Aviator, Bacará e Bac Bo.</div></div></div>
+        <div class="fi"><div class="fq" onclick="faq(this)"><span>O sistema garante lucro?</span><div class="ftog">+</div></div><div class="fa"><div class="fa-i">Não. Nenhum sistema garante lucro no cassino. O GestorBet garante disciplina, controle de banca e execução correta da estratégia — que é exatamente o que separa amadores de profissionais.</div></div></div>
+        <div class="fi"><div class="fq" onclick="faq(this)"><span>Como funciona na prática durante o jogo?</span><div class="ftog">+</div></div><div class="fa"><div class="fa-i">Você abre o GestorBet no navegador, configura a sessão e começa a jogar. A cada rodada, clica em GANHEI ou PERDI — o sistema mostra o valor exato da próxima aposta e encerra automaticamente no stop configurado.</div></div></div>
+        <div class="fi"><div class="fq" onclick="faq(this)"><span>Posso cancelar quando quiser?</span><div class="ftog">+</div></div><div class="fa"><div class="fa-i">Sim, sem multa e sem burocracia. Cancele com um clique a qualquer momento, direto na plataforma.</div></div></div>
+        <div class="fi"><div class="fq" onclick="faq(this)"><span>Funciona para iniciantes?</span><div class="ftog">+</div></div><div class="fa"><div class="fa-i">Sim. Cada estratégia tem descrição completa e indicador visual de risco. Você não precisa entender de matemática — o sistema faz tudo automaticamente.</div></div></div>
+      </div>
+      <div data-r="right">
+        <div class="faq-card">
+          <div class="fc-title">Pronto para<br><span style="color:var(--gold)">jogar de verdade?</span></div>
+          <div class="fc-sub">+500 apostadores já usam o GestorBet. A diferença está na disciplina.</div>
+          <div class="fc-feats">
+            <div class="ff2">9 estratégias profissionais inclusas</div>
+            <div class="ff2">Stop Loss e Stop Win automáticos</div>
+            <div class="ff2">Dashboard em tempo real</div>
+            <div class="ff2">Acesso imediato pelo navegador</div>
+            <div class="ff2">Garantia total de 7 dias</div>
+          </div>
+          <a href="login.html" class="btn-jackpot" style="width:100%;justify-content:center;display:flex;animation:none;box-shadow:0 8px 28px rgba(245,200,66,.25);">🎰 Quero meu acesso</a>
+          <div style="margin-top:14px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">🔒 Pagamento seguro · Cancele quando quiser</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CTA FINAL — JACKPOT STAGE
+═══════════════════════════════════════════ -->
+<section id="cta-final">
+  <div class="cta-lights"></div>
+  <div class="cta-grid-bg"></div>
+  <div class="cta-glow"></div>
+  <div class="cta-in" data-r>
+    <div class="cta-jackpot"><div class="jdot"></div>Vagas limitadas — plano trimestral</div>
+    <h2 class="cta-h">
+      Sua próxima sessão<br>
+      começa <span class="g">agora.</span>
+    </h2>
+    <p class="cta-sub-serif">
+      Chega de apostar no achismo. Comece a jogar com a mesma disciplina dos profissionais.
+    </p>
+    <a href="login.html" class="btn-jackpot" style="font-size:18px;padding:22px 60px">
+      🎰 Quero jogar com estratégia
+    </a>
+    <div class="cta-badges">
+      <div class="ctabdg">🔒 Pagamento seguro</div>
+      <div class="ctabdg">✓ Garantia de 7 dias</div>
+      <div class="ctabdg">💻 Acesso imediato</div>
+      <div class="ctabdg">Pix · Cartão · Boleto</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft">
+    <div class="ft-top">
+      <div><div class="ft-logo">Gestor<em>Bet</em></div><div class="ft-desc">Software web de gestão de estratégias para apostadores profissionais. Controle sua banca com disciplina e dados.</div></div>
+      <div><div class="ft-col-t">Produto</div><div class="ft-links"><a href="#como">Como Funciona</a><a href="#estrategias">Estratégias</a><a href="#beneficios">Benefícios</a><a href="#precos">Planos</a></div></div>
+      <div><div class="ft-col-t">Suporte</div><div class="ft-links"><a href="#faq">FAQ</a><a href="#">Contato</a><a href="#">Status</a></div></div>
+      <div><div class="ft-col-t">Redes</div><div class="ft-links"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Telegram</a></div></div>
+    </div>
+    <div class="ft-bot">
+      <div class="ft-legal">O GestorBet é uma ferramenta de gestão de banca. Não incentivamos apostas. Jogue com responsabilidade e dentro dos seus limites.</div>
+      <div class="ft-copy">© 2025 GestorBet · Todos os direitos reservados</div>
+    </div>
+  </div>
+</footer>
+
+<!-- LIBS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ══════════════════════════════════
+   CURSOR
+══════════════════════════════════ */
+const dot=document.getElementById('cur'),ring=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=(mx-4)+'px';dot.style.top=(my-4)+'px';});
+(function r(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=(rx-17)+'px';ring.style.top=(ry-17)+'px';requestAnimationFrame(r);})();
+document.querySelectorAll('a,button,.prob-card,.tc,.pcard,.strat-card,.bc').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('h'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('h'));
+});
+
+/* ══════════════════════════════════
+   NAV
+══════════════════════════════════ */
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('on',scrollY>50));
+
+/* ══════════════════════════════════
+   ROULETTE TICKER
+══════════════════════════════════ */
+(function(){
+  const SEQUENCE=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const RED=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+  const track=document.getElementById('rt-track');
+  const full=[...SEQUENCE,...SEQUENCE];
+  full.forEach(n=>{
+    const el=document.createElement('div');
+    el.className='rt-num '+(n===0?'rt-green':RED.has(n)?'rt-red':'rt-black');
+    el.textContent=n;
+    track.appendChild(el);
+  });
+})();
+
+/* ══════════════════════════════════
+   LIGHT BEAMS
+══════════════════════════════════ */
+(function(){
+  const container=document.getElementById('beams');
+  const colors=['rgba(245,200,66,.15)','rgba(224,64,251,.1)','rgba(245,200,66,.12)','rgba(255,255,255,.06)'];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='beam';
+    const x=5+i*8+Math.random()*4;
+    const h=30+Math.random()*50;
+    const delay=Math.random()*4;
+    b.style.cssText=`left:${x}%;height:${h}%;background:linear-gradient(180deg,${colors[i%colors.length]},transparent);animation-delay:${delay}s;animation-duration:${3+Math.random()*3}s;width:${1+Math.random()*2}px;opacity:${.4+Math.random()*.6};`;
+    container.appendChild(b);
+  }
+})();
+
+/* ══════════════════════════════════
+   THREE.JS HERO — Roulette wheel + particles
+══════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('hero-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setClearColor(0x060409,1);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);
+  cam.position.set(0,0,6);
+
+  // Roulette wheel — torus geometry
+  const torusGeo=new THREE.TorusGeometry(2.8,.08,16,120);
+  const torusMat=new THREE.MeshBasicMaterial({color:0xF5C842,transparent:true,opacity:.12});
+  const torus=new THREE.Mesh(torusGeo,torusMat);
+  torus.rotation.x=Math.PI*.4;
+  torus.position.set(3.5,-1.5,-2);
+  scene.add(torus);
+
+  // Inner ring
+  const torus2=new THREE.TorusGeometry(2.0,.04,12,80);
+  const torus2Mat=new THREE.MeshBasicMaterial({color:0xF5C842,transparent:true,opacity:.07});
+  const torus2Mesh=new THREE.Mesh(torus2,torus2Mat);
+  torus2Mesh.rotation.x=Math.PI*.4;
+  torus2Mesh.position.set(3.5,-1.5,-2);
+  scene.add(torus2Mesh);
+
+  // Spokes
+  for(let i=0;i<18;i++){
+    const sg=new THREE.CylinderGeometry(.01,.01,2.8,4);
+    const sm=new THREE.MeshBasicMaterial({color:0xF5C842,transparent:true,opacity:.06});
+    const sp=new THREE.Mesh(sg,sm);
+    sp.rotation.z=i*(Math.PI/9);
+    sp.position.set(3.5,-1.5,-2);
+    scene.add(sp);
+  }
+
+  // Gold particle field
+  const N=1400;
+  const pos=new Float32Array(N*3),col=new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    pos[i*3]=(Math.random()-.5)*22;
+    pos[i*3+1]=(Math.random()-.5)*22;
+    pos[i*3+2]=(Math.random()-.5)*14;
+    const b=.15+Math.random()*.85;
+    // mix gold and purple (neon) for jackpot feel
+    if(Math.random()<.15){col[i*3]=.88;col[i*3+1]=.25;col[i*3+2]=.98;} // purple
+    else{col[i*3]=b*.96;col[i*3+1]=b*.78;col[i*3+2]=b*.1;}
+  }
+  const pg=new THREE.BufferGeometry();
+  pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  pg.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const pm=new THREE.PointsMaterial({size:.045,vertexColors:true,transparent:true,opacity:.7,sizeAttenuation:true});
+  const pts=new THREE.Points(pg,pm);
+  scene.add(pts);
+
+  // Small octahedra as dice faces
+  [-3,-1,2].forEach((x,i)=>{
+    const og=new THREE.OctahedronGeometry(.3,0);
+    const om=new THREE.MeshBasicMaterial({color:0xF5C842,wireframe:true,transparent:true,opacity:.18});
+    const o=new THREE.Mesh(og,om);
+    o.position.set(x-2,i*.8-1,-1);
+    scene.add(o);
+    o.userData.spin=.5+Math.random();
+  });
+
+  let mx2=0,my2=0;
+  document.addEventListener('mousemove',e=>{mx2=(e.clientX/innerWidth-.5)*2;my2=(e.clientY/innerHeight-.5)*2;});
+
+  const clk=new THREE.Clock();
+  function draw(){
+    const t=clk.getElapsedTime();
+    requestAnimationFrame(draw);
+    // Roulette wheel spins
+    torus.rotation.z=t*.4;
+    torus2Mesh.rotation.z=-t*.3;
+    pts.rotation.y=t*.015; pts.rotation.x=t*.007;
+    // Dice
+    scene.children.filter(c=>c.userData.spin).forEach(c=>{
+      c.rotation.x=t*c.userData.spin;
+      c.rotation.y=t*c.userData.spin*.7;
+    });
+    cam.position.x+=(mx2*.35-cam.position.x)*.025;
+    cam.position.y+=(-my2*.22-cam.position.y)*.025;
+    cam.lookAt(0,0,0);
+    renderer.render(scene,cam);
+  }
+  draw();
+  window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+})();
+
+/* ══════════════════════════════════
+   CHIP RAIN — Canvas 2D falling chips
+══════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('chip-canvas');
+  const ctx=canvas.getContext('2d');
+  let W,H;
+  function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
+  resize(); window.addEventListener('resize',resize);
+
+  const COLORS=['#F5C842','#C0392B','#1a7a32','#1a1a2e','#E040FB','#00BCD4'];
+  const CHIP_COUNT=28;
+  const chips=Array.from({length:CHIP_COUNT},()=>({
+    x:Math.random()*innerWidth,
+    y:-40-Math.random()*300,
+    r:8+Math.random()*10,
+    vx:(Math.random()-.5)*1.2,
+    vy:.6+Math.random()*1.4,
+    rot:Math.random()*Math.PI*2,
+    vrot:(Math.random()-.5)*.08,
+    col:COLORS[Math.floor(Math.random()*COLORS.length)],
+    alpha:.7+Math.random()*.3,
+    stripes:3+Math.floor(Math.random()*4),
+  }));
+
+  function drawChip(c){
+    ctx.save();
+    ctx.translate(c.x,c.y);
+    ctx.rotate(c.rot);
+    ctx.globalAlpha=c.alpha;
+
+    // Shadow
+    ctx.beginPath(); ctx.arc(0,0,c.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,.3)';
+    ctx.filter='blur(3px)';
+    ctx.fill(); ctx.filter='none';
+
+    // Base circle
+    ctx.beginPath(); ctx.arc(0,0,c.r,0,Math.PI*2);
+    ctx.fillStyle=c.col; ctx.fill();
+
+    // Rim
+    ctx.beginPath(); ctx.arc(0,0,c.r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // Inner circle
+    ctx.beginPath(); ctx.arc(0,0,c.r*.65,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,.2)'; ctx.lineWidth=1; ctx.stroke();
+
+    // Stripe segments
+    const sliceAngle=Math.PI*2/c.stripes;
+    for(let i=0;i<c.stripes;i++){
+      if(i%2===0){
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.arc(0,0,c.r*.85,i*sliceAngle,(i+.5)*sliceAngle);
+        ctx.closePath();
+        ctx.fillStyle='rgba(255,255,255,.15)'; ctx.fill();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    chips.forEach(c=>{
+      c.x+=c.vx; c.y+=c.vy; c.rot+=c.vrot;
+      if(c.y>H+20){c.y=-20;c.x=Math.random()*W;c.vy=.6+Math.random()*1.4;}
+      if(c.x<-20||c.x>W+20){c.vx*=-1;}
+      drawChip(c);
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ══════════════════════════════════
+   GSAP HERO ENTRANCE
+══════════════════════════════════ */
+window.addEventListener('load',()=>{
+  const h1=document.getElementById('h-title');
+  h1.querySelectorAll('.row').forEach(row=>{
+    const txt=row.innerHTML;
+    // Preserve span tags, wrap plain chars
+    row.innerHTML=[...row.textContent].map(c=>
+      c===' '?'&nbsp;':`<span class="char" style="display:inline-block">${c}</span>`
+    ).join('');
+    // re-apply gold/red class if needed
+    if(txt.includes('class="g"')){
+      row.querySelectorAll('.char').forEach((ch,i)=>{
+        if(i<4) ch.style.color='var(--gold)';
+      });
+    }
+  });
+  // Re-apply gold color based on data
+  const rows=h1.querySelectorAll('.row');
+  rows[1].querySelectorAll('.char').forEach(c=>c.style.color='var(--gold)');
+  rows[3].querySelectorAll('.char').forEach(c=>c.style.color='var(--gold)');
+
+  const chars=h1.querySelectorAll('.char');
+  gsap.timeline({defaults:{ease:'power3.out'}})
+    .set('#h-live',{opacity:0,y:-16})
+    .set(chars,{opacity:0,y:80,rotationX:-90})
+    .set('#h-serif',{opacity:0,y:20})
+    .set('#h-stats',{opacity:0,y:20})
+    .set('#h-btns',{opacity:0,y:20})
+    .set('#h-scroll',{opacity:0})
+    .to('#h-live',{opacity:1,y:0,duration:.55},.2)
+    .to(chars,{opacity:1,y:0,rotationX:0,duration:.6,stagger:.018,ease:'back.out(1.3)'},.4)
+    .to('#h-serif',{opacity:1,y:0,duration:.6},1.2)
+    .to('#h-stats',{opacity:1,y:0,duration:.6},1.35)
+    .to('#h-btns',{opacity:1,y:0,duration:.6},1.5)
+    .to('#h-scroll',{opacity:1,duration:.5},2.0);
+
+  // Counter animation
+  const el=document.getElementById('cnt-1');
+  gsap.to({v:0},{v:500,duration:2,delay:1.2,ease:'power2.out',onUpdate:function(){el.textContent='+'+Math.round(this.targets()[0].v);}});
+});
+
+/* ══════════════════════════════════
+   GSAP SCROLL REVEALS
+══════════════════════════════════ */
+document.querySelectorAll('[data-r]').forEach((el,i)=>{
+  const dir=el.dataset.r;
+  gsap.fromTo(el,
+    {opacity:0,x:dir==='left'?-44:dir==='right'?44:0,y:(!dir||dir==='true'||dir==='')?44:0,scale:dir==='scale'?.93:1},
+    {opacity:1,x:0,y:0,scale:1,duration:.85,ease:'power3.out',
+     scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'},
+     delay:(i%5)*.055}
+  );
+});
+
+/* ══════════════════════════════════
+   PARALLAX HERO
+══════════════════════════════════ */
+window.addEventListener('scroll',()=>{
+  const hc=document.querySelector('.h-content');
+  if(hc) hc.style.transform=`translateY(${scrollY*.2}px)`;
+},{passive:true});
+
+/* ══════════════════════════════════
+   STRATEGIES DATA + RENDER
+══════════════════════════════════ */
+const STRATS=[
+  {n:'Flat Betting',  ico:'➡️',risk:8, ret:30,col:'#2DD4BF',bl:'Mínimo',bc:'bmin',sub:'Stake sempre igual'},
+  {n:"Oscar's Grind", ico:'⚙️',risk:18,ret:38,col:'#34D399',bl:'Baixo', bc:'blow',sub:'Meta +1u por ciclo'},
+  {n:'Paroli',        ico:'🎯',risk:22,ret:55,col:'#00E676',bl:'Baixo', bc:'blow',sub:'Dobra nos greens'},
+  {n:'1-3-2-6',       ico:'🔢',risk:20,ret:60,col:'#FBBF24',bl:'Baixo', bc:'blow',sub:'Ciclo fixo 4 passos'},
+  {n:"D'Alembert",    ico:'📐',risk:40,ret:48,col:'#60A5FA',bl:'Médio', bc:'bmed',sub:'+1u derrota / −1u vitória'},
+  {n:'Anti-Martingale',ico:'🔻',risk:45,ret:62,col:'#FB923C',bl:'Médio',bc:'bmed',sub:'Dobra após vitória'},
+  {n:'Fibonacci',     ico:'🌀',risk:58,ret:70,col:'#E040FB',bl:'Médio', bc:'bmed',sub:'Sequência matemática'},
+  {n:'Labouchère',    ico:'📋',risk:75,ret:78,col:'#F472B6',bl:'Alto',  bc:'bhi', sub:'Lista de cancelamento'},
+  {n:'Martingale',    ico:'🔺',risk:95,ret:92,col:'#FF1744',bl:'Alto',  bc:'bhi', sub:'Dobra após derrota'},
+];
+
+const sg=document.getElementById('strat-grid');
+STRATS.forEach(s=>{
+  const d=document.createElement('div');
+  d.className='strat-card';
+  d.setAttribute('data-ico',s.ico);
+  d.style.setProperty('--sc-col',s.col);
+  d.innerHTML=`
+    <div class="sc-top"><span class="sc-ico">${s.ico}</span><span class="sc-badge ${s.bc}">${s.bl}</span></div>
+    <div class="sc-name">${s.n}</div>
+    <div class="sc-sub">${s.sub}</div>
+    <div class="sc-meters">
+      <div class="sc-m"><div class="sc-ml">Risco</div><div class="sc-mt"><div class="sc-mf" style="width:${s.risk}%;background:${s.risk>60?'var(--red)':s.risk>35?'var(--gold)':'var(--green)'}"></div></div></div>
+      <div class="sc-m"><div class="sc-ml">Retorno</div><div class="sc-mt"><div class="sc-mf" style="width:${s.ret}%"></div></div></div>
+    </div>`;
+  sg.appendChild(d);
+});
+
+/* ══════════════════════════════════
+   SCATTER CANVAS
+══════════════════════════════════ */
+function drawScatter(){
+  const c=document.getElementById('scat');
+  if(!c)return;
+  const W=c.offsetWidth,H=210;
+  c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  const pad={l:36,r:16,t:14,b:30};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  // Background quadrant fills
+  ctx.fillStyle='rgba(0,230,118,.04)';ctx.fillRect(pad.l,pad.t,iW/2,iH/2);  // low risk high ret — ideal
+  ctx.fillStyle='rgba(255,23,68,.04)';ctx.fillRect(pad.l+iW/2,pad.t+iH/2,iW/2,iH/2); // high risk low ret — avoid
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  [0,.25,.5,.75,1].forEach(f=>{
+    const x=pad.l+f*iW,y=pad.t+f*iH;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+iH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();
+  });
+
+  // Axis labels
+  ctx.fillStyle='rgba(255,255,255,.18)';ctx.font='7px JetBrains Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('← RISCO →',pad.l+iW/2,H-5);
+  ctx.save();ctx.translate(10,pad.t+iH/2);ctx.rotate(-Math.PI/2);ctx.fillText('← RETORNO →',0,0);ctx.restore();
+
+  // Quadrant labels
+  ctx.font='6px JetBrains Mono,monospace';
+  ctx.fillStyle='rgba(0,230,118,.35)';ctx.textAlign='left';ctx.fillText('IDEAL',pad.l+3,pad.t+10);
+  ctx.fillStyle='rgba(255,23,68,.35)';ctx.textAlign='right';ctx.fillText('EVITAR',pad.l+iW-3,pad.t+iH-5);
+
+  // Plot each strategy
+  STRATS.forEach(s=>{
+    const x=pad.l+(s.risk/100)*iW;
+    const y=pad.t+iH-(s.ret/100)*iH;
+
+    // Outer glow
+    const grd=ctx.createRadialGradient(x,y,0,x,y,20);
+    grd.addColorStop(0,s.col+'50');grd.addColorStop(1,'transparent');
+    ctx.fillStyle=grd;ctx.beginPath();ctx.arc(x,y,20,0,Math.PI*2);ctx.fill();
+
+    // Dot
+    ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle=s.col;ctx.fill();
+    ctx.strokeStyle='rgba(6,4,9,.7)';ctx.lineWidth=1.5;ctx.stroke();
+
+    // Label
+    const lx=x+(s.risk>65?-9:9);
+    const ly=y+(s.ret>60?-11:14);
+    ctx.fillStyle=s.col;ctx.font='bold 7px JetBrains Mono,monospace';
+    ctx.textAlign=s.risk>65?'right':'left';
+    ctx.fillText(s.n,lx,ly);
+  });
+}
+requestAnimationFrame(()=>setTimeout(drawScatter,120));
+window.addEventListener('resize',drawScatter);
+
+/* ══════════════════════════════════
+   FAQ
+══════════════════════════════════ */
+function faq(q){
+  const fi=q.parentElement,fa=fi.querySelector('.fa'),open=fi.classList.contains('open');
+  document.querySelectorAll('.fi.open').forEach(f=>{f.classList.remove('open');f.querySelector('.fa').style.maxHeight='0';});
+  if(!open){fi.classList.add('open');fa.style.maxHeight=fa.scrollHeight+'px';}
+}
+
+/* ══════════════════════════════════
+   JACKPOT FLASH ON CTA HOVER
+══════════════════════════════════ */
+document.querySelectorAll('.btn-jackpot').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{ring.classList.add('win');ring.classList.remove('h');});
+  btn.addEventListener('mouseleave',()=>{ring.classList.remove('win');});
+});
+</script>
+</body>
+</html>

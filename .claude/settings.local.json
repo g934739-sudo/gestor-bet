@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/gestorbet_v3 \\(1\\).html\")",
+      "Bash(open /Users/lucaendrigo/Documents/Projetos/gestor-bet/tela-login-cadastro.html)",
+      "Bash(npm view:*)"
+    ]
+  }
+}
