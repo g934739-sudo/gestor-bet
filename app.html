@@ -68,69 +68,89 @@ body {
   display: flex; align-items: center;
 }
 .game-sel-btn {
-  display: flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; gap: 8px;
   background: var(--s2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 5px 11px;
+  border-radius: 8px; padding: 6px 12px;
   cursor: pointer; transition: all .15s; user-select: none;
-  min-width: 168px;
+  min-width: 200px;
 }
-.game-sel-btn:hover { border-color: var(--border2); }
-.game-sel-btn.open { border-color: var(--gold); }
-.gs-icon { font-size: 15px; flex-shrink: 0; }
-.gs-name { font-family: var(--mono); font-size: 11px; color: var(--text2); flex: 1; letter-spacing: 0.3px; white-space: nowrap; }
+.game-sel-btn:hover { border-color: var(--border2); background: var(--s3); }
+.game-sel-btn.open { border-color: var(--gold); background: var(--s3); }
+.gs-icon { font-size: 16px; flex-shrink: 0; }
+.gs-name { font-family: var(--mono); font-size: 11px; color: var(--text); flex: 1; letter-spacing: 0.3px; white-space: nowrap; font-weight: 600; }
+.gs-badge { font-size: 8px; font-family: var(--mono); font-weight: 700; letter-spacing: 1px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; text-transform: uppercase; }
+.gs-badge.casino { background: rgba(240,192,64,.15); color: var(--gold); }
+.gs-badge.sport  { background: rgba(31,217,122,.12); color: var(--green); }
 .gs-caret { font-size: 9px; color: var(--muted); transition: transform .2s; }
 .gs-caret.open { transform: rotate(180deg); }
 
 .game-dropdown {
-  position: absolute; top: calc(100% + 6px); left: 0;
-  background: var(--s2); border: 1px solid var(--border);
-  border-radius: 9px; overflow: hidden;
-  min-width: 220px; z-index: 100;
-  box-shadow: 0 12px 32px rgba(0,0,0,.5);
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: var(--s1); border: 1px solid var(--border2);
+  border-radius: 14px; overflow: hidden;
+  width: 340px; z-index: 9000;
+  box-shadow: 0 20px 60px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.03);
   display: none;
 }
-.game-dropdown.open { display: block; animation: ddIn .15s ease; }
-@keyframes ddIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+.game-dropdown.open { display: block; animation: ddIn .18s cubic-bezier(.2,.8,.4,1); }
+@keyframes ddIn { from{opacity:0;transform:translateY(-8px) scale(.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+/* Category sections */
+.dd-section { padding: 14px 12px 10px; }
+.dd-section + .dd-section { border-top: 1px solid var(--border); }
+.dd-section-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.dd-section-icon { font-size: 14px; }
+.dd-section-title {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+}
+.dd-section.casino .dd-section-title { color: var(--gold); }
+.dd-section.sport  .dd-section-title { color: var(--green); }
+.dd-section-line { flex: 1; height: 1px; }
+.dd-section.casino .dd-section-line { background: rgba(240,192,64,.2); }
+.dd-section.sport  .dd-section-line { background: rgba(31,217,122,.15); }
+
+/* Game grid */
+.dd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
 .dd-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  transition: background .12s;
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 10px; cursor: pointer;
+  border-radius: 8px; border: 1px solid transparent;
+  transition: background .12s, border-color .12s;
+  background: var(--s2);
 }
-.dd-item:last-child { border-bottom: none; }
-.dd-item:hover { background: var(--s3); }
-.dd-item.active { background: var(--gold-d); }
+.dd-item:hover { background: var(--s3); border-color: var(--border2); }
+.dd-item.active { border-color: var(--gold); background: var(--gold-d); }
+.dd-section.sport .dd-item.active { border-color: var(--green); background: var(--green-d); }
+.dd-ico { font-size: 20px; flex-shrink: 0; line-height: 1; }
+.dd-item-info { flex: 1; min-width: 0; }
+.dd-item-name { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dd-item.active .dd-item-name { color: var(--gold); }
-.dd-ico { font-size: 18px; flex-shrink: 0; }
-.dd-item-info { flex: 1; }
-.dd-item-name { font-size: 13px; font-weight: 700; }
-.dd-item-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
-.dd-check { font-size: 12px; color: var(--gold); opacity: 0; }
+.dd-section.sport .dd-item.active .dd-item-name { color: var(--green); }
+.dd-item-sub { font-size: 9px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dd-check { font-size: 10px; color: var(--gold); opacity: 0; flex-shrink: 0; }
+.dd-section.sport .dd-check { color: var(--green); }
 .dd-item.active .dd-check { opacity: 1; }
-
-.dd-divider {
-  padding: 6px 14px 4px;
-  font-family: var(--mono); font-size: 9px;
-  text-transform: uppercase; letter-spacing: 1.5px;
-  color: var(--muted); background: var(--s3);
-  border-bottom: 1px solid var(--border);
-}
+.dd-item.dd-full { grid-column: 1 / -1; }
 
 .dd-custom {
-  padding: 10px 14px;
+  padding: 10px 12px 12px;
   display: flex; align-items: center; gap: 8px;
   border-top: 1px solid var(--border);
 }
+.dd-custom-label { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
 .dd-custom-input {
-  flex: 1; background: var(--s3); border: 1px solid var(--border);
-  border-radius: 5px; padding: 6px 9px;
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 7px 10px;
   color: var(--text); font-family: var(--mono); font-size: 11px;
   outline: none; transition: border-color .15s;
 }
 .dd-custom-input:focus { border-color: var(--gold); }
 .dd-custom-btn {
-  padding: 6px 10px; border-radius: 5px; border: none;
+  padding: 7px 12px; border-radius: 6px; border: none;
   background: var(--gold); color: var(--bg);
   font-family: var(--body); font-size: 11px; font-weight: 800;
   cursor: pointer; white-space: nowrap; transition: filter .15s;
@@ -957,63 +977,83 @@ body {
     <div class="game-sel-btn" id="gameSelBtn" onclick="toggleGameDropdown()">
       <span class="gs-icon" id="gsIcon">🎡</span>
       <span class="gs-name" id="gsName">Roleta Europeia</span>
+      <span class="gs-badge casino" id="gsBadge">Cassino</span>
       <span class="gs-caret" id="gsCaret">▼</span>
     </div>
     <div class="game-dropdown" id="gameDropdown">
-      <div class="dd-divider">🎰 Cassino</div>
-      <div class="dd-item active" onclick="selectGame('🎡','Roleta Europeia')">
-        <span class="dd-ico">🎡</span>
-        <div class="dd-item-info"><div class="dd-item-name">Roleta Europeia</div><div class="dd-item-sub">1 zero · odds 1:1 a 35:1</div></div>
-        <span class="dd-check">✓</span>
+      <!-- CASSINO -->
+      <div class="dd-section casino">
+        <div class="dd-section-header">
+          <span class="dd-section-icon">🎰</span>
+          <span class="dd-section-title">Cassino</span>
+          <span class="dd-section-line"></span>
+        </div>
+        <div class="dd-grid">
+          <div class="dd-item active" onclick="selectGame('🎡','Roleta Europeia','casino')">
+            <span class="dd-ico">🎡</span>
+            <div class="dd-item-info"><div class="dd-item-name">Roleta Europeia</div><div class="dd-item-sub">1 zero · par/ímpar</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🎰','Roleta Americana','casino')">
+            <span class="dd-ico">🎰</span>
+            <div class="dd-item-info"><div class="dd-item-name">Roleta Americana</div><div class="dd-item-sub">2 zeros</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🎲','Roleta Lightning','casino')">
+            <span class="dd-ico">🎲</span>
+            <div class="dd-item-info"><div class="dd-item-name">Lightning Roulette</div><div class="dd-item-sub">Mult. 50×–500×</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🃏','Bacará','casino')">
+            <span class="dd-ico">🃏</span>
+            <div class="dd-item-info"><div class="dd-item-name">Bacará</div><div class="dd-item-sub">Player vs Banker</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🎯','Bac Bo','casino')">
+            <span class="dd-ico">🎯</span>
+            <div class="dd-item-info"><div class="dd-item-name">Bac Bo</div><div class="dd-item-sub">Dados + Bacará</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('✈️','Aviator / Crash','casino')">
+            <span class="dd-ico">✈️</span>
+            <div class="dd-item-info"><div class="dd-item-name">Aviator / Crash</div><div class="dd-item-sub">Multiplicador + cash out</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+        </div>
       </div>
-      <div class="dd-item" onclick="selectGame('🎰','Roleta Americana')">
-        <span class="dd-ico">🎰</span>
-        <div class="dd-item-info"><div class="dd-item-name">Roleta Americana</div><div class="dd-item-sub">2 zeros · maior vantagem da casa</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('🎲','Roleta Lightning')">
-        <span class="dd-ico">🎲</span>
-        <div class="dd-item-info"><div class="dd-item-name">Roleta Lightning</div><div class="dd-item-sub">Multiplicadores 50x–500x</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('🃏','Bacará')">
-        <span class="dd-ico">🃏</span>
-        <div class="dd-item-info"><div class="dd-item-name">Bacará</div><div class="dd-item-sub">Player vs Banker · odds 1:1</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('🎯','Bac Bo')">
-        <span class="dd-ico">🎯</span>
-        <div class="dd-item-info"><div class="dd-item-name">Bac Bo</div><div class="dd-item-sub">Dados + Bacará · multiplicadores</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('✈️','Aviator / Crash')">
-        <span class="dd-ico">✈️</span>
-        <div class="dd-item-info"><div class="dd-item-name">Aviator / Crash</div><div class="dd-item-sub">Multiplicador crescente · cash out</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-divider">⚽ Apostas Esportivas</div>
-      <div class="dd-item" onclick="selectGame('⚽','Futebol')">
-        <span class="dd-ico">⚽</span>
-        <div class="dd-item-info"><div class="dd-item-name">Futebol</div><div class="dd-item-sub">Odds variáveis · pré-jogo ou ao vivo</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('🏀','Basquete')">
-        <span class="dd-ico">🏀</span>
-        <div class="dd-item-info"><div class="dd-item-name">Basquete</div><div class="dd-item-sub">NBA, NBB · odds variáveis</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('🎾','Tênis')">
-        <span class="dd-ico">🎾</span>
-        <div class="dd-item-info"><div class="dd-item-name">Tênis</div><div class="dd-item-sub">ATP, WTA · odds por set/game</div></div>
-        <span class="dd-check">✓</span>
-      </div>
-      <div class="dd-item" onclick="selectGame('🏈','Esporte (outro)')">
-        <span class="dd-ico">🏈</span>
-        <div class="dd-item-info"><div class="dd-item-name">Esporte (outro)</div><div class="dd-item-sub">Qualquer modalidade · odd variável</div></div>
-        <span class="dd-check">✓</span>
+      <!-- ESPORTES -->
+      <div class="dd-section sport">
+        <div class="dd-section-header">
+          <span class="dd-section-icon">⚽</span>
+          <span class="dd-section-title">Apostas Esportivas</span>
+          <span class="dd-section-line"></span>
+        </div>
+        <div class="dd-grid">
+          <div class="dd-item" onclick="selectGame('⚽','Futebol','sport')">
+            <span class="dd-ico">⚽</span>
+            <div class="dd-item-info"><div class="dd-item-name">Futebol</div><div class="dd-item-sub">Pré-jogo ou ao vivo</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🏀','Basquete','sport')">
+            <span class="dd-ico">🏀</span>
+            <div class="dd-item-info"><div class="dd-item-name">Basquete</div><div class="dd-item-sub">NBA, NBB · over/under</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🎾','Tênis','sport')">
+            <span class="dd-ico">🎾</span>
+            <div class="dd-item-info"><div class="dd-item-name">Tênis</div><div class="dd-item-sub">ATP, WTA · set/game</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+          <div class="dd-item" onclick="selectGame('🏈','Esporte (outro)','sport')">
+            <span class="dd-ico">🏈</span>
+            <div class="dd-item-info"><div class="dd-item-name">Outro esporte</div><div class="dd-item-sub">Qualquer modalidade</div></div>
+            <span class="dd-check">✓</span>
+          </div>
+        </div>
       </div>
       <div class="dd-custom">
-        <input class="dd-custom-input" id="customGameInput" placeholder="Outro jogo..." maxlength="28" onkeydown="if(event.key==='Enter')confirmCustomGame()">
+        <span class="dd-custom-label">Outro:</span>
+        <input class="dd-custom-input" id="customGameInput" placeholder="Nome do jogo..." maxlength="28" onkeydown="if(event.key==='Enter')confirmCustomGame()">
         <button class="dd-custom-btn" onclick="confirmCustomGame()">+ Usar</button>
       </div>
     </div>
@@ -2548,10 +2588,16 @@ function closeOnOutside(e){
   }
 }
 
-function selectGame(icon, name){
-  currentGame = { icon, name };
+function selectGame(icon, name, category){
+  currentGame = { icon, name, category: category || 'casino' };
   document.getElementById('gsIcon').textContent = icon;
   document.getElementById('gsName').textContent = name;
+  // badge
+  const badge = document.getElementById('gsBadge');
+  if(badge){
+    badge.textContent   = category === 'sport' ? 'Esporte' : 'Cassino';
+    badge.className     = 'gs-badge ' + (category === 'sport' ? 'sport' : 'casino');
+  }
   document.querySelectorAll('.dd-item').forEach(el => {
     el.classList.toggle('active', el.querySelector('.dd-item-name')?.textContent === name);
   });
@@ -2683,19 +2729,9 @@ function renderSimGame(){
     const resEl      = document.getElementById('simGenericResult');
 
     if(sport){
-      const sportName = (currentGame?.name || '').toLowerCase();
-      let mktA = '✅ Green (venceu)';
-      let mktB = '❌ Red (perdeu)';
-      if(sportName.includes('futebol')){
-        mktA = '⚽ Green (mercado ganho)'; mktB = '❌ Red (mercado perdido)';
-      } else if(sportName.includes('basquete')){
-        mktA = '🏀 Over (pontos)'; mktB = '🏀 Under (pontos)';
-      } else if(sportName.includes('tênis') || sportName.includes('tenis')){
-        mktA = '🎾 Venceu (set/jogo)'; mktB = '🎾 Perdeu (set/jogo)';
-      }
-      playerBtn.textContent = mktA;
-      bankerBtn.textContent = mktB;
-      labelEl.textContent   = '📋 Qual foi o resultado do mercado que você apostou?';
+      playerBtn.textContent = '✅ Ganhei (green)';
+      bankerBtn.textContent = '❌ Perdi (red)';
+      labelEl.textContent   = '📋 Sua aposta no mercado deu green ou red?';
       playBtn.textContent   = '📝 Registrar Resultado';
       resEl.textContent     = 'Selecione o resultado da aposta';
     } else {
