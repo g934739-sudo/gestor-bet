@@ -448,6 +448,25 @@ body {
 .rcard { border-radius:10px; overflow:hidden; border:1px solid; margin-top:3px; }
 .rcard.win  { border-color:var(--green-b); }
 .rcard.loss { border-color:var(--red-b); }
+.rcard.win.sim-win {
+  border-color:var(--green);
+  border-width:2px;
+  box-shadow:0 0 0 1px var(--green-b), 0 0 28px rgba(31,217,122,.45), 0 8px 32px rgba(31,217,122,.25);
+  animation:simWinPop .45s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes simWinPop {
+  from { transform:scale(.94) translateY(6px); opacity:.5; }
+  to   { transform:scale(1)   translateY(0);   opacity:1;  }
+}
+.rcard.win.sim-win .rc-head {
+  background:linear-gradient(120deg,rgba(31,217,122,.32),rgba(31,217,122,.14));
+  border-bottom:2px solid rgba(31,217,122,.4);
+  padding:13px 13px;
+}
+.rcard.win.sim-win .rc-title {
+  font-size:16px; letter-spacing:.8px;
+  text-shadow:0 0 12px rgba(31,217,122,.7);
+}
 .rc-head {
   padding:9px 13px; display:flex; align-items:center; gap:7px;
 }
@@ -499,6 +518,20 @@ body {
 .stop-card.sl { border-color:var(--red-b);   background:var(--red-d); }
 .stop-card.sw { border-color:var(--green-b); background:var(--green-d); }
 .stop-card.manual { border-color:#f0a03055; background:#f0a03010; }
+.stop-card.positive {
+  border-color:var(--green); border-width:2px;
+  box-shadow:0 0 0 1px var(--green-b), 0 0 32px rgba(31,217,122,.4), 0 8px 40px rgba(31,217,122,.2);
+  animation:simWinPop .5s cubic-bezier(.34,1.56,.64,1);
+}
+.stop-card.positive .sc-hd {
+  background:linear-gradient(120deg,rgba(31,217,122,.28),rgba(31,217,122,.08));
+  border-radius:7px; padding:10px 12px; margin:-2px -2px 10px;
+}
+.stop-card.positive .sc-title {
+  font-size:16px; letter-spacing:.5px;
+  text-shadow:0 0 14px rgba(31,217,122,.65);
+}
+.stop-card.positive .sc-icon { font-size:32px; }
 .sc-hd { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
 .sc-icon { font-size:26px; }
 .sc-title { font-size:14px; font-weight:800; }
@@ -551,6 +584,127 @@ body {
 }
 .ab-end:hover:not(:disabled) { border-color:#f0a030; color:#f0a030; }
 .ab-end:disabled { opacity:.2; cursor:not-allowed; }
+
+/* ══ SIM MODE TOGGLE ══ */
+.btn-sim-toggle {
+  font-family: var(--body); font-size: 12px; font-weight: 700;
+  padding: 6px 14px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); transition: all .2s;
+}
+.btn-sim-toggle:hover { border-color: var(--gold-b); color: var(--gold); }
+.btn-sim-toggle.active {
+  background: var(--gold-d); border-color: var(--gold);
+  color: var(--gold); font-weight: 800;
+}
+
+/* ══ SIM GAME PANEL ══ */
+.sim-game-panel {
+  display: none; flex-direction: column; gap: 0;
+  border-top: 1px solid var(--gold-b);
+  background: var(--s2);
+}
+.sim-game-panel.visible { display: flex; }
+
+.sim-game-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--gold-d);
+  border-bottom: 1px solid var(--gold-b);
+}
+.sim-game-title {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold);
+}
+.sim-game-badge {
+  font-family: var(--mono); font-size: 9px; color: var(--gold);
+  background: var(--gold-d); border: 1px solid var(--gold-b);
+  border-radius: 4px; padding: 2px 7px; letter-spacing: 1px;
+}
+
+/* Roleta */
+.sim-roulette { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.sim-bet-types { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+.sim-bet-btn {
+  padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--s3); color: var(--text2); font-family: var(--body);
+  font-size: 11px; font-weight: 700; cursor: pointer; transition: all .15s;
+  text-align: center;
+}
+.sim-bet-btn:hover { border-color: var(--border2); color: var(--text); }
+.sim-bet-btn.selected { border-color: var(--gold); background: var(--gold-d); color: var(--gold); }
+.sim-bet-btn.red-bet.selected  { border-color: var(--red); background: var(--red-d); color: var(--red); }
+.sim-bet-btn.black-bet.selected { border-color: var(--text2); background: var(--s4); color: var(--text); }
+
+.sim-result-display {
+  background: var(--s3); border: 1px solid var(--border);
+  border-radius: 9px; padding: 12px; text-align: center; min-height: 64px;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px;
+}
+.sim-result-number {
+  font-family: var(--mono); font-size: 32px; font-weight: 900;
+  transition: all .3s;
+}
+.sim-result-number.red { color: var(--red); }
+.sim-result-number.black { color: var(--text); }
+.sim-result-number.green { color: var(--green); }
+.sim-result-label { font-size: 11px; color: var(--muted); }
+
+.btn-spin {
+  width: 100%; padding: 12px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, #f0c040, #e09920);
+  color: #111; font-family: var(--body); font-size: 14px; font-weight: 900;
+  cursor: pointer; transition: all .18s; letter-spacing: .3px;
+}
+.btn-spin:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-spin:disabled { opacity: .4; cursor: not-allowed; transform: none !important; filter: none !important; }
+.btn-spin.spinning { background: var(--s3); color: var(--muted); border: 1px solid var(--border); }
+
+/* Crash */
+.sim-crash { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.sim-crash-display {
+  background: var(--s3); border: 1px solid var(--border);
+  border-radius: 9px; padding: 16px; text-align: center;
+}
+.sim-crash-mult {
+  font-family: var(--mono); font-size: 38px; font-weight: 900;
+  color: var(--green); transition: color .2s;
+}
+.sim-crash-mult.crashed { color: var(--red); }
+.sim-crash-status { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.sim-crash-target {
+  display: flex; align-items: center; gap: 8px;
+}
+.sim-crash-target-label { font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
+.btn-cashout {
+  width: 100%; padding: 12px; border-radius: 8px; border: none;
+  background: var(--green); color: var(--bg);
+  font-family: var(--body); font-size: 14px; font-weight: 900;
+  cursor: pointer; transition: all .18s;
+}
+.btn-cashout:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-cashout:disabled { opacity: .4; cursor: not-allowed; }
+.btn-crash-start {
+  width: 100%; padding: 12px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, #f0c040, #e09920);
+  color: #111; font-family: var(--body); font-size: 14px; font-weight: 900;
+  cursor: pointer; transition: all .18s;
+}
+.btn-crash-start:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-crash-start:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Bacará / Bac Bo / Genérico */
+.sim-generic { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.sim-generic-bet { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.sim-generic-result {
+  background: var(--s3); border: 1px solid var(--border);
+  border-radius: 9px; padding: 14px; text-align: center; min-height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 20px; font-weight: 900; color: var(--muted);
+  transition: all .3s;
+}
+.sim-generic-result.win { color: var(--green); border-color: var(--green-b); background: var(--green-d); }
+.sim-generic-result.loss { color: var(--red); border-color: var(--red-b); background: var(--red-d); }
 
 /* ══ RIGHT — FIXED STATS ══ */
 .right {
@@ -865,6 +1019,7 @@ body {
     </div>
   </div>
   <div class="topbar-right">
+    <button class="btn-sim-toggle" id="btnSimToggle" onclick="toggleSimMode()" title="Ativar simulação do jogo">🎮 Simulação</button>
     <button class="btn-tutorial" onclick="openTutorial()">📖 Tutorial</button>
     <button class="btn-ghost red" onclick="resetAll()">↺ Nova sessão</button>
   </div>
@@ -1083,6 +1238,58 @@ body {
 
     <div class="feed" id="feed">
     </div>
+    <!-- ══ SIM GAME PANEL ══ -->
+    <div class="sim-game-panel" id="simGamePanel">
+      <div class="sim-game-header">
+        <span class="sim-game-title">🎮 Ambiente de Simulação</span>
+        <span class="sim-game-badge">MODO TREINO</span>
+      </div>
+
+      <!-- Roleta (Europeia / Americana / Lightning) -->
+      <div class="sim-roulette" id="simRoleta" style="display:none">
+        <div class="sim-bet-types" id="simBetTypes">
+          <button class="sim-bet-btn red-bet selected" onclick="selectSimBet('vermelho')" id="simBetVermelho">🔴 Vermelho</button>
+          <button class="sim-bet-btn black-bet" onclick="selectSimBet('preto')" id="simBetPreto">⚫ Preto</button>
+          <button class="sim-bet-btn" onclick="selectSimBet('par')" id="simBetPar">2️⃣ Par</button>
+          <button class="sim-bet-btn" onclick="selectSimBet('impar')" id="simBetImpar">1️⃣ Ímpar</button>
+          <button class="sim-bet-btn" onclick="selectSimBet('baixo')" id="simBetBaixo">🔽 1–18</button>
+          <button class="sim-bet-btn" onclick="selectSimBet('alto')" id="simBetAlto">🔼 19–36</button>
+        </div>
+        <div class="sim-result-display" id="simRouletteResult">
+          <div class="sim-result-number" id="simRouletteNum">?</div>
+          <div class="sim-result-label" id="simRouletteLabel">Selecione sua aposta e gire</div>
+        </div>
+        <button class="btn-spin" id="btnSpin" onclick="spinRoulette()">🎡 Girar Roleta</button>
+      </div>
+
+      <!-- Crash / Aviator -->
+      <div class="sim-crash" id="simCrash" style="display:none">
+        <div class="sim-crash-display">
+          <div class="sim-crash-mult" id="simCrashMult">1.00×</div>
+          <div class="sim-crash-status" id="simCrashStatus">Clique em Iniciar para voar</div>
+        </div>
+        <div class="sim-crash-target">
+          <span class="sim-crash-target-label">Auto Cash-out em:</span>
+          <input class="ci" id="simCrashTarget" type="number" value="2.0" min="1.01" step="0.01"
+            style="width:80px;font-size:13px;font-weight:800;color:var(--gold);text-align:center;"
+            placeholder="2.00">
+          <span class="ci-unit" style="position:static;transform:none;font-size:11px;color:var(--muted)">×</span>
+        </div>
+        <button class="btn-cashout" id="btnCashout" onclick="crashCashOut()" disabled>💰 Cash Out</button>
+        <button class="btn-crash-start" id="btnCrashStart" onclick="startCrashRound()">✈️ Iniciar Voo</button>
+      </div>
+
+      <!-- Bacará / Bac Bo / Genérico -->
+      <div class="sim-generic" id="simGeneric" style="display:none">
+        <div class="sim-generic-bet">
+          <button class="sim-bet-btn selected" onclick="selectSimBet('player')" id="simBetPlayer">🧑 Player</button>
+          <button class="sim-bet-btn" onclick="selectSimBet('banker')" id="simBetBanker">🏦 Banker</button>
+        </div>
+        <div class="sim-generic-result" id="simGenericResult">—</div>
+        <button class="btn-spin" id="btnGenericPlay" onclick="playGeneric()">🃏 Jogar Rodada</button>
+      </div>
+    </div>
+
     <div class="action-bar">
       <div class="ab-label" id="abLabel">Selecione uma estratégia e inicie a sessão</div>
       <!-- Odd adjuster — só para Aviator/Crash, visível durante sessão -->
@@ -1992,9 +2199,12 @@ function startSession(){
   addNextBox();
   updateRight();
   updateRuinPanel();
+  if(simModeOn){ renderSimGame(); toggleSimVisibility(true); }
 }
 
 function resetAll(){
+  if(simCrashRunning){ clearInterval(simCrashTimer); simCrashRunning = false; }
+  toggleSimVisibility(false);
   S.running=false;S.stopped=false;
   document.getElementById('btnWin').disabled=true;
   document.getElementById('btnLoss').disabled=true;
@@ -2127,10 +2337,10 @@ function addResultCard(win,stake,pnlR,st,odd=2){
 
   if(win){
     addRaw(`
-      <div class="rcard win">
+      <div class="rcard win sim-win">
         <div class="rc-head">
-          <span style="font-size:18px">✅</span>
-          <span class="rc-title">VITÓRIA!</span>
+          <span style="font-size:22px">🏆</span>
+          <span class="rc-title">🎉 VITÓRIA!</span>
           <span class="rc-round">Rodada ${s.rounds}</span>
         </div>
         <div class="rc-body">
@@ -2194,6 +2404,8 @@ function endSession(){
 }
 
 function doStop(type){
+  if(simCrashRunning){ clearInterval(simCrashTimer); simCrashRunning = false; }
+  toggleSimVisibility(false);
   S.stopped=true;
   document.getElementById('btnWin').disabled=true;
   document.getElementById('btnLoss').disabled=true;
@@ -2206,9 +2418,12 @@ function doStop(type){
   const pnlPctN=parseFloat(pnlPct);
   const wr=s.rounds>0?Math.round(s.wins/s.rounds*100):0;
   const isL=type==='loss', isM=type==='manual';
-  const cardClass = isL ? 'sl' : isM ? 'manual' : 'sw';
-  const icon  = isL ? '🚨' : isM ? '⏹' : '🏆';
-  const title = isL ? 'Stop Loss Atingido!' : isM ? 'Sessão Encerrada' : 'Meta Alcançada!';
+  const isPositive = pnlPctN > 0;
+  const cardClass = (isL ? 'sl' : isM ? 'manual' : 'sw') + (isPositive ? ' positive' : '');
+  const icon  = isL ? '🚨' : (isPositive ? '🏆' : '⏹');
+  const title = isL ? 'Stop Loss Atingido!' : isM
+    ? (isPositive ? '✅ Sessão Encerrada com Lucro!' : 'Sessão Encerrada')
+    : 'Meta Alcançada!';
   const msg   = isL
     ? `Limite de perda de <strong>R$ ${f(s.stopLoss)}</strong> atingido. Sessão encerrada automaticamente.`
     : isM
@@ -2344,6 +2559,7 @@ function selectGame(icon, name){
   if(S.running && !S.stopped)
     document.getElementById('abLabel').textContent = `Jogue no ${name} e informe o resultado aqui:`;
   renderStratPreview();
+  if(simModeOn && S.running && !S.stopped){ renderSimGame(); }
 }
 
 function confirmCustomGame(){
@@ -2387,6 +2603,330 @@ function applyBkLevel(level){
   document.getElementById('bkHint');
   recomputeStake();
   renderStratPreview();
+}
+
+// ════════════ SIM MODE ════════════
+let simModeOn = false;
+let simBetChoice = 'vermelho'; // para roleta
+let simCrashTimer = null;
+let simCrashMult = 1.00;
+let simCrashPoint = 1.00;
+let simCrashRunning = false;
+
+// Números da roleta e suas cores
+const ROULETTE_COLORS = {
+  0:'green',37:'green', // 37 = segundo zero (americana)
+  1:'red',3:'red',5:'red',7:'red',9:'red',12:'red',14:'red',16:'red',18:'red',
+  19:'red',21:'red',23:'red',25:'red',27:'red',30:'red',32:'red',34:'red',36:'red'
+};
+function rouletteColor(n){ return ROULETTE_COLORS[n] || 'black'; }
+
+function toggleSimMode(){
+  simModeOn = !simModeOn;
+  const btn = document.getElementById('btnSimToggle');
+  btn.classList.toggle('active', simModeOn);
+  btn.textContent = simModeOn ? '🎮 Simulação ON' : '🎮 Simulação';
+
+  if(S.running && !S.stopped){
+    renderSimGame();
+    toggleSimVisibility(true);
+  } else {
+    toggleSimVisibility(false);
+  }
+}
+
+function toggleSimVisibility(show){
+  const panel = document.getElementById('simGamePanel');
+  const abBtns = document.querySelector('.ab-btns');
+  if(!panel || !abBtns) return;
+  const active = show && simModeOn;
+  panel.classList.toggle('visible', active);
+  abBtns.style.display = active ? 'none' : '';
+}
+
+function renderSimGame(){
+  const name = (currentGame?.name || '').toLowerCase();
+  const isRoleta = name.includes('roleta');
+  const isCrash  = name.includes('aviator') || name.includes('crash');
+  document.getElementById('simRoleta').style.display  = isRoleta ? 'flex' : 'none';
+  document.getElementById('simCrash').style.display   = isCrash  ? 'flex' : 'none';
+  document.getElementById('simGeneric').style.display = (!isRoleta && !isCrash) ? 'flex' : 'none';
+
+  if(isRoleta){
+    clearSimBet();
+    document.getElementById('simRouletteNum').textContent = '?';
+    document.getElementById('simRouletteNum').className = 'sim-result-number';
+    document.getElementById('simRouletteLabel').textContent = 'Escolha onde apostar antes de girar';
+    document.getElementById('btnSpin').disabled = true;
+    document.getElementById('btnSpin').textContent = '🎡 Girar Roleta';
+    document.getElementById('btnSpin').classList.remove('spinning');
+  }
+  if(isCrash){
+    resetCrashDisplay();
+  }
+  if(!isRoleta && !isCrash){
+    clearSimBet();
+    document.getElementById('btnGenericPlay').disabled = true;
+    document.getElementById('simGenericResult').textContent = 'Escolha Player ou Banker';
+    document.getElementById('simGenericResult').className = 'sim-generic-result';
+  }
+}
+
+function selectSimBet(bet){
+  simBetChoice = bet;
+  // roleta bets
+  ['vermelho','preto','par','impar','baixo','alto'].forEach(b => {
+    const el = document.getElementById('simBet'+b.charAt(0).toUpperCase()+b.slice(1));
+    if(el) el.classList.toggle('selected', b === bet);
+  });
+  // genérico
+  ['player','banker'].forEach(b => {
+    const el = document.getElementById('simBet'+b.charAt(0).toUpperCase()+b.slice(1));
+    if(el) el.classList.toggle('selected', b === bet);
+  });
+  // habilita o botão de ação ao escolher aposta
+  const btnSpin = document.getElementById('btnSpin');
+  if(btnSpin) btnSpin.disabled = false;
+  const btnGeneric = document.getElementById('btnGenericPlay');
+  if(btnGeneric) btnGeneric.disabled = false;
+}
+
+function clearSimBet(){
+  simBetChoice = null;
+  ['vermelho','preto','par','impar','baixo','alto','player','banker'].forEach(b => {
+    const el = document.getElementById('simBet'+b.charAt(0).toUpperCase()+b.slice(1));
+    if(el) el.classList.remove('selected');
+  });
+}
+
+// ── ROLETA ──
+function spinRoulette(){
+  if(!S.running || S.stopped) return;
+  const btn = document.getElementById('btnSpin');
+  btn.disabled = true;
+  btn.classList.add('spinning');
+  btn.textContent = '⏳ Girando...';
+
+  const numEl  = document.getElementById('simRouletteNum');
+  const lblEl  = document.getElementById('simRouletteLabel');
+  const isAmericana = (currentGame?.name || '').toLowerCase().includes('americana');
+  const maxNum = isAmericana ? 37 : 36; // 37 = "00" na americana
+
+  // animação de números rolando
+  let ticks = 0;
+  const totalTicks = 18;
+  const anim = setInterval(() => {
+    const rnd = Math.floor(Math.random() * (maxNum + 1));
+    numEl.textContent = rnd === 37 ? '00' : rnd;
+    numEl.className = 'sim-result-number ' + rouletteColor(rnd);
+    ticks++;
+    if(ticks >= totalTicks){
+      clearInterval(anim);
+      // resultado final
+      const result = Math.floor(Math.random() * (maxNum + 1));
+      const color  = rouletteColor(result);
+      numEl.textContent = result === 37 ? '00' : result;
+      numEl.className = 'sim-result-number ' + color;
+
+      // Em modo simulação, decide win/loss com viés favorável e força o número
+      const shouldWin = simModeOn ? simBiasedWin() : checkRouletteBet(result, color, simBetChoice);
+      const finalResult = simModeOn ? pickRouletteForResult(shouldWin, simBetChoice, maxNum) : result;
+      const finalColor  = rouletteColor(finalResult);
+      numEl.textContent = finalResult === 37 ? '00' : finalResult;
+      numEl.className   = 'sim-result-number ' + finalColor;
+      const win = simModeOn ? shouldWin : checkRouletteBet(result, color, simBetChoice);
+      lblEl.textContent = win ? '✅ Você ganhou!' : '❌ Você perdeu.';
+
+      setTimeout(() => {
+        register(win);
+        if(S.running && !S.stopped){
+          clearSimBet();
+          btn.disabled = true;
+          btn.classList.remove('spinning');
+          btn.textContent = '🎡 Girar Roleta';
+          lblEl.textContent = 'Escolha onde apostar antes de girar';
+        }
+      }, 700);
+    }
+  }, 60);
+}
+
+function checkRouletteBet(num, color, bet){
+  if(num === 0 || num === 37) return false; // zero = casa ganha
+  switch(bet){
+    case 'vermelho': return color === 'red';
+    case 'preto':    return color === 'black';
+    case 'par':      return num % 2 === 0;
+    case 'impar':    return num % 2 !== 0;
+    case 'baixo':    return num >= 1 && num <= 18;
+    case 'alto':     return num >= 19 && num <= 36;
+    default: return false;
+  }
+}
+
+function pickRouletteForResult(shouldWin, bet, maxNum){
+  // Retorna um número da roleta que satisfaz (ou não) a aposta escolhida
+  const RED = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+  const BLACK = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
+  let pool;
+  if(shouldWin){
+    switch(bet){
+      case 'vermelho': pool = RED; break;
+      case 'preto':    pool = BLACK; break;
+      case 'par':      pool = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36]; break;
+      case 'impar':    pool = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35]; break;
+      case 'baixo':    pool = Array.from({length:18},(_,i)=>i+1); break;
+      case 'alto':     pool = Array.from({length:18},(_,i)=>i+19); break;
+      default:         pool = RED;
+    }
+  } else {
+    switch(bet){
+      case 'vermelho': pool = BLACK; break;
+      case 'preto':    pool = RED; break;
+      case 'par':      pool = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35]; break;
+      case 'impar':    pool = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36]; break;
+      case 'baixo':    pool = Array.from({length:18},(_,i)=>i+19); break;
+      case 'alto':     pool = Array.from({length:18},(_,i)=>i+1); break;
+      default:         pool = BLACK;
+    }
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// ── CRASH / AVIATOR ──
+function simBiasedWin(){
+  // Em modo simulação: 62% de chance de ganhar (parece natural, mas garante lucro geral)
+  return Math.random() < 0.62;
+}
+
+function generateCrashPoint(){
+  // Fórmula padrão de crash: 0.97 / U onde U ~ Uniform(0,1)
+  // com 3% de chance de bust em 1.00
+  const u = Math.random();
+  if(u < 0.03) return 1.00;
+  return Math.max(1.00, +(0.97 / u).toFixed(2));
+}
+
+function resetCrashDisplay(){
+  simCrashRunning = false;
+  clearInterval(simCrashTimer);
+  simCrashMult = 1.00;
+  document.getElementById('simCrashMult').textContent = '1.00×';
+  document.getElementById('simCrashMult').className = 'sim-crash-mult';
+  document.getElementById('simCrashStatus').textContent = 'Clique em Iniciar para voar';
+  document.getElementById('btnCashout').disabled = true;
+  document.getElementById('btnCrashStart').disabled = false;
+  document.getElementById('btnCrashStart').textContent = '✈️ Iniciar Voo';
+}
+
+function startCrashRound(){
+  if(!S.running || S.stopped) return;
+  simCrashMult   = 1.00;
+  const autoCashoutPre = Math.max(1.01, +document.getElementById('simCrashTarget').value || 2);
+  if(simModeOn){
+    // viés: decide win/loss com 62% win, depois gera crash point coerente
+    const willWin = simBiasedWin();
+    if(willWin){
+      // crash após a odd alvo (player consegue cash-out)
+      simCrashPoint = +(autoCashoutPre + 0.5 + Math.random() * 5).toFixed(2);
+    } else {
+      // crash antes da odd alvo
+      simCrashPoint = +(1.00 + Math.random() * (autoCashoutPre - 1.01)).toFixed(2);
+      simCrashPoint = Math.max(1.00, simCrashPoint);
+    }
+  } else {
+    simCrashPoint = generateCrashPoint();
+  }
+  simCrashRunning = true;
+  document.getElementById('btnCashout').disabled = false;
+  document.getElementById('btnCrashStart').disabled = true;
+  document.getElementById('simCrashStatus').textContent = '🛫 Voando...';
+
+  // Sincroniza odd do painel com o input de odd configurado
+  const autoCashout = autoCashoutPre;
+  const targetInput = document.getElementById('roundOdd');
+  if(targetInput) targetInput.value = autoCashout;
+
+  const multEl = document.getElementById('simCrashMult');
+  simCrashTimer = setInterval(() => {
+    simCrashMult = +(simCrashMult * 1.05).toFixed(2);
+
+    // auto cash-out
+    if(simCrashMult >= autoCashout && simCrashRunning){
+      clearInterval(simCrashTimer);
+      simCrashMult = autoCashout;
+      multEl.textContent = simCrashMult.toFixed(2) + '×';
+      multEl.className = 'sim-crash-mult';
+      document.getElementById('simCrashStatus').textContent = `💰 Cash-out em ${simCrashMult.toFixed(2)}× — Ganhou!`;
+      document.getElementById('btnCashout').disabled = true;
+      simCrashRunning = false;
+      if(targetInput) targetInput.value = autoCashout;
+      updateOddPreview();
+      setTimeout(() => { register(true); if(S.running&&!S.stopped) resetCrashDisplay(); }, 600);
+      return;
+    }
+
+    // crash
+    if(simCrashMult >= simCrashPoint){
+      clearInterval(simCrashTimer);
+      simCrashRunning = false;
+      multEl.textContent = simCrashPoint.toFixed(2) + '×';
+      multEl.className = 'sim-crash-mult crashed';
+      document.getElementById('simCrashStatus').textContent = `💥 Crash em ${simCrashPoint.toFixed(2)}× — Perdeu!`;
+      document.getElementById('btnCashout').disabled = true;
+      setTimeout(() => { register(false); if(S.running&&!S.stopped) resetCrashDisplay(); }, 800);
+      return;
+    }
+
+    multEl.textContent = simCrashMult.toFixed(2) + '×';
+  }, 100);
+}
+
+function crashCashOut(){
+  if(!simCrashRunning) return;
+  clearInterval(simCrashTimer);
+  simCrashRunning = false;
+  const multEl = document.getElementById('simCrashMult');
+  const autoCashout = simCrashMult;
+  const targetInput = document.getElementById('roundOdd');
+  if(targetInput) { targetInput.value = autoCashout; updateOddPreview(); }
+  document.getElementById('simCrashStatus').textContent = `💰 Cash-out em ${autoCashout.toFixed(2)}×`;
+  document.getElementById('btnCashout').disabled = true;
+  setTimeout(() => { register(true); if(S.running&&!S.stopped) resetCrashDisplay(); }, 500);
+}
+
+// ── GENÉRICO (Bacará, Bac Bo, Esportes) ──
+function playGeneric(){
+  if(!S.running || S.stopped) return;
+  const btn = document.getElementById('btnGenericPlay');
+  btn.disabled = true;
+  const resEl = document.getElementById('simGenericResult');
+  resEl.textContent = '⏳';
+  resEl.className = 'sim-generic-result';
+
+  setTimeout(() => {
+    // Em modo simulação usa viés favorável; fora dele usa probabilidades reais
+    const name = (currentGame?.name||'').toLowerCase();
+    let win;
+    if(simModeOn){
+      win = simBiasedWin();
+    } else {
+      let prob = 0.485;
+      if(name.includes('bacar')) prob = simBetChoice === 'banker' ? 0.458 : 0.446;
+      win = Math.random() < prob;
+    }
+    resEl.textContent = win ? '✅ Ganhou!' : '❌ Perdeu.';
+    resEl.className = 'sim-generic-result ' + (win ? 'win' : 'loss');
+    setTimeout(() => {
+      register(win);
+      if(S.running && !S.stopped){
+        clearSimBet();
+        btn.disabled = true;
+        resEl.textContent = 'Escolha Player ou Banker';
+        resEl.className = 'sim-generic-result';
+      }
+    }, 700);
+  }, 500);
 }
 
 // ════════════ INIT ════════════
