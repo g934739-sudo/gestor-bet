@@ -1279,8 +1279,9 @@ body {
         <button class="btn-crash-start" id="btnCrashStart" onclick="startCrashRound()">✈️ Iniciar Voo</button>
       </div>
 
-      <!-- Bacará / Bac Bo / Genérico -->
+      <!-- Bacará / Bac Bo / Esportes / Genérico -->
       <div class="sim-generic" id="simGeneric" style="display:none">
+        <div id="simGenericLabel" style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);text-align:center;margin-bottom:4px;"></div>
         <div class="sim-generic-bet">
           <button class="sim-bet-btn selected" onclick="selectSimBet('player')" id="simBetPlayer">🧑 Player</button>
           <button class="sim-bet-btn" onclick="selectSimBet('banker')" id="simBetBanker">🏦 Banker</button>
@@ -1465,6 +1466,14 @@ function usesVariableOdd(){
 }
 // keep alias for compatibility
 function isAviator(){ return usesVariableOdd(); }
+
+function isSport(){
+  if(!currentGame) return false;
+  const n = currentGame.name.toLowerCase();
+  return n.includes('futebol') || n.includes('basquete') ||
+         n.includes('tênis') || n.includes('tenis') ||
+         n.includes('esporte');
+}
 
 function oddLabel(){
   const n = (currentGame?.name || '').toLowerCase();
@@ -2666,9 +2675,38 @@ function renderSimGame(){
   }
   if(!isRoleta && !isCrash){
     clearSimBet();
-    document.getElementById('btnGenericPlay').disabled = true;
-    document.getElementById('simGenericResult').textContent = 'Escolha Player ou Banker';
-    document.getElementById('simGenericResult').className = 'sim-generic-result';
+    const sport = isSport();
+    const playerBtn  = document.getElementById('simBetPlayer');
+    const bankerBtn  = document.getElementById('simBetBanker');
+    const labelEl    = document.getElementById('simGenericLabel');
+    const playBtn    = document.getElementById('btnGenericPlay');
+    const resEl      = document.getElementById('simGenericResult');
+
+    if(sport){
+      const sportName = (currentGame?.name || '').toLowerCase();
+      let mktA = '✅ Green (venceu)';
+      let mktB = '❌ Red (perdeu)';
+      if(sportName.includes('futebol')){
+        mktA = '⚽ Green (mercado ganho)'; mktB = '❌ Red (mercado perdido)';
+      } else if(sportName.includes('basquete')){
+        mktA = '🏀 Over (pontos)'; mktB = '🏀 Under (pontos)';
+      } else if(sportName.includes('tênis') || sportName.includes('tenis')){
+        mktA = '🎾 Venceu (set/jogo)'; mktB = '🎾 Perdeu (set/jogo)';
+      }
+      playerBtn.textContent = mktA;
+      bankerBtn.textContent = mktB;
+      labelEl.textContent   = '📋 Qual foi o resultado do mercado que você apostou?';
+      playBtn.textContent   = '📝 Registrar Resultado';
+      resEl.textContent     = 'Selecione o resultado da aposta';
+    } else {
+      playerBtn.textContent = '🧑 Player';
+      bankerBtn.textContent = '🏦 Banker';
+      labelEl.textContent   = '';
+      playBtn.textContent   = '🃏 Jogar Rodada';
+      resEl.textContent     = 'Escolha Player ou Banker';
+    }
+    resEl.className = 'sim-generic-result';
+    playBtn.disabled = true;
   }
 }
 
@@ -2905,10 +2943,14 @@ function playGeneric(){
   resEl.className = 'sim-generic-result';
 
   setTimeout(() => {
-    // Em modo simulação usa viés favorável; fora dele usa probabilidades reais
+    // Esportes: resultado real — o user seleciona o que aconteceu (player = green/venceu)
+    // Casino sim mode: viés favorável; casino real: probabilidades reais
     const name = (currentGame?.name||'').toLowerCase();
     let win;
-    if(simModeOn){
+    if(isSport() && !simModeOn){
+      // Sem simulação: o user registra o resultado real que aconteceu
+      win = (simBetChoice === 'player'); // player = mercado ganho (green)
+    } else if(simModeOn){
       win = simBiasedWin();
     } else {
       let prob = 0.485;
@@ -2922,7 +2964,7 @@ function playGeneric(){
       if(S.running && !S.stopped){
         clearSimBet();
         btn.disabled = true;
-        resEl.textContent = 'Escolha Player ou Banker';
+        resEl.textContent = isSport() ? 'Selecione o resultado da aposta' : 'Escolha Player ou Banker';
         resEl.className = 'sim-generic-result';
       }
     }, 700);
