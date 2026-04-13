@@ -1498,6 +1498,8 @@ function onBancaChange(){
 
 function usesVariableOdd(){
   if(!currentGame) return false;
+  // All sports use variable odds; crash/aviator also use variable odd
+  if(currentGame.category === 'sport') return true;
   const n = currentGame.name.toLowerCase();
   return n.includes('aviator') || n.includes('crash') ||
          n.includes('futebol') || n.includes('basquete') ||
@@ -1509,6 +1511,8 @@ function isAviator(){ return usesVariableOdd(); }
 
 function isSport(){
   if(!currentGame) return false;
+  if(currentGame.category) return currentGame.category === 'sport';
+  // fallback: nome (para jogos customizados sem categoria)
   const n = currentGame.name.toLowerCase();
   return n.includes('futebol') || n.includes('basquete') ||
          n.includes('tênis') || n.includes('tenis') ||
@@ -2620,7 +2624,8 @@ function selectGame(icon, name, category){
 function confirmCustomGame(){
   const val = document.getElementById('customGameInput').value.trim();
   if(!val) return;
-  selectGame('🎮', val);
+  // Default custom games to casino (user can pick sport section if needed)
+  selectGame('🎮', val, 'casino');
   document.getElementById('customGameInput').value = '';
 }
 
@@ -2979,13 +2984,13 @@ function playGeneric(){
   resEl.className = 'sim-generic-result';
 
   setTimeout(() => {
-    // Esportes: resultado real — o user seleciona o que aconteceu (player = green/venceu)
+    // Esportes: resultado sempre vem da escolha do user — o jogo já aconteceu
     // Casino sim mode: viés favorável; casino real: probabilidades reais
     const name = (currentGame?.name||'').toLowerCase();
     let win;
-    if(isSport() && !simModeOn){
-      // Sem simulação: o user registra o resultado real que aconteceu
-      win = (simBetChoice === 'player'); // player = mercado ganho (green)
+    if(isSport()){
+      // O user registra o resultado real — "Ganhei" = player, "Perdi" = banker
+      win = (simBetChoice === 'player');
     } else if(simModeOn){
       win = simBiasedWin();
     } else {
