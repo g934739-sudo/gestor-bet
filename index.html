@@ -78,6 +78,132 @@ body { background: var(--bg); color: var(--text); font-family: var(--r); overflo
   #nav { padding: 0 20px; }
   .nav-links { display: none; }
 }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  padding: 120px 48px 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+}
+#hero::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(ellipse at center, rgba(240,192,64,.06) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  background: var(--green-dim); border: 1px solid var(--green-line); border-radius: 100px;
+  font-family: var(--m); font-size: 10px; color: var(--green);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.6s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.hero-h {
+  font-size: clamp(44px, 5.5vw, 72px);
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -.5px;
+  margin-bottom: 22px;
+}
+.hero-h em { color: var(--gold); font-style: normal; display: block; }
+.hero-p {
+  font-size: 18px; color: var(--text2); line-height: 1.72;
+  margin-bottom: 36px; max-width: 480px;
+}
+.hero-btns { display: flex; gap: 12px; align-items: center; margin-bottom: 40px; flex-wrap: wrap; }
+.btn-gold {
+  padding: 16px 36px; background: var(--gold); color: #000;
+  font-family: var(--r); font-weight: 700; font-size: 15px; border-radius: 10px;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  transition: filter .2s, transform .2s;
+  box-shadow: 0 0 0 0 rgba(240,192,64,.4);
+  animation: goldpulse 2.8s ease-in-out infinite;
+}
+@keyframes goldpulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(240,192,64,.3); }
+  50%      { box-shadow: 0 0 0 14px rgba(240,192,64,0); }
+}
+.btn-gold:hover { filter: brightness(1.07); transform: translateY(-1px); animation: none; }
+.btn-ghost {
+  padding: 16px 28px; background: transparent; color: var(--text2);
+  border: 1px solid var(--border2); border-radius: 10px;
+  text-decoration: none; font-size: 14px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px; transition: all .2s;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.hero-social { display: flex; align-items: center; gap: 14px; }
+.avatars { display: flex; }
+.avatars span {
+  width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+  margin-left: -10px;
+}
+.avatars span:first-child { margin-left: 0; }
+.hero-social-txt { font-size: 13px; color: var(--text2); }
+.hero-social-txt strong { color: var(--text); }
+
+/* APP MOCK */
+.hero-mock { position: relative; z-index: 1; display: flex; justify-content: center; }
+.mock {
+  width: 100%; max-width: 520px;
+  background: var(--s1); border: 1px solid var(--border2); border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 48px 96px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
+  animation: float 4.5s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.mock-bar {
+  padding: 10px 14px; background: rgba(0,0,0,.3); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.mock-dots { display: flex; gap: 5px; }
+.mock-dot { width: 9px; height: 9px; border-radius: 50%; }
+.mock-url {
+  flex: 1; margin: 0 10px; background: rgba(255,255,255,.04);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; font-family: var(--m); font-size: 9px; color: var(--muted);
+}
+.mock-live { font-family: var(--m); font-size: 9px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+.mock-live::before { content:''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: blink 1.2s infinite; }
+.mock-inner { padding: 20px; }
+.mock-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.mock-strat-label { font-family: var(--m); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 4px; }
+.mock-strat-name { font-size: 16px; font-weight: 700; color: var(--gold); }
+.mock-badge { padding: 4px 10px; background: var(--green-dim); border: 1px solid var(--green-line); border-radius: 100px; font-family: var(--m); font-size: 9px; color: var(--green); }
+.mock-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.mock-stat { background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.mock-stat-l { font-family: var(--m); font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.mock-stat-v { font-size: 18px; font-weight: 700; }
+.mock-stat-v.g { color: var(--green); }
+.mock-stat-v.gold { color: var(--gold); }
+.mock-bets { display: flex; flex-direction: column; gap: 6px; }
+.mock-bet { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--s2); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; }
+.mock-bet-n { color: var(--text2); }
+.mock-bet-v { font-weight: 600; }
+.mock-bet-v.g { color: var(--green); }
+.mock-bet-v.r { color: var(--red); }
+
+@media (max-width: 768px) {
+  #hero { grid-template-columns: 1fr; padding: 100px 20px 60px; gap: 48px; }
+  .hero-mock { display: none; }
+}
 </style>
 </head>
 <body>
@@ -97,6 +223,75 @@ body { background: var(--bg); color: var(--text); font-family: var(--r); overflo
     <a href="login.html" class="nav-cta">Começar grátis</a>
   </div>
 </nav>
+
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-pill">
+      <span class="pill-dot"></span>
+      Cassino &amp; Apostas Esportivas
+    </div>
+    <h1 class="hero-h">
+      Pare de apostar<br>no escuro.
+      <em>Gerencie sua banca<br>como um profissional.</em>
+    </h1>
+    <p class="hero-p">Estratégias automáticas, Stop Loss inteligente e dashboard em tempo real — para cassino e apostas esportivas.</p>
+    <div class="hero-btns">
+      <a href="login.html" class="btn-gold">Começar agora — 7 dias grátis →</a>
+      <a href="#how" class="btn-ghost">Ver como funciona ↓</a>
+    </div>
+    <div class="hero-social">
+      <div class="avatars">
+        <span style="background:#6366f1">RM</span>
+        <span style="background:#ec4899">JS</span>
+        <span style="background:#f59e0b">KL</span>
+        <span style="background:#10b981">PT</span>
+      </div>
+      <span class="hero-social-txt"><strong>+3.200</strong> apostadores já usam</span>
+    </div>
+  </div>
+
+  <div class="hero-mock">
+    <div class="mock">
+      <div class="mock-bar">
+        <div class="mock-dots">
+          <div class="mock-dot" style="background:#f5445f"></div>
+          <div class="mock-dot" style="background:#f0c040"></div>
+          <div class="mock-dot" style="background:#1fd97a"></div>
+        </div>
+        <div class="mock-url">gestorbet.app</div>
+        <div class="mock-live">AO VIVO</div>
+      </div>
+      <div class="mock-inner">
+        <div class="mock-header">
+          <div>
+            <div class="mock-strat-label">Estratégia ativa</div>
+            <div class="mock-strat-name">Fibonacci</div>
+          </div>
+          <div class="mock-badge">● Sessão ativa</div>
+        </div>
+        <div class="mock-stats">
+          <div class="mock-stat">
+            <div class="mock-stat-l">Banca</div>
+            <div class="mock-stat-v gold">R$1.240</div>
+          </div>
+          <div class="mock-stat">
+            <div class="mock-stat-l">Lucro</div>
+            <div class="mock-stat-v g">+R$240</div>
+          </div>
+          <div class="mock-stat">
+            <div class="mock-stat-l">ROI</div>
+            <div class="mock-stat-v g">+24%</div>
+          </div>
+        </div>
+        <div class="mock-bets">
+          <div class="mock-bet"><span class="mock-bet-n">Aposta #12</span><span class="mock-bet-v g">+R$64</span></div>
+          <div class="mock-bet"><span class="mock-bet-n">Aposta #11</span><span class="mock-bet-v r">-R$32</span></div>
+          <div class="mock-bet"><span class="mock-bet-n">Aposta #10</span><span class="mock-bet-v g">+R$32</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <script>
 window.addEventListener('scroll', () => {
