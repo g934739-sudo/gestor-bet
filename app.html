@@ -75,26 +75,27 @@ body {
 .logo-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
-/* Game selectors */
-.game-selectors { display: flex; align-items: center; gap: 8px; }
+/* Game selector (unified) */
+.game-selectors { display: flex; align-items: center; }
 .game-selector { position: relative; }
 .game-sel-btn {
   display: flex; align-items: center; gap: 9px;
   background: var(--s2); border: 1px solid var(--border);
   border-radius: 10px; padding: 7px 13px 7px 11px;
   cursor: pointer; transition: all .15s; user-select: none;
-  min-width: 148px;
+  min-width: 160px;
 }
 .game-sel-btn:hover { border-color: var(--border2); background: var(--s3); }
-.game-selector.casino .game-sel-btn.open { border-color: var(--gold); background: var(--s3); }
-.game-selector.sport  .game-sel-btn.open { border-color: var(--green); background: var(--s3); }
-.game-selector.casino .game-sel-btn.active-game { border-color: rgba(240,192,64,.55); background: rgba(240,192,64,.07); }
-.game-selector.sport  .game-sel-btn.active-game { border-color: rgba(31,217,122,.45); background: rgba(31,217,122,.06); }
+.game-sel-btn.open { border-color: var(--border2); background: var(--s3); }
+.game-sel-btn.cat-casino { border-color: rgba(240,192,64,.45); background: rgba(240,192,64,.07); }
+.game-sel-btn.cat-casino.open { border-color: var(--gold); }
+.game-sel-btn.cat-sport  { border-color: rgba(31,217,122,.35); background: rgba(31,217,122,.06); }
+.game-sel-btn.cat-sport.open  { border-color: var(--green); }
 .gs-icon { font-size: 16px; flex-shrink: 0; }
 .gs-info { flex: 1; min-width: 0; }
-.gs-label { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; margin-bottom: 2px; }
-.game-selector.casino .gs-label { color: var(--gold); }
-.game-selector.sport  .gs-label { color: var(--green); }
+.gs-label { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; margin-bottom: 2px; color: var(--muted); }
+.game-sel-btn.cat-casino .gs-label { color: var(--gold); }
+.game-sel-btn.cat-sport  .gs-label { color: var(--green); }
 .gs-name { font-family: var(--mono); font-size: 11px; color: var(--text); letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
 .gs-caret { font-size: 9px; color: var(--muted); transition: transform .2s; flex-shrink: 0; }
 .gs-caret.open { transform: rotate(180deg); }
@@ -1043,21 +1044,21 @@ body {
   <div class="logo">Gestor<span>Bet</span></div>
   <div class="logo-sep"></div>
   <div class="game-selectors">
-    <!-- CASSINO -->
-    <div class="game-selector casino" id="gameSelectorCasino">
-      <div class="game-sel-btn active-game" id="casinoSelBtn" onclick="toggleCasinoDropdown()">
-        <span class="gs-icon" id="casinoIcon">🎡</span>
+    <div class="game-selector" id="gameSelector">
+      <div class="game-sel-btn cat-casino" id="gameSelBtn" onclick="toggleGameDropdown()">
+        <span class="gs-icon" id="gameIcon">🎡</span>
         <div class="gs-info">
-          <div class="gs-label">Cassino</div>
-          <div class="gs-name" id="casinoName">Roleta Europeia</div>
+          <div class="gs-label" id="gameCategory">Cassino</div>
+          <div class="gs-name" id="gameName">Roleta Europeia</div>
         </div>
-        <span class="gs-caret" id="casinoCaret">▼</span>
+        <span class="gs-caret" id="gameCaret">▼</span>
       </div>
-      <div class="game-dropdown" id="casinoDropdown">
+      <div class="game-dropdown" id="gameDropdown">
+        <!-- CASSINO -->
         <div class="dd-section casino">
           <div class="dd-section-header">
             <span class="dd-section-icon">🎰</span>
-            <span class="dd-section-title">Escolha o jogo</span>
+            <span class="dd-section-title">Cassino</span>
             <span class="dd-section-line"></span>
           </div>
           <div class="dd-grid">
@@ -1071,7 +1072,7 @@ body {
               <div class="dd-item-info"><div class="dd-item-name">Roleta Americana</div><div class="dd-item-sub">2 zeros</div></div>
               <span class="dd-check">✓</span>
             </div>
-            <div class="dd-item" onclick="selectGame('🎲','Roleta Lightning','casino')">
+            <div class="dd-item" onclick="selectGame('🎲','Lightning Roulette','casino')">
               <span class="dd-ico">🎲</span>
               <div class="dd-item-info"><div class="dd-item-name">Lightning Roulette</div><div class="dd-item-sub">Mult. 50×–500×</div></div>
               <span class="dd-check">✓</span>
@@ -1093,28 +1094,11 @@ body {
             </div>
           </div>
         </div>
-        <div class="dd-custom">
-          <span class="dd-custom-label">Outro:</span>
-          <input class="dd-custom-input" id="customGameInput" placeholder="Nome do jogo..." maxlength="28" onkeydown="if(event.key==='Enter')confirmCustomGame()">
-          <button class="dd-custom-btn" onclick="confirmCustomGame()">+ Usar</button>
-        </div>
-      </div>
-    </div>
-    <!-- ESPORTES -->
-    <div class="game-selector sport" id="gameSelectorSport">
-      <div class="game-sel-btn" id="sportSelBtn" onclick="toggleSportDropdown()">
-        <span class="gs-icon" id="sportIcon">⚽</span>
-        <div class="gs-info">
-          <div class="gs-label">Esportes</div>
-          <div class="gs-name" id="sportName">Selecionar esporte</div>
-        </div>
-        <span class="gs-caret" id="sportCaret">▼</span>
-      </div>
-      <div class="game-dropdown" id="sportDropdown">
+        <!-- ESPORTES -->
         <div class="dd-section sport">
           <div class="dd-section-header">
             <span class="dd-section-icon">⚽</span>
-            <span class="dd-section-title">Escolha o esporte</span>
+            <span class="dd-section-title">Esportes</span>
             <span class="dd-section-line"></span>
           </div>
           <div class="dd-grid">
@@ -1133,12 +1117,17 @@ body {
               <div class="dd-item-info"><div class="dd-item-name">Tênis</div><div class="dd-item-sub">ATP, WTA · set/game</div></div>
               <span class="dd-check">✓</span>
             </div>
-            <div class="dd-item" onclick="selectGame('🏈','Esporte (outro)','sport')">
+            <div class="dd-item" onclick="selectGame('🏈','Outro esporte','sport')">
               <span class="dd-ico">🏈</span>
               <div class="dd-item-info"><div class="dd-item-name">Outro esporte</div><div class="dd-item-sub">Qualquer modalidade</div></div>
               <span class="dd-check">✓</span>
             </div>
           </div>
+        </div>
+        <div class="dd-custom">
+          <span class="dd-custom-label">Outro:</span>
+          <input class="dd-custom-input" id="customGameInput" placeholder="Nome do jogo..." maxlength="28" onkeydown="if(event.key==='Enter')confirmCustomGame()">
+          <button class="dd-custom-btn" onclick="confirmCustomGame()">+ Usar</button>
         </div>
       </div>
     </div>
@@ -2672,60 +2661,41 @@ let currentGame = { icon: '🎡', name: 'Roleta Europeia' };
 
 function getGameName(){ return currentGame.name; }
 
-function closeCasinoDropdown(){
-  document.getElementById('casinoDropdown').classList.remove('open');
-  document.getElementById('casinoSelBtn').classList.remove('open');
-  document.getElementById('casinoCaret').classList.remove('open');
+function closeGameDropdown(){
+  document.getElementById('gameDropdown').classList.remove('open');
+  document.getElementById('gameSelBtn').classList.remove('open');
+  document.getElementById('gameCaret').classList.remove('open');
 }
-function closeSportDropdown(){
-  document.getElementById('sportDropdown').classList.remove('open');
-  document.getElementById('sportSelBtn').classList.remove('open');
-  document.getElementById('sportCaret').classList.remove('open');
-}
+// Keep old names as aliases so any other callers don't break
+function closeCasinoDropdown(){ closeGameDropdown(); }
+function closeSportDropdown(){ closeGameDropdown(); }
 function closeDropdownsOnOutside(e){
-  const cc = document.getElementById('gameSelectorCasino');
-  const cs = document.getElementById('gameSelectorSport');
-  if(!cc.contains(e.target) && !cs.contains(e.target)){
-    closeCasinoDropdown(); closeSportDropdown();
+  if(!document.getElementById('gameSelector').contains(e.target)){
+    closeGameDropdown();
     document.removeEventListener('click', closeDropdownsOnOutside);
   }
 }
-function toggleCasinoDropdown(){
-  closeSportDropdown();
-  const dd  = document.getElementById('casinoDropdown');
-  const btn = document.getElementById('casinoSelBtn');
-  const car = document.getElementById('casinoCaret');
+function toggleGameDropdown(){
+  const dd  = document.getElementById('gameDropdown');
+  const btn = document.getElementById('gameSelBtn');
+  const car = document.getElementById('gameCaret');
   const open = dd.classList.toggle('open');
   btn.classList.toggle('open', open);
   car.classList.toggle('open', open);
   if(open){ setTimeout(()=>document.addEventListener('click', closeDropdownsOnOutside), 0); }
 }
-function toggleSportDropdown(){
-  closeCasinoDropdown();
-  const dd  = document.getElementById('sportDropdown');
-  const btn = document.getElementById('sportSelBtn');
-  const car = document.getElementById('sportCaret');
-  const open = dd.classList.toggle('open');
-  btn.classList.toggle('open', open);
-  car.classList.toggle('open', open);
-  if(open){ setTimeout(()=>document.addEventListener('click', closeDropdownsOnOutside), 0); }
-}
+// Keep old names as aliases
+function toggleCasinoDropdown(){ toggleGameDropdown(); }
+function toggleSportDropdown(){ toggleGameDropdown(); }
 
 function selectGame(icon, name, category){
   currentGame = { icon, name, category: category || 'casino' };
-  if(category === 'sport'){
-    document.getElementById('sportIcon').textContent = icon;
-    document.getElementById('sportName').textContent = name;
-    document.getElementById('sportSelBtn').classList.add('active-game');
-    document.getElementById('casinoSelBtn').classList.remove('active-game');
-    closeSportDropdown();
-  } else {
-    document.getElementById('casinoIcon').textContent = icon;
-    document.getElementById('casinoName').textContent = name;
-    document.getElementById('casinoSelBtn').classList.add('active-game');
-    document.getElementById('sportSelBtn').classList.remove('active-game');
-    closeCasinoDropdown();
-  }
+  const btn = document.getElementById('gameSelBtn');
+  document.getElementById('gameIcon').textContent = icon;
+  document.getElementById('gameName').textContent = name;
+  document.getElementById('gameCategory').textContent = category === 'sport' ? 'Esportes' : 'Cassino';
+  btn.className = 'game-sel-btn ' + (category === 'sport' ? 'cat-sport' : 'cat-casino');
+  closeGameDropdown();
   document.querySelectorAll('.dd-item').forEach(el => {
     el.classList.toggle('active', el.querySelector('.dd-item-name')?.textContent === name);
   });
