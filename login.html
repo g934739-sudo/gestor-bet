@@ -324,7 +324,10 @@ async function onReg(e) {
     showMsg('register', error.message, 'error');
     btn.textContent = 'Criar conta grátis'; btn.disabled = false;
   } else {
-    showMsg('register', 'Conta criada! Verifique seu e-mail para confirmar o cadastro.', 'success');
+    showMsg('register', 'Conta criada! Redirecionando para o login...', 'success');
+    setTimeout(() => {
+      goTab('login', document.querySelector('.tab'));
+    }, 1500);
     btn.textContent = 'Criar conta grátis'; btn.disabled = false;
   }
 }
