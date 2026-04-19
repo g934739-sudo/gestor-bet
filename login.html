@@ -6,6 +6,7 @@
 <title>GestorBet — Entrar ou Cadastrar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg:         #09090f;
@@ -106,6 +107,12 @@ select.input option { background: #1a1a28; color: var(--text); }
 .btn-submit { width: 100%; padding: 14px; background: var(--gold); color: #000; font-family: var(--r); font-size: 15px; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; transition: filter .2s, transform .15s; }
 .btn-submit:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .btn-submit:active { transform: translateY(0); }
+.btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; filter: none; }
+
+/* Feedback messages */
+.msg { display: none; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 16px; line-height: 1.5; }
+.msg.error { display: block; background: rgba(245,68,95,.12); border: 1px solid rgba(245,68,95,.3); color: #f5445f; }
+.msg.success { display: block; background: rgba(31,217,122,.10); border: 1px solid rgba(31,217,122,.25); color: #1fd97a; }
 
 /* Divider */
 .divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; }
@@ -161,9 +168,10 @@ select.input option { background: #1a1a28; color: var(--text); }
 
     <!-- LOGIN -->
     <form id="form-login" class="form active" onsubmit="onLogin(event)">
+      <div id="msg-login" class="msg"></div>
       <div class="field">
         <label class="label">E-mail</label>
-        <input class="input" type="email" placeholder="seu@email.com" required>
+        <input class="input" type="email" id="login-email" placeholder="seu@email.com" required>
       </div>
       <div class="field">
         <label class="label">Senha</label>
@@ -172,7 +180,7 @@ select.input option { background: #1a1a28; color: var(--text); }
           <button type="button" class="eye" onclick="togglePass('lp')">👁</button>
         </div>
       </div>
-      <a href="#" class="forgot">Esqueci a senha</a>
+      <a href="#" class="forgot" onclick="onForgot(event)">Esqueci a senha</a>
       <button type="submit" class="btn-submit">Acessar plataforma</button>
       <div class="divider"><div class="div-line"></div><span class="div-txt">ou continue com</span><div class="div-line"></div></div>
       <div class="socials">
@@ -189,13 +197,14 @@ select.input option { background: #1a1a28; color: var(--text); }
 
     <!-- CADASTRO -->
     <form id="form-register" class="form" onsubmit="onReg(event)">
+      <div id="msg-register" class="msg"></div>
       <div class="row2">
-        <div class="field"><label class="label">Nome</label><input class="input" type="text" placeholder="João" required></div>
-        <div class="field"><label class="label">Sobrenome</label><input class="input" type="text" placeholder="Silva" required></div>
+        <div class="field"><label class="label">Nome</label><input class="input" type="text" id="reg-nome" placeholder="João" required></div>
+        <div class="field"><label class="label">Sobrenome</label><input class="input" type="text" id="reg-sobrenome" placeholder="Silva" required></div>
       </div>
       <div class="field">
         <label class="label">E-mail</label>
-        <input class="input" type="email" placeholder="seu@email.com" required>
+        <input class="input" type="email" id="reg-email" placeholder="seu@email.com" required>
       </div>
       <div class="field">
         <label class="label">Senha</label>
@@ -207,11 +216,11 @@ select.input option { background: #1a1a28; color: var(--text); }
       </div>
       <div class="field">
         <label class="label">Plano</label>
-        <select class="input" required>
+        <select class="input" id="reg-plano" required>
           <option value="" disabled selected>Selecionar plano</option>
-          <option>Starter — R$97/mês</option>
-          <option>Pro — R$297/mês</option>
-          <option>Elite — R$597/mês</option>
+          <option value="starter">Starter — R$97/mês</option>
+          <option value="pro">Pro — R$297/mês</option>
+          <option value="elite">Elite — R$597/mês</option>
         </select>
       </div>
       <div class="chk-row">
@@ -236,6 +245,10 @@ select.input option { background: #1a1a28; color: var(--text); }
 </div>
 
 <script>
+const SUPA_URL = 'https://pngnxrmmfymviwiywexn.supabase.co';
+const SUPA_KEY = 'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
 function goTab(id, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
@@ -258,8 +271,80 @@ function checkStr(v) {
     if (i < s) el.classList.add(s <= 1 ? 'w' : s <= 2 ? 'm' : 'g');
   });
 }
-function onLogin(e) { e.preventDefault(); window.location.href = 'app.html'; }
-function onReg(e) { e.preventDefault(); window.location.href = 'app.html'; }
+
+function showMsg(formId, text, type) {
+  const el = document.getElementById('msg-' + formId);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+function clearMsg(formId) {
+  const el = document.getElementById('msg-' + formId);
+  el.className = 'msg';
+  el.textContent = '';
+}
+
+async function onLogin(e) {
+  e.preventDefault();
+  clearMsg('login');
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('lp').value;
+  const btn   = e.target.querySelector('.btn-submit');
+  btn.textContent = 'Entrando...'; btn.disabled = true;
+
+  const { error } = await supa.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    const msg = error.message.includes('Invalid login') || error.message.includes('invalid')
+      ? 'E-mail ou senha incorretos.'
+      : error.message;
+    showMsg('login', msg, 'error');
+    btn.textContent = 'Acessar plataforma'; btn.disabled = false;
+  } else {
+    window.location.href = 'app.html';
+  }
+}
+
+async function onReg(e) {
+  e.preventDefault();
+  clearMsg('register');
+  const nome     = document.getElementById('reg-nome').value.trim();
+  const sobre    = document.getElementById('reg-sobrenome').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const pass     = document.getElementById('rp').value;
+  const plano    = document.getElementById('reg-plano').value;
+  const btn      = e.target.querySelector('.btn-submit');
+  btn.textContent = 'Criando conta...'; btn.disabled = true;
+
+  const { error } = await supa.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { nome_completo: nome + ' ' + sobre, plano } }
+  });
+
+  if (error) {
+    showMsg('register', error.message, 'error');
+    btn.textContent = 'Criar conta grátis'; btn.disabled = false;
+  } else {
+    showMsg('register', 'Conta criada! Verifique seu e-mail para confirmar o cadastro.', 'success');
+    btn.textContent = 'Criar conta grátis'; btn.disabled = false;
+  }
+}
+
+async function onForgot(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) {
+    showMsg('login', 'Digite seu e-mail acima para recuperar a senha.', 'error');
+    return;
+  }
+  const { error } = await supa.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/login.html'
+  });
+  if (error) {
+    showMsg('login', error.message, 'error');
+  } else {
+    showMsg('login', 'E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'success');
+  }
+}
 </script>
 </body>
 </html>
