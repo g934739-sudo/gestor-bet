@@ -234,27 +234,44 @@ body {
 }
 
 .phead {
-  padding: 11px 16px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--gold);
+  padding: 14px 16px 13px;
+  display: flex; align-items: center; gap: 10px;
   border-bottom: 1px solid var(--border);
-  background: rgba(240,192,64,.05);
-  display: flex; align-items: center; gap: 7px;
+  background: linear-gradient(90deg, rgba(240,192,64,.08) 0%, transparent 70%);
+  position: relative;
 }
-.phead::before {
-  content: ''; width: 3px; height: 14px; border-radius: 2px;
-  background: var(--gold); flex-shrink: 0;
+.phead::after {
+  content: ''; position: absolute; bottom: -1px; left: 0;
+  width: 48px; height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+.phead-icon {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(240,192,64,.12); border: 1px solid rgba(240,192,64,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.phead-text { display: flex; flex-direction: column; gap: 1px; }
+.phead-label {
+  font-size: 11px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1.8px; color: var(--gold); line-height: 1;
+}
+.phead-sub {
+  font-size: 9px; font-family: var(--mono); color: var(--muted);
+  letter-spacing: 0.8px; text-transform: uppercase; line-height: 1;
 }
 .phead.cfg-phead {
-  color: var(--green);
-  background: rgba(31,217,122,.04);
-  border-top: 2px solid var(--border);
-  margin-top: 4px;
+  background: linear-gradient(90deg, rgba(31,217,122,.07) 0%, transparent 70%);
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
 }
-.phead.cfg-phead::before { background: var(--green); }
+.phead.cfg-phead::after {
+  background: linear-gradient(90deg, var(--green), transparent);
+}
+.phead.cfg-phead .phead-icon {
+  background: rgba(31,217,122,.1); border-color: rgba(31,217,122,.2);
+}
+.phead.cfg-phead .phead-label { color: var(--green); }
 
 /* Strategy manual slide header */
 .sm-header {
@@ -1141,11 +1158,23 @@ body {
   <!-- ══ LEFT ══ -->
   <div class="left">
     <div class="left-scroll">
-      <div class="phead">Estratégias</div>
+      <div class="phead">
+        <div class="phead-icon">📊</div>
+        <div class="phead-text">
+          <span class="phead-label">Estratégias</span>
+          <span class="phead-sub">Selecione o método</span>
+        </div>
+      </div>
       <div id="stratList"></div>
 
       <div class="cfg">
-        <div class="phead cfg-phead">Configurar sessão</div>
+        <div class="phead cfg-phead">
+          <div class="phead-icon">⚙️</div>
+          <div class="phead-text">
+            <span class="phead-label">Configurar sessão</span>
+            <span class="phead-sub">Banca · limites · stake</span>
+          </div>
+        </div>
 
         <!-- Banca -->
         <div class="cfg-row">
