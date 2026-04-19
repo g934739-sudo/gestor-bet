@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GestorBet</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async () => {
+  const _c = supabase.createClient(
+    'https://pngnxrmmfymviwiywexn.supabase.co',
+    'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
+  );
+  const { data } = await _c.auth.getSession();
+  if (!data.session) { window.location.replace('login.html'); }
+  else { document.documentElement.style.visibility = 'visible'; }
+})();
+</script>
+<style>html { visibility: hidden; }</style>
 <style>
 :root {
   --bg:       #09090f;
@@ -3824,16 +3837,11 @@ document.addEventListener('keydown', e => {
   </div><!-- /stratsModal -->
 </div><!-- /stratsOverlay -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const _supa = supabase.createClient(
   'https://pngnxrmmfymviwiywexn.supabase.co',
   'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
 );
-(async () => {
-  const { data } = await _supa.auth.getSession();
-  if (!data.session) window.location.replace('login.html');
-})();
 async function onLogout() {
   await _supa.auth.signOut();
   window.location.href = 'login.html';
