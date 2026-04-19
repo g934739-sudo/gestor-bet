@@ -3830,6 +3830,10 @@ const _supa = supabase.createClient(
   'https://pngnxrmmfymviwiywexn.supabase.co',
   'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
 );
+(async () => {
+  const { data } = await _supa.auth.getSession();
+  if (!data.session) window.location.replace('login.html');
+})();
 async function onLogout() {
   await _supa.auth.signOut();
   window.location.href = 'login.html';
