@@ -1118,6 +1118,7 @@ body {
     <button class="btn-strats" onclick="openStrategies()">📊 Estratégias</button>
     <button class="btn-tutorial" onclick="openTutorial()">📖 Tutorial</button>
     <button class="btn-ghost red" onclick="resetAll()">↺ Nova sessão</button>
+    <button class="btn-ghost" onclick="onLogout()" title="Sair da conta" style="color:var(--muted);">⎋ Sair</button>
   </div>
 </div>
 
@@ -3822,6 +3823,18 @@ document.addEventListener('keydown', e => {
     </div>
   </div><!-- /stratsModal -->
 </div><!-- /stratsOverlay -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const _supa = supabase.createClient(
+  'https://pngnxrmmfymviwiywexn.supabase.co',
+  'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
+);
+async function onLogout() {
+  await _supa.auth.signOut();
+  window.location.href = 'login.html';
+}
+</script>
 
 </body>
 </html>
