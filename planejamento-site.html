@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planejamento — GestorBet index.html</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090f;
+  --s1: #0f0f18;
+  --s2: #141420;
+  --s3: #1a1a28;
+  --gold: #f0c040;
+  --green: #1fd97a;
+  --red: #f5445f;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --orange: #fb923c;
+  --text: #f2f2f5;
+  --text2: #9090a8;
+  --muted: #505068;
+  --border: rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.13);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; -webkit-font-smoothing: antialiased; }
+
+/* HEADER */
+.site-header {
+  background: var(--s1);
+  border-bottom: 1px solid var(--border2);
+  padding: 28px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px);
+}
+.site-logo { font-size: 22px; font-weight: 900; }
+.site-logo em { color: var(--gold); font-style: normal; }
+.site-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+.site-badge { background: rgba(31,217,122,.12); border: 1px solid rgba(31,217,122,.25); color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* MAIN LAYOUT */
+.container { max-width: 1100px; margin: 0 auto; padding: 60px 48px; }
+
+/* INTRO */
+.intro { text-align: center; margin-bottom: 72px; }
+.intro-tag { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; padding: 6px 18px; border: 1px solid rgba(240,192,64,.25); border-radius: 100px; margin-bottom: 20px; }
+.intro h1 { font-size: 48px; font-weight: 900; line-height: 1.06; margin-bottom: 14px; }
+.intro h1 em { color: var(--gold); font-style: normal; }
+.intro p { font-size: 17px; color: var(--text2); line-height: 1.7; max-width: 520px; margin: 0 auto; }
+
+/* TIMELINE */
+.timeline { position: relative; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 36px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold), var(--green), var(--blue), var(--purple));
+  opacity: 0.25;
+  border-radius: 2px;
+}
+
+.section-block {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 32px;
+  margin-bottom: 48px;
+  align-items: start;
+}
+
+.section-num {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px; font-weight: 700;
+  flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+
+.section-body {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color .25s;
+}
+.section-body:hover { border-color: var(--border2); }
+
+.sb-head {
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.sb-title { font-size: 20px; font-weight: 800; }
+.sb-status {
+  font-family: 'JetBrains Mono', monospace; font-size: 8px;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+}
+.status-keep { background: rgba(96,165,250,.1); color: var(--blue); border: 1px solid rgba(96,165,250,.2); }
+.status-new  { background: rgba(31,217,122,.1); color: var(--green); border: 1px solid rgba(31,217,122,.2); }
+.status-expand { background: rgba(251,146,60,.1); color: var(--orange); border: 1px solid rgba(251,146,60,.2); }
+
+.sb-body { padding: 20px 24px; }
+.sb-desc { font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; }
+
+/* TAGS */
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  padding: 3px 10px; border-radius: 5px;
+  text-transform: uppercase; letter-spacing: .8px;
+}
+
+/* SUB-SECTIONS */
+.sub-grid { display: grid; gap: 10px; }
+.sub-grid.cols2 { grid-template-columns: 1fr 1fr; }
+.sub-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.sub-card {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+}
+.sub-card-title {
+  font-size: 12px; font-weight: 700; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sub-card ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.sub-card li { font-size: 12px; color: var(--text2); display: flex; align-items: flex-start; gap: 7px; line-height: 1.45; }
+.sub-card li::before { content: '·'; color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+
+/* FLOW */
+.flow { display: flex; align-items: center; gap: 0; margin: 8px 0; }
+.flow-step {
+  flex: 1; text-align: center; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 10px;
+}
+.flow-ico { font-size: 22px; margin-bottom: 6px; }
+.flow-label { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+.flow-sub { font-size: 10px; color: var(--muted); }
+.flow-arrow { font-size: 18px; color: var(--muted); padding: 0 8px; flex-shrink: 0; }
+
+/* TRIGGERS BOX */
+.triggers-box {
+  background: rgba(240,192,64,.05);
+  border: 1px solid rgba(240,192,64,.15);
+  border-radius: 10px; padding: 16px 18px; margin-top: 16px;
+}
+.triggers-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.triggers-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.trigger-pill {
+  font-size: 11px; color: var(--text2); background: var(--s2);
+  border: 1px solid var(--border2); border-radius: 7px; padding: 5px 11px;
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* STRAT MINI GRID */
+.strat-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 4px; }
+.sm-item {
+  background: var(--s3); border: 1px solid var(--border); border-radius: 7px;
+  padding: 8px 10px; display: flex; align-items: center; gap: 7px; font-size: 11px;
+}
+.sm-risk { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* LEGEND */
+.legend {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  margin-bottom: 48px; padding: 16px 20px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 12px; align-items: center;
+}
+.legend-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-right: 4px; }
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); }
+
+/* COLORS PER SECTION */
+.n1 { background: rgba(240,192,64,.12); border: 2px solid rgba(240,192,64,.4); color: var(--gold); }
+.n2 { background: rgba(31,217,122,.12); border: 2px solid rgba(31,217,122,.4); color: var(--green); }
+.n3 { background: rgba(245,68,95,.1); border: 2px solid rgba(245,68,95,.35); color: var(--red); }
+.n4 { background: rgba(96,165,250,.1); border: 2px solid rgba(96,165,250,.35); color: var(--blue); }
+.n5 { background: rgba(167,139,250,.1); border: 2px solid rgba(167,139,250,.35); color: var(--purple); }
+.n6 { background: rgba(251,146,60,.1); border: 2px solid rgba(251,146,60,.35); color: var(--orange); }
+.n7 { background: rgba(240,192,64,.08); border: 2px solid rgba(240,192,64,.3); color: var(--gold); }
+.n8 { background: rgba(31,217,122,.08); border: 2px solid rgba(31,217,122,.3); color: var(--green); }
+.n9 { background: rgba(96,165,250,.08); border: 2px solid rgba(96,165,250,.3); color: var(--blue); }
+.n10 { background: rgba(240,192,64,.06); border: 2px solid rgba(240,192,64,.2); color: var(--gold); }
+
+/* FOOTER NOTE */
+.plan-footer {
+  margin-top: 72px; padding: 32px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; text-align: center;
+}
+.plan-footer-h { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.plan-footer-h em { color: var(--gold); font-style: normal; }
+.plan-footer-p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+@media(max-width: 768px) {
+  .container { padding: 40px 20px; }
+  .site-header { padding: 20px; }
+  .sub-grid.cols2, .sub-grid.cols3 { grid-template-columns: 1fr; }
+  .strat-mini { grid-template-columns: 1fr 1fr; }
+  .section-block { grid-template-columns: 52px 1fr; gap: 16px; }
+  .section-num { width: 52px; height: 52px; font-size: 16px; }
+  .timeline::before { left: 26px; }
+  .flow { flex-direction: column; gap: 8px; }
+  .flow-arrow { transform: rotate(90deg); }
+  .intro h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-logo">Gestor<em>Bet</em></div>
+  <div class="site-meta">Planejamento · index.html</div>
+  <div class="site-badge">✓ Aprovado</div>
+</header>
+
+<div class="container">
+
+  <div class="intro">
+    <div class="intro-tag">📋 Arquitetura de seções</div>
+    <h1>Novo <em>index.html</em><br>do GestorBet</h1>
+    <p>10 seções planejadas para maximizar conversão e clareza para o apostador brasileiro — mantendo todos os gatilhos psicológicos.</p>
+  </div>
+
+  <div class="legend">
+    <span class="legend-title">Legenda:</span>
+    <span class="legend-item"><span class="sb-status status-keep">Manter</span> Seção existente</span>
+    <span class="legend-item"><span class="sb-status status-new">Nova</span> Seção nova</span>
+    <span class="legend-item"><span class="sb-status status-expand">Expandir</span> Seção melhorada</span>
+  </div>
+
+  <div class="timeline">
+
+    <!-- 1. HERO -->
+    <div class="section-block">
+      <div class="section-num n1">1</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">🚀 Hero</div>
+          <div class="sb-status status-keep">Manter</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">Headline principal, mockup do app flutuando, CTAs, prova social com avatares e contador de usuários ativos. Gatilhos já funcionando.</div>
+          <div class="tags">
+            <span class="tag" style="background:rgba(240,192,64,.1);color:var(--gold);">Headline</span>
+            <span class="tag" style="background:rgba(31,217,122,.1);color:var(--green);">App mock</span>
+            <span class="tag" style="background:rgba(96,165,250,.1);color:var(--blue);">Prova social</span>
+            <span class="tag" style="background:rgba(245,68,95,.1);color:var(--red);">Pill pulsando</span>
+          </div>
+          <div class="triggers-box">
+            <div class="triggers-title">⚡ Gatilhos ativos nesta seção</div>
+            <div class="triggers-grid">
+              <div class="trigger-pill">🔔 Toasts de prova social</div>
+              <div class="trigger-pill">📊 Barra de progresso</div>
+              <div class="trigger-pill">🟢 Pill animada (ao vivo)</div>
+              <div class="trigger-pill">✨ CTA flutuante</div>
+              <div class="trigger-pill">🚪 Exit intent modal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. O QUE É -->
+    <div class="section-block">
+      <div class="section-num n2">2</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">💡 O que é o GestorBet</div>
+          <div class="sb-status status-new">Nova</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">Explicação clara e didática do que o software faz — em 1 parágrafo e um fluxo visual de 3 passos. Remove fricção do primeiro contato.</div>
+          <div class="flow">
+            <div class="flow-step">
+              <div class="flow-ico">🎮</div>
+              <div class="flow-label">Você joga</div>
+              <div class="flow-sub">No cassino ou esporte que já usa</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="flow-ico">📝</div>
+              <div class="flow-label">Informa o resultado</div>
+              <div class="flow-sub">Clica em Ganhei ou Perdi</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="flow-ico">⚙️</div>
+              <div class="flow-label">Sistema ajusta</div>
+              <div class="flow-sub">Calcula stake, aplica estratégia, avisa stop</div>
+            </div>
+          </div>
+          <div class="tags" style="margin-top:14px;">
+            <span class="tag" style="background:rgba(31,217,122,.1);color:var(--green);">Sem instalação</span>
+            <span class="tag" style="background:rgba(31,217,122,.1);color:var(--green);">Funciona no navegador</span>
+            <span class="tag" style="background:rgba(31,217,122,.1);color:var(--green);">Qualquer plataforma</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PROBLEMA -->
+    <div class="section-block">
+      <div class="section-num n3">3</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">⚠️ O Problema</div>
+          <div class="sb-status status-keep">Manter</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">4 cards que identificam as dores do apostador: apostar sem sistema, emocional no stop, stake aleatório, sem registro. Cria identificação antes da solução.</div>
+          <div class="sub-grid cols2">
+            <div class="sub-card">
+              <div class="sub-card-title" style="color:var(--red);">❌ Sem sistema</div>
+              <ul><li>Aposta no achismo, sem estratégia definida</li></ul>
+            </div>
+            <div class="sub-card">
+              <div class="sub-card-title" style="color:var(--red);">😤 Emocional no stop</div>
+              <ul><li>Continua jogando depois do limite</li></ul>
+            </div>
+            <div class="sub-card">
+              <div class="sub-card-title" style="color:var(--red);">🎲 Stake aleatório</div>
+              <ul><li>Valor de aposta varia sem critério</li></ul>
+            </div>
+            <div class="sub-card">
+              <div class="sub-card-title" style="color:var(--red);">📉 Sem registro</div>
+              <ul><li>Não sabe quanto perdeu nem por quê</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ONDE FUNCIONA -->
+    <div class="section-block">
+      <div class="section-num n4">4</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">🌐 Onde funciona</div>
+          <div class="sb-status status-new">Nova</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">Dois blocos lado a lado: Esportes e Cassino. Para cada modalidade, lista os mercados binários que se aplicam — deixa claro que funciona com qualquer resultado sim/não.</div>
+          <div class="sub-grid cols2">
+            <div class="sub-card" style="border-color:rgba(31,217,122,.2);">
+              <div class="sub-card-title" style="color:var(--green);">⚽ Apostas Esportivas</div>
+              <ul>
+                <li><strong style="color:var(--text);">Futebol</strong> — Resultado (1/X/2), Over/Under gols, Ambas marcam</li>
+                <li><strong style="color:var(--text);">Tênis</strong> — Vencedor do set, Total de games, Tiebreak</li>
+                <li><strong style="color:var(--text);">Basquete</strong> — Over/Under pontos, Spread, Vencedor</li>
+                <li><strong style="color:var(--text);">Outros</strong> — Qualquer mercado binário</li>
+              </ul>
+            </div>
+            <div class="sub-card" style="border-color:rgba(240,192,64,.2);">
+              <div class="sub-card-title" style="color:var(--gold);">🎰 Cassino ao Vivo</div>
+              <ul>
+                <li><strong style="color:var(--text);">Roleta</strong> — Vermelho/Preto, Par/Ímpar, 1-18/19-36</li>
+                <li><strong style="color:var(--text);">Bacará / Bac Bo</strong> — Player vs Banker</li>
+                <li><strong style="color:var(--text);">Aviator / Crash</strong> — Odd de cash-out definida</li>
+                <li><strong style="color:var(--text);">Lightning Roulette</strong> — Números / cores</li>
+              </ul>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;">💡 <strong style="color:var(--text2);">Princípio:</strong> qualquer mercado com resultado binário (verde/vermelho) pode ser gerenciado pelo GestorBet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. FUNCIONALIDADES -->
+    <div class="section-block">
+      <div class="section-num n5">5</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">⚙️ Funcionalidades</div>
+          <div class="sb-status status-new">Nova</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">3 sub-blocos visuais explicando o que o sistema oferece: modos de jogo, estratégias disponíveis e modo simulação.</div>
+          <div class="sub-grid cols3">
+            <div class="sub-card" style="border-color:rgba(240,192,64,.2);">
+              <div class="sub-card-title" style="color:var(--gold);">🎯 Modos de Jogo</div>
+              <ul>
+                <li>Stake Fixa — valor fixo por rodada</li>
+                <li>Meta de Ganho — encerra ao atingir lucro-alvo</li>
+                <li>Nº de Rodadas — sessão com X apostas</li>
+              </ul>
+            </div>
+            <div class="sub-card" style="border-color:rgba(167,139,250,.2);">
+              <div class="sub-card-title" style="color:var(--purple);">📊 9 Estratégias</div>
+              <ul>
+                <li>Flat, Paroli, Oscar's Grind, 1-3-2-6</li>
+                <li>D'Alembert, Anti-Martingale, Fibonacci</li>
+                <li>Labouchère, Martingale</li>
+              </ul>
+            </div>
+            <div class="sub-card" style="border-color:rgba(96,165,250,.2);">
+              <div class="sub-card-title" style="color:var(--blue);">🎮 Modo Simulação</div>
+              <ul>
+                <li>Testa estratégias sem dinheiro real</li>
+                <li>Simula resultados com bias configurável</li>
+                <li>Ideal para aprender antes de jogar</li>
+              </ul>
+            </div>
+          </div>
+          <div class="strat-mini" style="margin-top:12px;">
+            <div class="sm-item"><div class="sm-risk" style="background:var(--green)"></div><span>Flat Betting</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--green)"></div><span>Paroli</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--green)"></div><span>Oscar's Grind</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--green)"></div><span>1-3-2-6</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--gold)"></div><span>D'Alembert</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--gold)"></div><span>Anti-Martingale</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--gold)"></div><span>Fibonacci</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--red)"></div><span>Labouchère</span></div>
+            <div class="sm-item"><div class="sm-risk" style="background:var(--red)"></div><span>Martingale</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. EXEMPLOS PRÁTICOS -->
+    <div class="section-block">
+      <div class="section-num n6">6</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">📱 Exemplos práticos com mockup</div>
+          <div class="sb-status status-new">Nova</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">3 cenários concretos com screenshots do app mostrando o sistema em ação. Objetivo: o usuário se enxergar usando o produto.</div>
+          <div class="sub-grid cols3">
+            <div class="sub-card" style="border-color:rgba(31,217,122,.15);">
+              <div class="sub-card-title" style="color:var(--green);">⚽ Futebol + D'Alembert</div>
+              <ul>
+                <li>Mercado: Over 2.5 gols</li>
+                <li>Banca: R$300 · Unit: R$10</li>
+                <li>8 rodadas · Stop Win: +R$80</li>
+                <li style="color:var(--green);">Resultado: Stop Win atingido ✓</li>
+              </ul>
+            </div>
+            <div class="sub-card" style="border-color:rgba(240,192,64,.15);">
+              <div class="sub-card-title" style="color:var(--gold);">🎡 Roleta + Paroli</div>
+              <ul>
+                <li>Mercado: Vermelho/Preto</li>
+                <li>Banca: R$500 · Unit: R$20</li>
+                <li>Ciclo de 3 vitórias</li>
+                <li style="color:var(--gold);">Resultado: +R$140 em 1 ciclo ✓</li>
+              </ul>
+            </div>
+            <div class="sub-card" style="border-color:rgba(167,139,250,.15);">
+              <div class="sub-card-title" style="color:var(--purple);">🎾 Tênis + Fibonacci</div>
+              <ul>
+                <li>Mercado: Vencedor do set</li>
+                <li>Banca: R$400 · Unit: R$15</li>
+                <li>Stop Loss: −R$100</li>
+                <li style="color:var(--purple);">Resultado: sessão encerrada no limite ✓</li>
+              </ul>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--muted);">
+            📸 Cada cenário acompanha um screenshot real do app mostrando o painel durante a sessão
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. PROVA SOCIAL -->
+    <div class="section-block">
+      <div class="section-num n7">7</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">⭐ Prova Social</div>
+          <div class="sb-status status-keep">Manter</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">3 depoimentos + strip de resultados reais (sequência de rodadas, P&L, taxa de win). Mantém a estrutura atual que já está funcionando.</div>
+          <div class="sub-grid cols3">
+            <div class="sub-card">
+              <div style="font-size:11px;color:var(--muted);">Depoimento #1</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;">"Parei de sair no prejuízo porque o sistema me força a respeitar o stop." — Bruno R., SP</div>
+            </div>
+            <div class="sub-card">
+              <div style="font-size:11px;color:var(--muted);">Depoimento #2</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;">"Usei no futebol e nunca mais apostei fora do plano." — Fernanda M., RJ</div>
+            </div>
+            <div class="sub-card">
+              <div style="font-size:11px;color:var(--muted);">Resultados reais</div>
+              <div style="font-size:12px;color:var(--green);margin-top:4px;font-family:'JetBrains Mono',monospace;">+R$67 · 71% W/R · 12 rodadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. PREÇOS -->
+    <div class="section-block">
+      <div class="section-num n8">8</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">💳 Preços</div>
+          <div class="sb-status status-keep">Manter</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">3 planos (Mensal, Trimestral destacado, Anual) + garantia de 7 dias + barra de escassez + countdown de oferta. Gatilhos de urgência ativos.</div>
+          <div class="sub-grid cols3">
+            <div class="sub-card"><div style="font-size:12px;font-weight:700;">Mensal</div><div style="font-size:22px;font-weight:900;color:var(--text);margin-top:4px;">R$49</div></div>
+            <div class="sub-card" style="border-color:var(--gold);">
+              <div style="font-size:9px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:4px;">⭐ MAIS POPULAR</div>
+              <div style="font-size:12px;font-weight:700;">Trimestral</div>
+              <div style="font-size:22px;font-weight:900;color:var(--gold);margin-top:4px;">R$99</div>
+            </div>
+            <div class="sub-card"><div style="font-size:12px;font-weight:700;">Anual</div><div style="font-size:22px;font-weight:900;color:var(--text);margin-top:4px;">R$299</div></div>
+          </div>
+          <div class="triggers-box" style="margin-top:12px;">
+            <div class="triggers-title">⚡ Gatilhos desta seção</div>
+            <div class="triggers-grid">
+              <div class="trigger-pill">⏱ Countdown de oferta</div>
+              <div class="trigger-pill">🔴 Barra de escassez</div>
+              <div class="trigger-pill">🔒 Garantia 7 dias</div>
+              <div class="trigger-pill">Pix · Cartão · Boleto</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. FAQ -->
+    <div class="section-block">
+      <div class="section-num n9">9</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">❓ FAQ</div>
+          <div class="sb-status status-expand">Expandir</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">Perguntas atuais mantidas + novas perguntas específicas sobre esportes e cassino para cobrir dúvidas dos dois públicos.</div>
+          <div class="sub-grid cols2">
+            <div class="sub-card">
+              <div class="sub-card-title" style="color:var(--blue);">✅ Perguntas atuais</div>
+              <ul>
+                <li>Precisa instalar algo?</li>
+                <li>Funciona em qual cassino?</li>
+                <li>Garante lucro?</li>
+                <li>Como funciona na prática?</li>
+                <li>Posso cancelar?</li>
+              </ul>
+            </div>
+            <div class="sub-card" style="border-color:rgba(96,165,250,.2);">
+              <div class="sub-card-title" style="color:var(--blue);">➕ Novas perguntas</div>
+              <ul>
+                <li>Funciona para apostas esportivas?</li>
+                <li>Como registro o resultado de um jogo?</li>
+                <li>Posso usar no celular ao vivo?</li>
+                <li>Qual estratégia escolher para esportes?</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. CTA FINAL + FOOTER -->
+    <div class="section-block">
+      <div class="section-num n10">10</div>
+      <div class="section-body">
+        <div class="sb-head">
+          <div class="sb-title">🏁 CTA Final + Footer</div>
+          <div class="sb-status status-keep">Manter</div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-desc">Headline impactante + CTA principal + badges de confiança. Footer com links institucionais, redes e aviso legal.</div>
+          <div class="sub-grid cols2">
+            <div class="sub-card" style="border-color:rgba(240,192,64,.15);">
+              <div class="sub-card-title" style="color:var(--gold);">CTA Final</div>
+              <ul>
+                <li>Headline: "Sua próxima sessão começa agora."</li>
+                <li>Botão dourado pulsando</li>
+                <li>Badges: Pix · Garantia · Acesso imediato</li>
+              </ul>
+            </div>
+            <div class="sub-card">
+              <div class="sub-card-title" style="color:var(--text2);">Footer</div>
+              <ul>
+                <li>Links: Produto · Suporte · Redes</li>
+                <li>Privacidade · Termos</li>
+                <li>Aviso responsabilidade legal</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <!-- ══ SEÇÃO DE ESTRATÉGIAS EXEMPLIFICADAS ══ -->
+  <div style="margin-top:80px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple);text-transform:uppercase;letter-spacing:2px;padding:6px 18px;border:1px solid rgba(167,139,250,.25);border-radius:100px;margin-bottom:18px;">📊 Seção adicional · Proposta de valor das estratégias</div>
+      <h2 style="font-size:36px;font-weight:900;line-height:1.1;margin-bottom:12px;">Como as estratégias<br><em style="color:var(--gold);font-style:normal;">transformam seu jogo</em></h2>
+      <p style="font-size:16px;color:var(--text2);line-height:1.7;max-width:540px;margin:0 auto;">A grande virada: com gestão de banca, você pode <strong style="color:var(--text);">errar mais do que acerta</strong> e ainda sair no lucro. Isso não é sorte — é matemática.</p>
+    </div>
+
+    <!-- CONCEITO CENTRAL -->
+    <div style="background:var(--s1);border:1px solid rgba(240,192,64,.2);border-radius:16px;padding:32px;margin-bottom:32px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6;"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;">💡 O PRINCÍPIO</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+        <div style="text-align:center;padding:20px;background:rgba(245,68,95,.06);border:1px solid rgba(245,68,95,.15);border-radius:12px;">
+          <div style="font-size:36px;font-weight:900;color:var(--red);line-height:1;">3×</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:6px;">apostas perdidas</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px;">seguidas</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;">
+            <div style="font-size:28px;color:var(--muted);">→</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">depois</div>
+            <div style="font-size:28px;color:var(--muted);">→</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:20px;background:rgba(31,217,122,.06);border:1px solid rgba(31,217,122,.15);border-radius:12px;">
+          <div style="font-size:36px;font-weight:900;color:var(--green);line-height:1;">1×</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:6px;">aposta ganha</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);margin-top:4px;">= lucro</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:14px 18px;background:var(--s2);border-radius:10px;border-left:3px solid var(--gold);">
+        <div style="font-size:14px;line-height:1.7;color:var(--text2);">Sem estratégia, 3 derrotas seguidas = <strong style="color:var(--red);">−R$30</strong> e você precisa ganhar <strong style="color:var(--text);">3 vezes</strong> para recuperar. Com D'Alembert, 1 vitória depois de 3 derrotas já <strong style="color:var(--green);">cobre tudo e gera lucro.</strong></div>
+      </div>
+    </div>
+
+    <!-- ESTRATÉGIA 1: D'ALEMBERT -->
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:24px;">
+      <div style="padding:20px 28px;background:rgba(96,165,250,.06);border-bottom:1px solid rgba(96,165,250,.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Estratégia 1 · Risco Médio</div>
+          <div style="font-size:22px;font-weight:900;">📐 D'Alembert</div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);max-width:340px;line-height:1.6;">+1 unidade após derrota · −1 unidade após vitória. Sobe devagar, desce devagar. <strong style="color:var(--text);">Sessões equilibradas tendem ao lucro naturalmente.</strong></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        <!-- ESPORTE -->
+        <div style="padding:24px 28px;border-right:1px solid var(--border);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">⚽ Exemplo: Futebol · Over 2.5 gols · Unit R$10</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R1 · Flamengo ×Flu · </span><strong style="color:#fff;">R$10</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Under — só 1 gol</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">+1u → R$20</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R2 · Santos ×Palmeiras · </span><strong style="color:#fff;">R$20</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Under — 2 gols</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">+1u → R$30</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R3 · Bragantino ×Fortaleza · </span><strong style="color:#fff;">R$30</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Over — 4 gols ✓</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">−1u → R$20</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R4 · Inter ×Grêmio · </span><strong style="color:#fff;">R$20</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Over — 3 gols ✓</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">−1u → R$10</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:12px 14px;background:rgba(31,217,122,.08);border:1px solid rgba(31,217,122,.2);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;">Resultado</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:2px;">2 erros · 2 acertos · 4 rodadas</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">PnL</div>
+              <div style="font-size:22px;font-weight:900;color:var(--green);">+R$20</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic;">Sem estratégia: −R$10 + −R$10 + R$10 + R$10 = R$0. Com D'Alembert: <strong style="color:var(--green);">+R$20.</strong></div>
+        </div>
+        <!-- CASSINO -->
+        <div style="padding:24px 28px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">🎡 Exemplo: Roleta · Vermelho/Preto · Unit R$10</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R1 · Preto · </span><strong style="color:#fff;">R$10</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Caiu vermelho</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">+1u → R$20</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R2 · Preto · </span><strong style="color:#fff;">R$20</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Caiu vermelho</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">+1u → R$30</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R3 · Preto · </span><strong style="color:#fff;">R$30</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Caiu preto ✓</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">−1u → R$20</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R4 · Preto · </span><strong style="color:#fff;">R$20</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Caiu preto ✓</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">−1u → R$10</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:12px 14px;background:rgba(31,217,122,.08);border:1px solid rgba(31,217,122,.2);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;">Resultado</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:2px;">2 erros · 2 acertos · 4 rodadas</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">PnL</div>
+              <div style="font-size:22px;font-weight:900;color:var(--green);">+R$20</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic;">Mesmo resultado 50%/50% — o tamanho crescente na derrota faz a vitória valer mais.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTRATÉGIA 2: PAROLI -->
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:32px;">
+      <div style="padding:20px 28px;background:rgba(31,217,122,.05);border-bottom:1px solid rgba(31,217,122,.12);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Estratégia 2 · Risco Baixo</div>
+          <div style="font-size:22px;font-weight:900;">🎯 Paroli</div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);max-width:340px;line-height:1.6;">Dobra apenas quando <strong style="color:var(--text);">você já está ganhando.</strong> Risco máximo = 1 unidade por ciclo. 3 vitórias = lucro de 7 unidades.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        <!-- ESPORTE -->
+        <div style="padding:24px 28px;border-right:1px solid var(--border);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">🎾 Exemplo: Tênis · Vencedor do set · Unit R$15</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R1 · Djokovic set 1 · </span><strong style="color:#fff;">R$15</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Perdeu o set</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">reset R$15</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R2 · Djokovic set 2 · </span><strong style="color:#fff;">R$15</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Perdeu o set</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">reset R$15</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R3 · Djokovic set 3 · </span><strong style="color:#fff;">R$15</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Ganhou o set ✓ (1/3)</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">dobra R$30</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R4 · Sinner set 1 · </span><strong style="color:#fff;">R$30</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Ganhou o set ✓ (2/3)</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">dobra R$60</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a2a0a;border-radius:8px;padding:9px 12px;border:2px solid rgba(31,217,122,.4);">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R5 · Sinner set 2 · </span><strong style="color:#fff;">R$60</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Ganhou o set ✓ (3/3) 🎉</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);font-weight:700;">reset!</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:12px 14px;background:rgba(31,217,122,.08);border:1px solid rgba(31,217,122,.2);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;">Resultado</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:2px;">2 erros · 3 acertos · 5 apostas</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">PnL</div>
+              <div style="font-size:22px;font-weight:900;color:var(--green);">+R$75</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">risco total: R$30</div>
+            </div>
+          </div>
+        </div>
+        <!-- CASSINO -->
+        <div style="padding:24px 28px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">🃏 Exemplo: Bacará · Player/Banker · Unit R$15</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R1 · Player · </span><strong style="color:#fff;">R$15</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Banker ganhou</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">reset R$15</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:9px 12px;border:1px solid #2a0000;">
+              <span style="font-size:14px;">❌</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R2 · Player · </span><strong style="color:#fff;">R$15</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Banker ganhou</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);">reset R$15</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R3 · Player · </span><strong style="color:#fff;">R$15</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Player ganhou ✓ (1/3)</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">dobra R$30</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:9px 12px;border:1px solid #1a3a1a;">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R4 · Player · </span><strong style="color:#fff;">R$30</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Player ganhou ✓ (2/3)</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);">dobra R$60</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0a2a0a;border-radius:8px;padding:9px 12px;border:2px solid rgba(31,217,122,.4);">
+              <span style="font-size:14px;">✅</span>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;">
+                <span style="color:#aaa;">R5 · Player · </span><strong style="color:#fff;">R$60</strong>
+                <span style="color:var(--muted);font-size:9px;display:block;">Player ganhou ✓ (3/3) 🎉</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);font-weight:700;">reset!</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:12px 14px;background:rgba(31,217,122,.08);border:1px solid rgba(31,217,122,.2);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;">Resultado</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:2px;">2 erros · 3 acertos · 5 apostas</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">PnL</div>
+              <div style="font-size:22px;font-weight:900;color:var(--green);">+R$75</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">risco total: R$30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- INSIGHT PAROLI -->
+      <div style="padding:16px 28px 20px;border-top:1px solid var(--border);background:rgba(240,192,64,.03);">
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          💡 <strong style="color:var(--gold);">A mágica do Paroli:</strong> você perdeu R$30 (2 apostas × R$15) mas ganhou R$105 (R$15 + R$30 + R$60). Lucro líquido de <strong style="color:var(--green);">+R$75 com risco máximo de R$15 por ciclo.</strong> Você nunca dobra uma aposta quando está perdendo — só quando está ganhando.
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARAÇÃO SEM VS COM -->
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:32px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;text-align:center;">📊 A mesma sequência · Com e sem estratégia · Unit R$10</div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;">
+        <!-- SEM -->
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:12px;text-align:center;">❌ Sem estratégia (stake fixo R$10)</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#1a0a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">❌ Derrota</span><span style="color:var(--red);">−R$10</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#1a0a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">❌ Derrota</span><span style="color:var(--red);">−R$10</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#1a0a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">❌ Derrota</span><span style="color:var(--red);">−R$10</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#0a1a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">✅ Vitória</span><span style="color:var(--green);">+R$10</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#0a1a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">✅ Vitória</span><span style="color:var(--green);">+R$10</span>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding:10px 14px;background:rgba(245,68,95,.08);border:1px solid rgba(245,68,95,.2);border-radius:8px;text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">Total</div>
+            <div style="font-size:24px;font-weight:900;color:var(--red);">−R$10</div>
+            <div style="font-size:11px;color:var(--muted);">3 erros · 2 acertos = prejuízo</div>
+          </div>
+        </div>
+        <!-- VS -->
+        <div style="display:flex;align-items:center;justify-content:center;padding:0 8px;">
+          <div style="font-size:13px;font-weight:900;color:var(--muted);writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:2px;">VS</div>
+        </div>
+        <!-- COM D'ALEMBERT -->
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:12px;text-align:center;">✅ Com D'Alembert (unit R$10)</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#1a0a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">❌ Aposta R$10</span><span style="color:var(--red);">−R$10 → R$20</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#1a0a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">❌ Aposta R$20</span><span style="color:var(--red);">−R$20 → R$30</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#1a0a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">❌ Aposta R$30</span><span style="color:var(--red);">−R$30 → R$40</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#0a1a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">✅ Aposta R$40</span><span style="color:var(--green);">+R$40 → R$30</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;background:#0a1a0a;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+              <span style="color:#aaa;">✅ Aposta R$30</span><span style="color:var(--green);">+R$30 → R$20</span>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding:10px 14px;background:rgba(31,217,122,.08);border:1px solid rgba(31,217,122,.2);border-radius:8px;text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);">Total</div>
+            <div style="font-size:24px;font-weight:900;color:var(--green);">+R$10</div>
+            <div style="font-size:11px;color:var(--muted);">3 erros · 2 acertos = lucro</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:18px;padding:14px 18px;background:rgba(240,192,64,.05);border:1px solid rgba(240,192,64,.15);border-radius:10px;text-align:center;font-size:14px;color:var(--text2);line-height:1.7;">
+        🧠 <strong style="color:var(--gold);">Mesma sequência de resultados.</strong> Sem estratégia: −R$10. Com D'Alembert: +R$10. A diferença é de <strong style="color:var(--green);">R$20</strong> — apenas por apostas maiores quando as odds estão a favor de recuperar.
+      </div>
+    </div>
+
+  </div>
+  <!-- ══ FIM SEÇÃO ESTRATÉGIAS ══ -->
+
+  <div class="plan-footer">
+    <div class="plan-footer-h">Próximo passo:<br><em>Escrever o index.html</em></div>
+    <div class="plan-footer-p" style="margin-top:8px;">
+      Todas as seções planejadas e aprovadas. A ordem foi pensada para guiar o apostador do problema à solução de forma natural, com os gatilhos psicológicos distribuídos ao longo da página.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

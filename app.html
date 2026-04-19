@@ -62,26 +62,28 @@ body {
 .logo-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
-/* Game selector */
-.game-selector {
-  position: relative;
-  display: flex; align-items: center;
-}
+/* Game selectors */
+.game-selectors { display: flex; align-items: center; gap: 8px; }
+.game-selector { position: relative; }
 .game-sel-btn {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 9px;
   background: var(--s2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 12px;
+  border-radius: 10px; padding: 7px 13px 7px 11px;
   cursor: pointer; transition: all .15s; user-select: none;
-  min-width: 200px;
+  min-width: 148px;
 }
 .game-sel-btn:hover { border-color: var(--border2); background: var(--s3); }
-.game-sel-btn.open { border-color: var(--gold); background: var(--s3); }
+.game-selector.casino .game-sel-btn.open { border-color: var(--gold); background: var(--s3); }
+.game-selector.sport  .game-sel-btn.open { border-color: var(--green); background: var(--s3); }
+.game-selector.casino .game-sel-btn.active-game { border-color: rgba(240,192,64,.55); background: rgba(240,192,64,.07); }
+.game-selector.sport  .game-sel-btn.active-game { border-color: rgba(31,217,122,.45); background: rgba(31,217,122,.06); }
 .gs-icon { font-size: 16px; flex-shrink: 0; }
-.gs-name { font-family: var(--mono); font-size: 11px; color: var(--text); flex: 1; letter-spacing: 0.3px; white-space: nowrap; font-weight: 600; }
-.gs-badge { font-size: 8px; font-family: var(--mono); font-weight: 700; letter-spacing: 1px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; text-transform: uppercase; }
-.gs-badge.casino { background: rgba(240,192,64,.15); color: var(--gold); }
-.gs-badge.sport  { background: rgba(31,217,122,.12); color: var(--green); }
-.gs-caret { font-size: 9px; color: var(--muted); transition: transform .2s; }
+.gs-info { flex: 1; min-width: 0; }
+.gs-label { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; margin-bottom: 2px; }
+.game-selector.casino .gs-label { color: var(--gold); }
+.game-selector.sport  .gs-label { color: var(--green); }
+.gs-name { font-family: var(--mono); font-size: 11px; color: var(--text); letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.gs-caret { font-size: 9px; color: var(--muted); transition: transform .2s; flex-shrink: 0; }
 .gs-caret.open { transform: rotate(180deg); }
 
 .game-dropdown {
@@ -123,15 +125,15 @@ body {
   background: var(--s2);
 }
 .dd-item:hover { background: var(--s3); border-color: var(--border2); }
-.dd-item.active { border-color: var(--gold); background: var(--gold-d); }
-.dd-section.sport .dd-item.active { border-color: var(--green); background: var(--green-d); }
+.dd-item.active { border-color: var(--gold); background: rgba(240,192,64,.13); border-left: 3px solid var(--gold); }
+.dd-section.sport .dd-item.active { border-color: var(--green); background: rgba(31,217,122,.11); border-left: 3px solid var(--green); }
 .dd-ico { font-size: 20px; flex-shrink: 0; line-height: 1; }
 .dd-item-info { flex: 1; min-width: 0; }
 .dd-item-name { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dd-item.active .dd-item-name { color: var(--gold); }
 .dd-section.sport .dd-item.active .dd-item-name { color: var(--green); }
 .dd-item-sub { font-size: 9px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dd-check { font-size: 10px; color: var(--gold); opacity: 0; flex-shrink: 0; }
+.dd-check { font-size: 13px; font-weight: 900; color: var(--gold); opacity: 0; flex-shrink: 0; }
 .dd-section.sport .dd-check { color: var(--green); }
 .dd-item.active .dd-check { opacity: 1; }
 .dd-item.dd-full { grid-column: 1 / -1; }
@@ -181,6 +183,20 @@ body {
 }
 .btn-tutorial:active { transform: translateY(0); }
 
+.btn-strats {
+  font-family: var(--body); font-size: 12px; font-weight: 800;
+  padding: 6px 16px; border-radius: 6px; cursor: pointer;
+  background: rgba(31,217,122,.12); color: var(--green);
+  border: 1px solid rgba(31,217,122,.3);
+  transition: all .2s; letter-spacing: .2px;
+}
+.btn-strats:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 18px rgba(31,217,122,.25);
+  transform: translateY(-1px);
+}
+.btn-strats:active { transform: translateY(0); }
+
 /* ══ BODY GRID ══ */
 .body-grid {
   flex: 1;
@@ -205,13 +221,36 @@ body {
 }
 
 .phead {
-  padding: 14px 16px 12px;
-  font-size: 11px;
-  font-weight: 800;
+  padding: 11px 16px;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text);
+  letter-spacing: 2px;
+  color: var(--gold);
   border-bottom: 1px solid var(--border);
+  background: rgba(240,192,64,.05);
+  display: flex; align-items: center; gap: 7px;
+}
+.phead::before {
+  content: ''; width: 3px; height: 14px; border-radius: 2px;
+  background: var(--gold); flex-shrink: 0;
+}
+.phead.cfg-phead {
+  color: var(--green);
+  background: rgba(31,217,122,.04);
+  border-top: 2px solid var(--border);
+  margin-top: 4px;
+}
+.phead.cfg-phead::before { background: var(--green); }
+
+/* Strategy manual slide header */
+.sm-header {
+  padding: 15px 24px 13px;
+  background: rgba(255,255,255,.025);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  font-size: 19px; font-weight: 900; color: #fff;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
 }
 
 .cfg-subhead {
@@ -973,93 +1012,110 @@ body {
 <div class="topbar">
   <div class="logo">Gestor<span>Bet</span></div>
   <div class="logo-sep"></div>
-  <div class="game-selector" id="gameSelector">
-    <div class="game-sel-btn" id="gameSelBtn" onclick="toggleGameDropdown()">
-      <span class="gs-icon" id="gsIcon">🎡</span>
-      <span class="gs-name" id="gsName">Roleta Europeia</span>
-      <span class="gs-badge casino" id="gsBadge">Cassino</span>
-      <span class="gs-caret" id="gsCaret">▼</span>
+  <div class="game-selectors">
+    <!-- CASSINO -->
+    <div class="game-selector casino" id="gameSelectorCasino">
+      <div class="game-sel-btn active-game" id="casinoSelBtn" onclick="toggleCasinoDropdown()">
+        <span class="gs-icon" id="casinoIcon">🎡</span>
+        <div class="gs-info">
+          <div class="gs-label">Cassino</div>
+          <div class="gs-name" id="casinoName">Roleta Europeia</div>
+        </div>
+        <span class="gs-caret" id="casinoCaret">▼</span>
+      </div>
+      <div class="game-dropdown" id="casinoDropdown">
+        <div class="dd-section casino">
+          <div class="dd-section-header">
+            <span class="dd-section-icon">🎰</span>
+            <span class="dd-section-title">Escolha o jogo</span>
+            <span class="dd-section-line"></span>
+          </div>
+          <div class="dd-grid">
+            <div class="dd-item active" onclick="selectGame('🎡','Roleta Europeia','casino')">
+              <span class="dd-ico">🎡</span>
+              <div class="dd-item-info"><div class="dd-item-name">Roleta Europeia</div><div class="dd-item-sub">1 zero · par/ímpar</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🎰','Roleta Americana','casino')">
+              <span class="dd-ico">🎰</span>
+              <div class="dd-item-info"><div class="dd-item-name">Roleta Americana</div><div class="dd-item-sub">2 zeros</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🎲','Roleta Lightning','casino')">
+              <span class="dd-ico">🎲</span>
+              <div class="dd-item-info"><div class="dd-item-name">Lightning Roulette</div><div class="dd-item-sub">Mult. 50×–500×</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🃏','Bacará','casino')">
+              <span class="dd-ico">🃏</span>
+              <div class="dd-item-info"><div class="dd-item-name">Bacará</div><div class="dd-item-sub">Player vs Banker</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🎯','Bac Bo','casino')">
+              <span class="dd-ico">🎯</span>
+              <div class="dd-item-info"><div class="dd-item-name">Bac Bo</div><div class="dd-item-sub">Dados + Bacará</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('✈️','Aviator / Crash','casino')">
+              <span class="dd-ico">✈️</span>
+              <div class="dd-item-info"><div class="dd-item-name">Aviator / Crash</div><div class="dd-item-sub">Multiplicador + cash out</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+          </div>
+        </div>
+        <div class="dd-custom">
+          <span class="dd-custom-label">Outro:</span>
+          <input class="dd-custom-input" id="customGameInput" placeholder="Nome do jogo..." maxlength="28" onkeydown="if(event.key==='Enter')confirmCustomGame()">
+          <button class="dd-custom-btn" onclick="confirmCustomGame()">+ Usar</button>
+        </div>
+      </div>
     </div>
-    <div class="game-dropdown" id="gameDropdown">
-      <!-- CASSINO -->
-      <div class="dd-section casino">
-        <div class="dd-section-header">
-          <span class="dd-section-icon">🎰</span>
-          <span class="dd-section-title">Cassino</span>
-          <span class="dd-section-line"></span>
+    <!-- ESPORTES -->
+    <div class="game-selector sport" id="gameSelectorSport">
+      <div class="game-sel-btn" id="sportSelBtn" onclick="toggleSportDropdown()">
+        <span class="gs-icon" id="sportIcon">⚽</span>
+        <div class="gs-info">
+          <div class="gs-label">Esportes</div>
+          <div class="gs-name" id="sportName">Selecionar esporte</div>
         </div>
-        <div class="dd-grid">
-          <div class="dd-item active" onclick="selectGame('🎡','Roleta Europeia','casino')">
-            <span class="dd-ico">🎡</span>
-            <div class="dd-item-info"><div class="dd-item-name">Roleta Europeia</div><div class="dd-item-sub">1 zero · par/ímpar</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🎰','Roleta Americana','casino')">
-            <span class="dd-ico">🎰</span>
-            <div class="dd-item-info"><div class="dd-item-name">Roleta Americana</div><div class="dd-item-sub">2 zeros</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🎲','Roleta Lightning','casino')">
-            <span class="dd-ico">🎲</span>
-            <div class="dd-item-info"><div class="dd-item-name">Lightning Roulette</div><div class="dd-item-sub">Mult. 50×–500×</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🃏','Bacará','casino')">
-            <span class="dd-ico">🃏</span>
-            <div class="dd-item-info"><div class="dd-item-name">Bacará</div><div class="dd-item-sub">Player vs Banker</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🎯','Bac Bo','casino')">
-            <span class="dd-ico">🎯</span>
-            <div class="dd-item-info"><div class="dd-item-name">Bac Bo</div><div class="dd-item-sub">Dados + Bacará</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('✈️','Aviator / Crash','casino')">
-            <span class="dd-ico">✈️</span>
-            <div class="dd-item-info"><div class="dd-item-name">Aviator / Crash</div><div class="dd-item-sub">Multiplicador + cash out</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-        </div>
+        <span class="gs-caret" id="sportCaret">▼</span>
       </div>
-      <!-- ESPORTES -->
-      <div class="dd-section sport">
-        <div class="dd-section-header">
-          <span class="dd-section-icon">⚽</span>
-          <span class="dd-section-title">Apostas Esportivas</span>
-          <span class="dd-section-line"></span>
+      <div class="game-dropdown" id="sportDropdown">
+        <div class="dd-section sport">
+          <div class="dd-section-header">
+            <span class="dd-section-icon">⚽</span>
+            <span class="dd-section-title">Escolha o esporte</span>
+            <span class="dd-section-line"></span>
+          </div>
+          <div class="dd-grid">
+            <div class="dd-item" onclick="selectGame('⚽','Futebol','sport')">
+              <span class="dd-ico">⚽</span>
+              <div class="dd-item-info"><div class="dd-item-name">Futebol</div><div class="dd-item-sub">Pré-jogo ou ao vivo</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🏀','Basquete','sport')">
+              <span class="dd-ico">🏀</span>
+              <div class="dd-item-info"><div class="dd-item-name">Basquete</div><div class="dd-item-sub">NBA, NBB · over/under</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🎾','Tênis','sport')">
+              <span class="dd-ico">🎾</span>
+              <div class="dd-item-info"><div class="dd-item-name">Tênis</div><div class="dd-item-sub">ATP, WTA · set/game</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+            <div class="dd-item" onclick="selectGame('🏈','Esporte (outro)','sport')">
+              <span class="dd-ico">🏈</span>
+              <div class="dd-item-info"><div class="dd-item-name">Outro esporte</div><div class="dd-item-sub">Qualquer modalidade</div></div>
+              <span class="dd-check">✓</span>
+            </div>
+          </div>
         </div>
-        <div class="dd-grid">
-          <div class="dd-item" onclick="selectGame('⚽','Futebol','sport')">
-            <span class="dd-ico">⚽</span>
-            <div class="dd-item-info"><div class="dd-item-name">Futebol</div><div class="dd-item-sub">Pré-jogo ou ao vivo</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🏀','Basquete','sport')">
-            <span class="dd-ico">🏀</span>
-            <div class="dd-item-info"><div class="dd-item-name">Basquete</div><div class="dd-item-sub">NBA, NBB · over/under</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🎾','Tênis','sport')">
-            <span class="dd-ico">🎾</span>
-            <div class="dd-item-info"><div class="dd-item-name">Tênis</div><div class="dd-item-sub">ATP, WTA · set/game</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-          <div class="dd-item" onclick="selectGame('🏈','Esporte (outro)','sport')">
-            <span class="dd-ico">🏈</span>
-            <div class="dd-item-info"><div class="dd-item-name">Outro esporte</div><div class="dd-item-sub">Qualquer modalidade</div></div>
-            <span class="dd-check">✓</span>
-          </div>
-        </div>
-      </div>
-      <div class="dd-custom">
-        <span class="dd-custom-label">Outro:</span>
-        <input class="dd-custom-input" id="customGameInput" placeholder="Nome do jogo..." maxlength="28" onkeydown="if(event.key==='Enter')confirmCustomGame()">
-        <button class="dd-custom-btn" onclick="confirmCustomGame()">+ Usar</button>
       </div>
     </div>
   </div>
   <div class="topbar-right">
     <button class="btn-sim-toggle" id="btnSimToggle" onclick="toggleSimMode()" title="Ativar simulação do jogo">🎮 Simulação</button>
+    <button class="btn-strats" onclick="openStrategies()">📊 Estratégias</button>
     <button class="btn-tutorial" onclick="openTutorial()">📖 Tutorial</button>
     <button class="btn-ghost red" onclick="resetAll()">↺ Nova sessão</button>
   </div>
@@ -1075,7 +1131,7 @@ body {
       <div id="stratList"></div>
 
       <div class="cfg">
-        <div class="phead" style="padding:0 0 12px;border:none;">Configurar sessão</div>
+        <div class="phead cfg-phead">Configurar sessão</div>
 
         <!-- Banca -->
         <div class="cfg-row">
@@ -2573,42 +2629,64 @@ let currentGame = { icon: '🎡', name: 'Roleta Europeia' };
 
 function getGameName(){ return currentGame.name; }
 
-function toggleGameDropdown(){
-  const dd  = document.getElementById('gameDropdown');
-  const btn = document.getElementById('gameSelBtn');
-  const car = document.getElementById('gsCaret');
+function closeCasinoDropdown(){
+  document.getElementById('casinoDropdown').classList.remove('open');
+  document.getElementById('casinoSelBtn').classList.remove('open');
+  document.getElementById('casinoCaret').classList.remove('open');
+}
+function closeSportDropdown(){
+  document.getElementById('sportDropdown').classList.remove('open');
+  document.getElementById('sportSelBtn').classList.remove('open');
+  document.getElementById('sportCaret').classList.remove('open');
+}
+function closeDropdownsOnOutside(e){
+  const cc = document.getElementById('gameSelectorCasino');
+  const cs = document.getElementById('gameSelectorSport');
+  if(!cc.contains(e.target) && !cs.contains(e.target)){
+    closeCasinoDropdown(); closeSportDropdown();
+    document.removeEventListener('click', closeDropdownsOnOutside);
+  }
+}
+function toggleCasinoDropdown(){
+  closeSportDropdown();
+  const dd  = document.getElementById('casinoDropdown');
+  const btn = document.getElementById('casinoSelBtn');
+  const car = document.getElementById('casinoCaret');
   const open = dd.classList.toggle('open');
   btn.classList.toggle('open', open);
   car.classList.toggle('open', open);
-  if(open){ setTimeout(()=>document.addEventListener('click', closeOnOutside), 0); }
+  if(open){ setTimeout(()=>document.addEventListener('click', closeDropdownsOnOutside), 0); }
 }
-
-function closeOnOutside(e){
-  if(!document.getElementById('gameSelector').contains(e.target)){
-    document.getElementById('gameDropdown').classList.remove('open');
-    document.getElementById('gameSelBtn').classList.remove('open');
-    document.getElementById('gsCaret').classList.remove('open');
-    document.removeEventListener('click', closeOnOutside);
-  }
+function toggleSportDropdown(){
+  closeCasinoDropdown();
+  const dd  = document.getElementById('sportDropdown');
+  const btn = document.getElementById('sportSelBtn');
+  const car = document.getElementById('sportCaret');
+  const open = dd.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  car.classList.toggle('open', open);
+  if(open){ setTimeout(()=>document.addEventListener('click', closeDropdownsOnOutside), 0); }
 }
 
 function selectGame(icon, name, category){
   currentGame = { icon, name, category: category || 'casino' };
-  document.getElementById('gsIcon').textContent = icon;
-  document.getElementById('gsName').textContent = name;
-  // badge
-  const badge = document.getElementById('gsBadge');
-  if(badge){
-    badge.textContent   = category === 'sport' ? 'Esporte' : 'Cassino';
-    badge.className     = 'gs-badge ' + (category === 'sport' ? 'sport' : 'casino');
+  if(category === 'sport'){
+    document.getElementById('sportIcon').textContent = icon;
+    document.getElementById('sportName').textContent = name;
+    document.getElementById('sportSelBtn').classList.add('active-game');
+    document.getElementById('casinoSelBtn').classList.remove('active-game');
+    closeSportDropdown();
+  } else {
+    document.getElementById('casinoIcon').textContent = icon;
+    document.getElementById('casinoName').textContent = name;
+    document.getElementById('casinoSelBtn').classList.add('active-game');
+    document.getElementById('sportSelBtn').classList.remove('active-game');
+    closeCasinoDropdown();
   }
   document.querySelectorAll('.dd-item').forEach(el => {
     el.classList.toggle('active', el.querySelector('.dd-item-name')?.textContent === name);
   });
-  document.getElementById('gameDropdown').classList.remove('open');
-  document.getElementById('gameSelBtn').classList.remove('open');
-  document.getElementById('gsCaret').classList.remove('open');
-  document.removeEventListener('click', closeOnOutside);
+  document.removeEventListener('click', closeDropdownsOnOutside);
   // show/hide odd adjuster in action bar only for variable-odd games
   const av = usesVariableOdd();
   document.getElementById('oddAdjust').style.display = (av && S.running && !S.stopped) ? 'block' : 'none';
@@ -3372,7 +3450,378 @@ document.addEventListener('keydown', e => {
   if(e.key === 'ArrowLeft')  tutNav(-1);
   if(e.key === 'Escape')     closeTutorial();
 });
+
+// ════════════ STRATEGIES MANUAL ════════════
+let stratCurrent = 0;
+const STRAT_TOTAL = 10;
+
+function openStrategies(){
+  stratCurrent = 0;
+  const ov = document.getElementById('stratsOverlay');
+  ov.style.display = 'flex';
+  requestAnimationFrame(()=>{
+    document.getElementById('stratsModal').style.animation = 'tut-in .3s ease both';
+  });
+  stratManRender();
+}
+function closeStrategies(){
+  document.getElementById('stratsOverlay').style.display = 'none';
+}
+function closeStratsOutside(e){
+  if(e.target === document.getElementById('stratsOverlay')) closeStrategies();
+}
+function stratManNav(dir){
+  stratCurrent = Math.max(0, Math.min(STRAT_TOTAL - 1, stratCurrent + dir));
+  stratManRender();
+}
+function stratManGo(i){
+  stratCurrent = i;
+  stratManRender();
+}
+function stratManRender(){
+  const inner = document.getElementById('stratSlidesInner');
+  const slideW = document.getElementById('stratsModal').offsetWidth;
+  inner.style.transform = `translateX(-${stratCurrent * slideW}px)`;
+  document.getElementById('stratSlides').scrollTop = 0;
+  document.getElementById('stratProgress').style.width = ((stratCurrent + 1) / STRAT_TOTAL * 100) + '%';
+  const dots = document.getElementById('stratDots');
+  dots.innerHTML = Array.from({length: STRAT_TOTAL}, (_,i) =>
+    `<div onclick="stratManGo(${i})" style="width:${i===stratCurrent?'20px':'7px'};height:7px;border-radius:4px;background:${i===stratCurrent?'#1fd97a':'#1a2a1a'};cursor:pointer;transition:all .3s;"></div>`
+  ).join('');
+  document.getElementById('stratBtnPrev').style.opacity = stratCurrent === 0 ? '0.3' : '1';
+  document.getElementById('stratBtnPrev').style.pointerEvents = stratCurrent === 0 ? 'none' : 'auto';
+  const nextBtn = document.getElementById('stratBtnNext');
+  if(stratCurrent === STRAT_TOTAL - 1){ nextBtn.style.display = 'none'; }
+  else { nextBtn.style.display = ''; nextBtn.textContent = 'Próximo →'; }
+}
+document.addEventListener('keydown', e => {
+  if(document.getElementById('stratsOverlay').style.display !== 'flex') return;
+  if(e.key === 'ArrowRight') stratManNav(1);
+  if(e.key === 'ArrowLeft')  stratManNav(-1);
+  if(e.key === 'Escape')     closeStrategies();
+});
 </script>
+
+<!-- ══ STRATEGIES MANUAL MODAL ══ -->
+<div id="stratsOverlay" onclick="closeStratsOutside(event)" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div id="stratsModal" style="position:relative;width:min(680px,95vw);max-height:92vh;background:#0f0f0a;border:1px solid rgba(31,217,122,.18);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px #000c;display:flex;flex-direction:column;">
+    <!-- Progress bar -->
+    <div style="height:3px;background:#111;flex-shrink:0;"><div id="stratProgress" style="height:100%;background:linear-gradient(90deg,#1fd97a,#a3ffda);transition:width .4s;width:10%;"></div></div>
+    <!-- Close -->
+    <button onclick="closeStrategies()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:#666;font-size:20px;cursor:pointer;line-height:1;z-index:2;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#666'">✕</button>
+    <!-- Slides -->
+    <div id="stratSlides" style="overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;">
+      <div id="stratSlidesInner" style="display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1);align-items:flex-start;">
+
+        <!-- SLIDE 0: Intro -->
+        <div class="tut-slide">
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#001a0d,#0f0f0a 70%);">
+            <div style="font-size:64px;animation:tut-float 3s ease-in-out infinite;">📊</div>
+            <div style="margin-top:16px;font-size:26px;font-weight:900;color:#1fd97a;letter-spacing:-0.5px;">Manual de Estratégias</div>
+            <div style="font-size:12px;color:#888;margin-top:6px;font-family:monospace;letter-spacing:1px;">9 ESTRATÉGIAS · EXEMPLOS PRÁTICOS</div>
+            <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:center;">
+              <span style="font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(245,68,95,.15);color:#f5445f;font-family:monospace;">🔴 Risco Alto</span>
+              <span style="font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(251,146,60,.15);color:#fb923c;font-family:monospace;">🟠 Risco Médio-Alto</span>
+              <span style="font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(251,191,36,.12);color:#fbbf24;font-family:monospace;">🟡 Risco Médio</span>
+              <span style="font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(31,217,122,.15);color:#1fd97a;font-family:monospace;">🟢 Risco Baixo</span>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-title">Domine cada estratégia</div>
+            <div class="ts-body">Cada estratégia tem uma lógica diferente de gestão de banca. Aqui você entende como cada uma funciona, com exemplos reais usando <strong>unidade base de R$10</strong>.</div>
+            <div class="ts-tip">💡 Use as setas ou as teclas ← → para navegar entre as estratégias</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 1: Martingale -->
+        <div class="tut-slide">
+          <div class="sm-header">🔺 Martingale <span style="font-size:11px;background:rgba(245,68,95,.15);color:#f5445f;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Alto</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#1a0000,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:10px;letter-spacing:1px;">EXEMPLO · BANCA R$500 · UNIT R$10</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: aposta <strong style="color:#fff">R$10</strong></span>
+                <span style="margin-left:auto;font-family:monospace;font-size:11px;color:#f5445f;">→ próxima: R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: aposta <strong style="color:#fff">R$20</strong></span>
+                <span style="margin-left:auto;font-family:monospace;font-size:11px;color:#f5445f;">→ próxima: R$40</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: aposta <strong style="color:#fff">R$40</strong></span>
+                <span style="margin-left:auto;font-family:monospace;font-size:12px;color:#1fd97a;font-weight:700;">Lucro: +R$10 ✓</span>
+              </div>
+              <div style="font-family:monospace;font-size:10px;color:#666;text-align:center;margin-top:2px;">reset → R$10 · banca final: R$510</div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Dobra o stake após cada derrota.</strong> Uma única vitória recupera todas as perdas anteriores e gera lucro de +1 unidade. Requer banca sólida para aguentar sequências longas.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">Volta ao stake inicial</div></div>
+              <div style="flex:1;background:#1a0a0a;border-radius:8px;padding:8px;border-left:3px solid #f5445f;"><div style="font-size:9px;color:#f5445f;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Dobra o stake (×2)</div></div>
+            </div>
+            <div class="ts-tip">⚠️ 6 derrotas seguidas: R$640 expostos. Use banca ≥ 50× a unidade e stop loss rigoroso.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: Anti-Martingale -->
+        <div class="tut-slide">
+          <div class="sm-header">🔻 Anti-Martingale <span style="font-size:11px;background:rgba(251,191,36,.12);color:#fbbf24;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Médio</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#001a0a,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:10px;letter-spacing:1px;">EXEMPLO · BANCA R$500 · UNIT R$10</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: aposta <strong style="color:#fff">R$10</strong></span>
+                <span style="margin-left:auto;font-family:monospace;font-size:11px;color:#1fd97a;">→ próxima: R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: aposta <strong style="color:#fff">R$20</strong></span>
+                <span style="margin-left:auto;font-family:monospace;font-size:11px;color:#1fd97a;">→ próxima: R$40</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: aposta <strong style="color:#fff">R$40</strong></span>
+                <span style="margin-left:auto;font-family:monospace;font-size:12px;color:#1fd97a;font-weight:700;">PnL: +R$20 ✓</span>
+              </div>
+              <div style="font-family:monospace;font-size:10px;color:#666;text-align:center;margin-top:2px;">reset → R$10 · banca final: R$520</div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Dobra o stake após vitória, reseta após derrota.</strong> Aproveita streaks de vitórias sem expor a banca principal — você arrisca apenas os lucros acumulados, não o capital base.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">Dobra o stake</div></div>
+              <div style="flex:1;background:#1a0a0a;border-radius:8px;padding:8px;border-left:3px solid #f5445f;"><div style="font-size:9px;color:#f5445f;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Volta ao stake inicial</div></div>
+            </div>
+            <div class="ts-tip">💡 Perda máxima por ciclo = 1 unidade. Funciona bem em futebol e mercados com resultado concentrado.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: D'Alembert -->
+        <div class="tut-slide">
+          <div class="sm-header">📐 D'Alembert <span style="font-size:11px;background:rgba(251,191,36,.12);color:#fbbf24;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Médio</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#0d0d1a,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:10px;letter-spacing:1px;">EXEMPLO · UNIT R$10</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#f5445f;font-family:monospace;">+1u → R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: <strong style="color:#fff">R$20</strong></span><span style="margin-left:auto;font-size:10px;color:#f5445f;font-family:monospace;">+1u → R$30</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: <strong style="color:#fff">R$30</strong></span><span style="margin-left:auto;font-size:10px;color:#1fd97a;font-family:monospace;">−1u → R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R4: <strong style="color:#fff">R$20</strong></span><span style="margin-left:auto;font-size:12px;color:#1fd97a;font-weight:700;font-family:monospace;">PnL: +R$20 ✓</span>
+              </div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>+1 unidade após derrota, −1 unidade após vitória.</strong> Progressão linear suave — nunca dobra. Em sessões equilibradas (50% W/L), tende naturalmente ao lucro com risco controlado.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">−1 unidade (mín. base)</div></div>
+              <div style="flex:1;background:#1a0a0a;border-radius:8px;padding:8px;border-left:3px solid #f5445f;"><div style="font-size:9px;color:#f5445f;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">+1 unidade</div></div>
+            </div>
+            <div class="ts-tip">💡 Ideal para sessões longas com muitas rodadas. Crescimento linear = risco previsível.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 4: Fibonacci -->
+        <div class="tut-slide">
+          <div class="sm-header">🌀 Fibonacci <span style="font-size:11px;background:rgba(251,191,36,.12);color:#fbbf24;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Médio</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#0a0a1a,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:8px;letter-spacing:1px;">SEQUÊNCIA · UNIT R$10</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
+              <span style="font-family:monospace;font-size:11px;background:#1a1a2a;padding:3px 8px;border-radius:5px;color:#a78bfa;">R$10</span>
+              <span style="font-family:monospace;font-size:11px;background:#1a1a2a;padding:3px 8px;border-radius:5px;color:#a78bfa;">R$10</span>
+              <span style="font-family:monospace;font-size:11px;background:#1a1a2a;padding:3px 8px;border-radius:5px;color:#a78bfa;">R$20</span>
+              <span style="font-family:monospace;font-size:11px;background:#1a1a2a;padding:3px 8px;border-radius:5px;color:#a78bfa;">R$30</span>
+              <span style="font-family:monospace;font-size:11px;background:#1a1a2a;padding:3px 8px;border-radius:5px;color:#a78bfa;">R$50</span>
+              <span style="font-family:monospace;font-size:11px;background:#111;padding:3px 8px;border-radius:5px;color:#555;">R$80…</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: <strong style="color:#fff">R$10</strong> (pos.1)</span><span style="margin-left:auto;font-size:10px;color:#f5445f;font-family:monospace;">→ pos.2: R$10</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: <strong style="color:#fff">R$10</strong> (pos.2)</span><span style="margin-left:auto;font-size:10px;color:#f5445f;font-family:monospace;">→ pos.3: R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: <strong style="color:#fff">R$20</strong> (pos.3)</span><span style="margin-left:auto;font-size:10px;color:#1fd97a;font-family:monospace;">−2 pos. → R$10</span>
+              </div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Avança 1 posição após derrota, recua 2 após vitória.</strong> Cresce mais devagar que o Martingale. A estrutura matemática da sequência garante que 2 vitórias cobrem múltiplas derrotas consecutivas.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">Recua 2 posições</div></div>
+              <div style="flex:1;background:#1a0a0a;border-radius:8px;padding:8px;border-left:3px solid #f5445f;"><div style="font-size:9px;color:#f5445f;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Avança 1 posição</div></div>
+            </div>
+            <div class="ts-tip">💡 Mais conservador que o Martingale. Requer banca de ≥ 30× a unidade para sequências longas.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 5: Labouchère -->
+        <div class="tut-slide">
+          <div class="sm-header">📋 Labouchère <span style="font-size:11px;background:rgba(251,146,60,.15);color:#fb923c;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Alto</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#1a0d00,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:8px;letter-spacing:1px;">SEQUÊNCIA [1,2,3,4] · UNIT R$10</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="background:#1a1200;border-radius:8px;padding:7px 12px;border:1px solid #2a2000;font-family:monospace;font-size:10px;color:#888;">Seq: <strong style="color:#f0c040">[1,2,3,4]</strong> → stake (1+4)×R$10 = <strong style="color:#fff">R$50</strong></div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: R$50</span><span style="margin-left:auto;font-size:10px;color:#1fd97a;font-family:monospace;">cancela 1 e 4 → [2,3]</span>
+              </div>
+              <div style="background:#1a1200;border-radius:8px;padding:7px 12px;border:1px solid #2a2000;font-family:monospace;font-size:10px;color:#888;">Seq: <strong style="color:#f0c040">[2,3]</strong> → stake (2+3)×R$10 = <strong style="color:#fff">R$50</strong></div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: R$50</span><span style="margin-left:auto;font-size:10px;color:#f5445f;font-family:monospace;">adiciona 5 → [2,3,5]</span>
+              </div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Stake = 1º + último da sequência.</strong> Vitória cancela esses dois números. Derrota adiciona o stake ao final. Completar a sequência inteira = lucro exato do total dela.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">Cancela 1º e último</div></div>
+              <div style="flex:1;background:#1a0a0a;border-radius:8px;padding:8px;border-left:3px solid #f5445f;"><div style="font-size:9px;color:#f5445f;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Adiciona stake ao final</div></div>
+            </div>
+            <div class="ts-tip">🎯 Lucro-alvo definido com precisão. O sistema gerencia a sequência automaticamente.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 6: Paroli -->
+        <div class="tut-slide">
+          <div class="sm-header">🎯 Paroli <span style="font-size:11px;background:rgba(31,217,122,.12);color:#1fd97a;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Baixo</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#001a0d,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:10px;letter-spacing:1px;">CICLO DE 3 · UNIT R$10</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: <strong style="color:#fff">R$10</strong> (1/3)</span><span style="margin-left:auto;font-size:10px;color:#1fd97a;font-family:monospace;">→ R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: <strong style="color:#fff">R$20</strong> (2/3)</span><span style="margin-left:auto;font-size:10px;color:#1fd97a;font-family:monospace;">→ R$40</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a6a2a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: <strong style="color:#fff">R$40</strong> (3/3)</span><span style="margin-left:auto;font-size:13px;color:#1fd97a;font-weight:700;font-family:monospace;">🎉 +R$70!</span>
+              </div>
+              <div style="font-family:monospace;font-size:10px;color:#666;text-align:center;margin-top:2px;">reset → R$10 · risco total do ciclo: R$10</div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Dobra por até 3 vitórias consecutivas, depois reseta.</strong> Derrota também reseta. Você arrisca no máximo 1 unidade por ciclo — o restante são lucros acumulados sendo reinvestidos.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">1ª / 2ª VITÓRIA</div><div style="font-size:11px;color:#ccc;">Dobra o stake</div></div>
+              <div style="flex:1;background:#1a1200;border-radius:8px;padding:8px;border-left:3px solid #f0c040;"><div style="font-size:9px;color:#f0c040;font-family:monospace;margin-bottom:3px;">3ª VIT. / DERROTA</div><div style="font-size:11px;color:#ccc;">Reseta ao inicial</div></div>
+            </div>
+            <div class="ts-tip">💡 Ótimo para iniciantes. Risco máximo: R$10/ciclo. Potencial: R$70/ciclo em 3 vitórias.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 7: Flat Betting -->
+        <div class="tut-slide">
+          <div class="sm-header">➡️ Flat Betting <span style="font-size:11px;background:rgba(31,217,122,.12);color:#1fd97a;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Mínimo</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#0d1a0d,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:10px;letter-spacing:1px;">EXEMPLO · UNIT R$10 (sempre fixo)</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#555;font-family:monospace;">→ R$10</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#555;font-family:monospace;">→ R$10</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#555;font-family:monospace;">→ R$10</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R4: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#555;font-family:monospace;">→ R$10</span>
+              </div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Mesmo valor em todas as rodadas, sem exceção.</strong> Elimina variáveis de gestão. Ideal para aprender o jogo, testar mercados ou maximizar longevidade de sessão com banca pequena.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">Stake não muda</div></div>
+              <div style="flex:1;background:#1a1a1a;border-radius:8px;padding:8px;border-left:3px solid #555;"><div style="font-size:9px;color:#888;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Stake não muda</div></div>
+            </div>
+            <div class="ts-tip">📊 Use no modo simulação para medir a taxa W/L real do mercado antes de escolher outra estratégia.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 8: Oscar's Grind -->
+        <div class="tut-slide">
+          <div class="sm-header">⚙️ Oscar's Grind <span style="font-size:11px;background:rgba(31,217,122,.12);color:#1fd97a;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Baixo</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#001010,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:10px;letter-spacing:1px;">CICLO · META +R$10 · UNIT R$10</div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#1a0a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a0000;">
+                <span>❌</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#888;font-family:monospace;">mantém → R$10</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: <strong style="color:#fff">R$10</strong></span><span style="margin-left:auto;font-size:10px;color:#1fd97a;font-family:monospace;">+1u → R$20</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a6a2a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: <strong style="color:#fff">R$20</strong></span><span style="margin-left:auto;font-size:13px;color:#1fd97a;font-weight:700;font-family:monospace;">🎉 Ciclo +R$10!</span>
+              </div>
+              <div style="font-family:monospace;font-size:10px;color:#666;text-align:center;margin-top:2px;">reset → R$10 · próximo ciclo começa</div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Meta de exatamente +1 unidade por ciclo.</strong> Sobe 1 unidade após vitória apenas se o ciclo ainda estiver aberto. Derrota mantém o stake. Ultra-conservador por design.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#0a1a0a;border-radius:8px;padding:8px;border-left:3px solid #1fd97a;"><div style="font-size:9px;color:#1fd97a;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">+1u (se ciclo aberto)</div></div>
+              <div style="flex:1;background:#1a1200;border-radius:8px;padding:8px;border-left:3px solid #f0c040;"><div style="font-size:9px;color:#f0c040;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Mantém o stake</div></div>
+            </div>
+            <div class="ts-tip">⚙️ Melhor para quem valoriza consistência. Drawdown controlado, lucros pequenos e frequentes.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 9: 1-3-2-6 -->
+        <div class="tut-slide">
+          <div class="sm-header">🔢 1-3-2-6 <span style="font-size:11px;background:rgba(31,217,122,.12);color:#1fd97a;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;">Risco Baixo</span></div>
+          <div class="ts-visual" style="background:radial-gradient(ellipse at 50% 40%,#0a001a,#0f0f0a 70%);">
+            <div style="font-size:12px;font-family:monospace;color:#888;margin-bottom:8px;letter-spacing:1px;">CICLO COMPLETO · UNIT R$10</div>
+            <div style="display:flex;gap:5px;justify-content:center;margin-bottom:10px;flex-wrap:wrap;">
+              <span style="font-family:monospace;font-size:13px;background:#1a1a2a;padding:4px 10px;border-radius:6px;color:#a78bfa;font-weight:700;">×1</span>
+              <span style="color:#444;font-size:16px;line-height:1.8;">→</span>
+              <span style="font-family:monospace;font-size:13px;background:#1a1a2a;padding:4px 10px;border-radius:6px;color:#a78bfa;font-weight:700;">×3</span>
+              <span style="color:#444;font-size:16px;line-height:1.8;">→</span>
+              <span style="font-family:monospace;font-size:13px;background:#1a1a2a;padding:4px 10px;border-radius:6px;color:#a78bfa;font-weight:700;">×2</span>
+              <span style="color:#444;font-size:16px;line-height:1.8;">→</span>
+              <span style="font-family:monospace;font-size:13px;background:#1a1a2a;padding:4px 10px;border-radius:6px;color:#a78bfa;font-weight:700;">×6</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;width:100%;padding:0 16px;">
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R1: <strong style="color:#fff">R$10</strong> (×1)</span><span style="margin-left:auto;font-size:10px;color:#a78bfa;font-family:monospace;">→ R$30 (×3)</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R2: <strong style="color:#fff">R$30</strong> (×3)</span><span style="margin-left:auto;font-size:10px;color:#a78bfa;font-family:monospace;">→ R$20 (×2)</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #1a3a1a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R3: <strong style="color:#fff">R$20</strong> (×2)</span><span style="margin-left:auto;font-size:10px;color:#a78bfa;font-family:monospace;">→ R$60 (×6)</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0a1a0a;border-radius:8px;padding:8px 12px;border:1px solid #2a5a2a;">
+                <span>✅</span><span style="font-family:monospace;font-size:11px;color:#aaa;">R4: <strong style="color:#fff">R$60</strong> (×6)</span><span style="margin-left:auto;font-size:13px;color:#1fd97a;font-weight:700;font-family:monospace;">🎉 +R$120!</span>
+              </div>
+            </div>
+          </div>
+          <div class="ts-content">
+            <div class="ts-body"><strong>Multiplicadores fixos: ×1 → ×3 → ×2 → ×6 em vitórias consecutivas.</strong> O pulo para ×2 na R3 protege os lucros: mesmo perdendo na R3, você ainda sai no positivo com +R$20.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#1a1a2a;border-radius:8px;padding:8px;border-left:3px solid #a78bfa;"><div style="font-size:9px;color:#a78bfa;font-family:monospace;margin-bottom:3px;">VITÓRIA</div><div style="font-size:11px;color:#ccc;">Próximo multiplicador</div></div>
+              <div style="flex:1;background:#1a0a0a;border-radius:8px;padding:8px;border-left:3px solid #f5445f;"><div style="font-size:9px;color:#f5445f;font-family:monospace;margin-bottom:3px;">DERROTA</div><div style="font-size:11px;color:#ccc;">Reseta para ×1</div></div>
+            </div>
+            <div class="ts-tip">🏆 Perder na R3 ainda deixa +R$20 de lucro. Ciclo completo = +R$120 com risco de apenas R$10.</div>
+          </div>
+        </div>
+
+      </div><!-- /stratSlidesInner -->
+    </div><!-- /stratSlides -->
+
+    <!-- Nav footer -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #1a1a1a;flex-shrink:0;">
+      <button id="stratBtnPrev" onclick="stratManNav(-1)" style="font-family:monospace;font-size:12px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid #2a2a2a;color:#888;transition:all .15s;" onmouseover="this.style.borderColor='#444';this.style.color='#fff'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#888'">← Anterior</button>
+      <div id="stratDots" style="display:flex;gap:5px;align-items:center;"></div>
+      <button id="stratBtnNext" onclick="stratManNav(1)" style="font-family:monospace;font-size:12px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer;background:#1fd97a;border:none;color:#000;transition:filter .15s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">Próximo →</button>
+    </div>
+  </div><!-- /stratsModal -->
+</div><!-- /stratsOverlay -->
 
 </body>
 </html>
