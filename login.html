@@ -317,7 +317,7 @@ async function onReg(e) {
   const { error } = await supa.auth.signUp({
     email,
     password: pass,
-    options: { data: { nome_completo: nome + ' ' + sobre, plano } }
+    options: { data: { nome, sobrenome: sobre, plano } }
   });
 
   if (error) {
