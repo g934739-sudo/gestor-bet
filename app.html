@@ -13,8 +13,18 @@
     'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
   );
   const { data } = await _c.auth.getSession();
-  if (!data.session) { window.location.replace('login.html'); }
-  else { document.documentElement.style.visibility = 'visible'; }
+  if (!data.session) { window.location.replace('login.html'); return; }
+
+  // Sessão única: verifica se este dispositivo tem o token ativo
+  const localToken = localStorage.getItem('gb_st');
+  const { data: usr } = await _c.from('usuarios').select('session_token').eq('id', data.session.user.id).single();
+  if (!usr || usr.session_token !== localToken) {
+    await _c.auth.signOut();
+    window.location.replace('login.html');
+    return;
+  }
+
+  document.documentElement.style.visibility = 'visible';
 })();
 </script>
 <style>html { visibility: hidden; }</style>

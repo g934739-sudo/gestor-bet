@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GestorBet — Entrar ou Cadastrar</title>
+<title>GestorBet — Entrar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,7 +17,6 @@
   --gold-line:  rgba(240,192,64,.25);
   --green:      #1fd97a;
   --green-dim:  rgba(31,217,122,.10);
-  --green-line: rgba(31,217,122,.25);
   --red:        #f5445f;
   --text:       #f2f2f5;
   --text2:      #9090a8;
@@ -61,16 +60,11 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 .right-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 40px; transition: color .2s; }
 .right-back:hover { color: var(--text2); }
 
-/* TABS */
-.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
-.tab { background: none; border: none; cursor: pointer; font-family: var(--r); font-size: 15px; font-weight: 600; color: var(--muted); padding: 0 0 14px; margin-right: 28px; position: relative; transition: color .2s; }
-.tab::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform .25s ease; }
-.tab.active { color: var(--text); }
-.tab.active::after { transform: scaleX(1); }
+.right-heading { margin-bottom: 32px; }
+.right-heading h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+.right-heading p { font-size: 14px; color: var(--text2); }
 
-/* FORMS */
-.form { display: none; }
-.form.active { display: block; }
+/* FORM */
 .field { margin-bottom: 18px; }
 .label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 8px; letter-spacing: .04em; }
 .input { width: 100%; background: var(--s1); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: var(--r); font-size: 14px; padding: 12px 16px; outline: none; transition: border-color .2s, box-shadow .2s; appearance: none; }
@@ -80,50 +74,44 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 .input-wrap .input { padding-right: 44px; }
 .eye { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 16px; opacity: .4; transition: opacity .2s; user-select: none; color: var(--text); background: none; border: none; }
 .eye:hover { opacity: .8; }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-select.input { cursor: pointer; }
-select.input option { background: #1a1a28; color: var(--text); }
 
-/* Strength */
-.str-bar { display: flex; gap: 4px; margin-top: 8px; }
-.str-seg { flex: 1; height: 2px; background: var(--border); border-radius: 2px; transition: background .3s; }
-.str-seg.w { background: var(--red); }
-.str-seg.m { background: var(--gold); }
-.str-seg.g { background: var(--green); }
-
-.forgot { display: block; text-align: right; font-size: 12px; color: var(--muted); text-decoration: none; margin: -8px 0 20px; transition: color .2s; }
+.forgot { display: block; text-align: right; font-size: 12px; color: var(--muted); text-decoration: none; margin: -8px 0 24px; transition: color .2s; }
 .forgot:hover { color: var(--gold); }
 
-/* Checkbox */
-.chk-row { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 20px; }
-.chk-row input[type="checkbox"] { appearance: none; width: 16px; height: 16px; min-width: 16px; border: 1px solid var(--border2); background: var(--s1); border-radius: 4px; cursor: pointer; position: relative; margin-top: 2px; transition: border-color .2s; }
-.chk-row input:checked { border-color: var(--gold); background: var(--gold-dim); }
-.chk-row input:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 5px; height: 9px; border: 2px solid var(--gold); border-top: none; border-left: none; transform: rotate(45deg); }
-.chk-label { font-size: 13px; color: var(--text2); line-height: 1.6; }
-.chk-label a { color: var(--text2); text-decoration: underline; text-underline-offset: 2px; transition: color .2s; }
-.chk-label a:hover { color: var(--gold); }
-
-/* Button */
+/* Buttons */
 .btn-submit { width: 100%; padding: 14px; background: var(--gold); color: #000; font-family: var(--r); font-size: 15px; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; transition: filter .2s, transform .15s; }
 .btn-submit:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .btn-submit:active { transform: translateY(0); }
 .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; filter: none; }
 
+/* Divider */
+.divider { display: flex; align-items: center; gap: 14px; margin: 28px 0; }
+.div-line { flex: 1; height: 1px; background: var(--border); }
+.div-txt { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+/* Assinar box */
+.assinar-box {
+  background: linear-gradient(135deg, rgba(240,192,64,.07) 0%, rgba(240,192,64,.03) 100%);
+  border: 1px solid var(--gold-line);
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.assinar-box-text { flex: 1; }
+.assinar-box-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.assinar-box-text span { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.btn-assinar {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  background: var(--gold); color: #000; font-family: var(--r); font-size: 13px;
+  font-weight: 700; border: none; border-radius: 8px; padding: 10px 16px;
+  cursor: pointer; text-decoration: none; transition: filter .2s, transform .15s; flex-shrink: 0;
+}
+.btn-assinar:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
 /* Feedback messages */
 .msg { display: none; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 16px; line-height: 1.5; }
-.msg.error { display: block; background: rgba(245,68,95,.12); border: 1px solid rgba(245,68,95,.3); color: #f5445f; }
+.msg.error   { display: block; background: rgba(245,68,95,.12); border: 1px solid rgba(245,68,95,.3); color: #f5445f; }
 .msg.success { display: block; background: rgba(31,217,122,.10); border: 1px solid rgba(31,217,122,.25); color: #1fd97a; }
-
-/* Divider */
-.divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; }
-.div-line { flex: 1; height: 1px; background: var(--border); }
-.div-txt { font-size: 12px; color: var(--muted); }
-
-/* Social */
-.socials { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.soc-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px; background: var(--s1); border: 1px solid var(--border2); border-radius: 10px; color: var(--text2); font-family: var(--r); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: border-color .2s, color .2s; }
-.soc-btn:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
-.soc-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
 @media (max-width: 768px) {
   .wrap { grid-template-columns: 1fr; }
@@ -132,7 +120,7 @@ select.input option { background: #1a1a28; color: var(--text); }
   .left-proof { display: none; }
   .right { padding: 32px 24px; }
   .right-back { margin-bottom: 24px; }
-  .row2 { grid-template-columns: 1fr; }
+  .assinar-box { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
@@ -151,8 +139,8 @@ select.input option { background: #1a1a28; color: var(--text); }
       <div class="left-proof">
         <div class="left-proof-item">Mais de 3.200 apostadores ativos</div>
         <div class="left-proof-item">18 estratégias testadas e validadas</div>
-        <div class="left-proof-item">7 dias grátis, sem cartão de crédito</div>
         <div class="left-proof-item">Cancele quando quiser</div>
+        <div class="left-proof-item">Suporte especializado incluído</div>
       </div>
     </div>
     <div class="left-footer">Acesso seguro · TLS 1.3</div>
@@ -161,13 +149,13 @@ select.input option { background: #1a1a28; color: var(--text); }
   <div class="right">
     <a href="index.html" class="right-back">← Voltar ao site</a>
 
-    <div class="tabs">
-      <button class="tab active" onclick="goTab('login',this)">Entrar</button>
-      <button class="tab" onclick="goTab('register',this)">Cadastrar</button>
+    <div class="right-heading">
+      <h2>Bem-vindo de volta</h2>
+      <p>Entre com sua conta para acessar a plataforma.</p>
     </div>
 
     <!-- LOGIN -->
-    <form id="form-login" class="form active" onsubmit="onLogin(event)">
+    <form id="form-login" onsubmit="onLogin(event)">
       <div id="msg-login" class="msg"></div>
       <div class="field">
         <label class="label">E-mail</label>
@@ -182,64 +170,21 @@ select.input option { background: #1a1a28; color: var(--text); }
       </div>
       <a href="#" class="forgot" onclick="onForgot(event)">Esqueci a senha</a>
       <button type="submit" class="btn-submit">Acessar plataforma</button>
-      <div class="divider"><div class="div-line"></div><span class="div-txt">ou continue com</span><div class="div-line"></div></div>
-      <div class="socials">
-        <a href="#" class="soc-btn">
-          <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Google
-        </a>
-        <a href="#" class="soc-btn">
-          <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          Facebook
-        </a>
-      </div>
     </form>
 
-    <!-- CADASTRO -->
-    <form id="form-register" class="form" onsubmit="onReg(event)">
-      <div id="msg-register" class="msg"></div>
-      <div class="row2">
-        <div class="field"><label class="label">Nome</label><input class="input" type="text" id="reg-nome" placeholder="João" required></div>
-        <div class="field"><label class="label">Sobrenome</label><input class="input" type="text" id="reg-sobrenome" placeholder="Silva" required></div>
+    <div class="divider">
+      <div class="div-line"></div>
+      <span class="div-txt">Ainda não é assinante?</span>
+      <div class="div-line"></div>
+    </div>
+
+    <div class="assinar-box">
+      <div class="assinar-box-text">
+        <strong>Assine o GestorBet</strong>
+        <span>Acesso completo a todas as estratégias e ferramentas.</span>
       </div>
-      <div class="field">
-        <label class="label">E-mail</label>
-        <input class="input" type="email" id="reg-email" placeholder="seu@email.com" required>
-      </div>
-      <div class="field">
-        <label class="label">Senha</label>
-        <div class="input-wrap">
-          <input class="input" type="password" id="rp" placeholder="Mínimo 8 caracteres" oninput="checkStr(this.value)" required>
-          <button type="button" class="eye" onclick="togglePass('rp')">👁</button>
-        </div>
-        <div class="str-bar"><div class="str-seg" id="s1"></div><div class="str-seg" id="s2"></div><div class="str-seg" id="s3"></div><div class="str-seg" id="s4"></div></div>
-      </div>
-      <div class="field">
-        <label class="label">Plano</label>
-        <select class="input" id="reg-plano" required>
-          <option value="" disabled selected>Selecionar plano</option>
-          <option value="starter">Starter — R$97/mês</option>
-          <option value="pro">Pro — R$297/mês</option>
-          <option value="elite">Elite — R$597/mês</option>
-        </select>
-      </div>
-      <div class="chk-row">
-        <input type="checkbox" id="terms" required>
-        <label class="chk-label" for="terms">Concordo com os <a href="termos.html">Termos de Uso</a> e confirmo ter 18+ anos.</label>
-      </div>
-      <button type="submit" class="btn-submit">Criar conta grátis</button>
-      <div class="divider"><div class="div-line"></div><span class="div-txt">ou continue com</span><div class="div-line"></div></div>
-      <div class="socials">
-        <a href="#" class="soc-btn">
-          <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Google
-        </a>
-        <a href="#" class="soc-btn">
-          <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          Facebook
-        </a>
-      </div>
-    </form>
+      <a href="#checkout" class="btn-assinar">Assinar agora →</a>
+    </div>
 
   </div>
 </div>
@@ -249,104 +194,56 @@ const SUPA_URL = 'https://pngnxrmmfymviwiywexn.supabase.co';
 const SUPA_KEY = 'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ';
 const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-function goTab(id, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('form-' + id).classList.add('active');
-}
 function togglePass(id) {
   const input = document.getElementById(id);
   input.type = input.type === 'password' ? 'text' : 'password';
 }
-function checkStr(v) {
-  let s = 0;
-  if (v.length >= 8) s++;
-  if (/[A-Z]/.test(v)) s++;
-  if (/[0-9]/.test(v)) s++;
-  if (/[^A-Za-z0-9]/.test(v)) s++;
-  ['s1','s2','s3','s4'].forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.className = 'str-seg';
-    if (i < s) el.classList.add(s <= 1 ? 'w' : s <= 2 ? 'm' : 'g');
-  });
-}
 
-function showMsg(formId, text, type) {
-  const el = document.getElementById('msg-' + formId);
+function showMsg(text, type) {
+  const el = document.getElementById('msg-login');
   el.textContent = text;
   el.className = 'msg ' + type;
 }
-function clearMsg(formId) {
-  const el = document.getElementById('msg-' + formId);
-  el.className = 'msg';
-  el.textContent = '';
+function clearMsg() {
+  const el = document.getElementById('msg-login');
+  el.className = 'msg'; el.textContent = '';
 }
 
 async function onLogin(e) {
   e.preventDefault();
-  clearMsg('login');
+  clearMsg();
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('lp').value;
   const btn   = e.target.querySelector('.btn-submit');
   btn.textContent = 'Entrando...'; btn.disabled = true;
 
-  const { error } = await supa.auth.signInWithPassword({ email, password: pass });
+  const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
   if (error) {
     const msg = error.message.includes('Invalid login') || error.message.includes('invalid')
       ? 'E-mail ou senha incorretos.'
       : error.message;
-    showMsg('login', msg, 'error');
+    showMsg(msg, 'error');
     btn.textContent = 'Acessar plataforma'; btn.disabled = false;
-  } else {
-    window.location.href = 'app.html';
+    return;
   }
-}
 
-async function onReg(e) {
-  e.preventDefault();
-  clearMsg('register');
-  const nome     = document.getElementById('reg-nome').value.trim();
-  const sobre    = document.getElementById('reg-sobrenome').value.trim();
-  const email    = document.getElementById('reg-email').value.trim();
-  const pass     = document.getElementById('rp').value;
-  const plano    = document.getElementById('reg-plano').value;
-  const btn      = e.target.querySelector('.btn-submit');
-  btn.textContent = 'Criando conta...'; btn.disabled = true;
+  // Sessão única: grava token no banco e no localStorage
+  const sessionToken = crypto.randomUUID();
+  localStorage.setItem('gb_st', sessionToken);
+  await supa.from('usuarios').update({ session_token: sessionToken }).eq('id', data.user.id);
 
-  const { error } = await supa.auth.signUp({
-    email,
-    password: pass,
-    options: { data: { nome, sobrenome: sobre, plano } }
-  });
-
-  if (error) {
-    showMsg('register', error.message, 'error');
-    btn.textContent = 'Criar conta grátis'; btn.disabled = false;
-  } else {
-    showMsg('register', 'Conta criada! Redirecionando para o login...', 'success');
-    setTimeout(() => {
-      goTab('login', document.querySelector('.tab'));
-    }, 1500);
-    btn.textContent = 'Criar conta grátis'; btn.disabled = false;
-  }
+  window.location.href = 'app.html';
 }
 
 async function onForgot(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
-  if (!email) {
-    showMsg('login', 'Digite seu e-mail acima para recuperar a senha.', 'error');
-    return;
-  }
+  if (!email) { showMsg('Digite seu e-mail acima para recuperar a senha.', 'error'); return; }
   const { error } = await supa.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/login.html'
   });
-  if (error) {
-    showMsg('login', error.message, 'error');
-  } else {
-    showMsg('login', 'E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'success');
-  }
+  if (error) { showMsg(error.message, 'error'); }
+  else { showMsg('E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'success'); }
 }
 </script>
 </body>
