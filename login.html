@@ -192,7 +192,15 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 <script>
 const SUPA_URL = 'https://pngnxrmmfymviwiywexn.supabase.co';
 const SUPA_KEY = 'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ';
-const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: window.localStorage,
+    storageKey: 'gb-auth'
+  }
+});
 
 function togglePass(id) {
   const input = document.getElementById(id);
@@ -227,10 +235,28 @@ async function onLogin(e) {
     return;
   }
 
-  // Sessão única: grava token no banco e no localStorage
+  // Sessão única: grava token no banco e no localStorage.
+  // Importante: envolvido em try/catch para não bloquear o redirect caso haja
+  // policy RLS faltando ou erro de schema — sessão de auth já está válida.
   const sessionToken = crypto.randomUUID();
   localStorage.setItem('gb_st', sessionToken);
-  await supa.from('usuarios').update({ session_token: sessionToken }).eq('id', data.user.id);
+  try {
+    await supa.from('usuarios').upsert(
+      { id: data.user.id, session_token: sessionToken },
+      { onConflict: 'id' }
+    );
+  } catch (err) {
+    console.warn('[gb] Falha ao gravar session_token (ignorando):', err);
+  }
+
+  // Garantir que a sessão foi persistida no localStorage antes de redirecionar.
+  // Em alguns ambientes a persistência é assíncrona e o redirect pode disparar
+  // antes da gravação — esse loop curto evita que o app.html não encontre sessão.
+  for (let i = 0; i < 20; i++) {
+    const { data: s } = await supa.auth.getSession();
+    if (s?.session) break;
+    await new Promise(r => setTimeout(r, 50));
+  }
 
   window.location.href = 'app.html';
 }

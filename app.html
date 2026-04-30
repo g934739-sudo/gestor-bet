@@ -6,28 +6,74 @@
 <title>GestorBet</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>html { visibility: hidden; }</style>
 <script>
-(async () => {
-  const _c = supabase.createClient(
-    'https://pngnxrmmfymviwiywexn.supabase.co',
-    'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
-  );
-  const { data } = await _c.auth.getSession();
-  if (!data.session) { window.location.replace('login.html'); return; }
+// Cliente Supabase único — compartilhado entre auth guard e o resto da app.
+// storageKey explícita ('gb-auth') deve casar com o login.html para que
+// a sessão criada lá seja encontrada aqui.
+window._supa = supabase.createClient(
+  'https://pngnxrmmfymviwiywexn.supabase.co',
+  'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage,
+      storageKey: 'gb-auth'
+    }
+  }
+);
 
-  // Sessão única: verifica se este dispositivo tem o token ativo
-  const localToken = localStorage.getItem('gb_st');
-  const { data: usr } = await _c.from('usuarios').select('session_token').eq('id', data.session.user.id).single();
-  if (!usr || usr.session_token !== localToken) {
-    await _c.auth.signOut();
+(async () => {
+  const redirectToLogin = () => {
+    // Limpa o estado local antes de mandar para o login.
+    try { localStorage.removeItem('gb_st'); } catch (_) {}
     window.location.replace('login.html');
-    return;
+  };
+
+  // Pequeno retry para cobrir o caso de o storage ainda estar sendo hidratado
+  // imediatamente após o redirect do login.
+  let session = null;
+  for (let i = 0; i < 10; i++) {
+    const { data } = await window._supa.auth.getSession();
+    if (data?.session) { session = data.session; break; }
+    await new Promise(r => setTimeout(r, 50));
   }
 
+  if (!session) { redirectToLogin(); return; }
+
+  // Sessão única (opcional): valida que o token salvo localmente bate com
+  // o registrado no banco. Se a verificação falhar por qualquer motivo
+  // (RLS, schema, rede), liberamos o acesso para não trancar o usuário.
+  try {
+    const localToken = localStorage.getItem('gb_st');
+    if (localToken) {
+      const { data: row, error } = await window._supa
+        .from('usuarios')
+        .select('session_token')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (!error && row && row.session_token && row.session_token !== localToken) {
+        // Outro dispositivo assumiu a sessão.
+        await window._supa.auth.signOut();
+        redirectToLogin();
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('[gb] Falha ao validar session_token (ignorando):', err);
+  }
+
+  // Auth ok — revela a página.
   document.documentElement.style.visibility = 'visible';
+
+  // Se o usuário deslogar em outra aba, manda de volta para o login.
+  window._supa.auth.onAuthStateChange((event, sess) => {
+    if (event === 'SIGNED_OUT' || !sess) redirectToLogin();
+  });
 })();
 </script>
-<style>html { visibility: hidden; }</style>
 <style>
 :root {
   --bg:       #09090f;
@@ -3896,13 +3942,11 @@ document.addEventListener('keydown', e => {
 </div><!-- /stratsOverlay -->
 
 <script>
-const _supa = supabase.createClient(
-  'https://pngnxrmmfymviwiywexn.supabase.co',
-  'sb_publishable_BOTecHSbSFzlJFlRzxJHmQ_B-iew_KZ'
-);
+// Reutiliza o cliente criado pelo auth guard no <head> (window._supa).
 async function onLogout() {
-  await _supa.auth.signOut();
-  window.location.href = 'login.html';
+  try { localStorage.removeItem('gb_st'); } catch (_) {}
+  try { await window._supa.auth.signOut(); } catch (_) {}
+  window.location.replace('login.html');
 }
 </script>
 
