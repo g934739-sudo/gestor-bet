@@ -3,126 +3,584 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GestorBet — Política de Privacidade</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <title>Grivo.bet — Política de Privacidade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-    body { font-family:'Outfit',sans-serif; background:#09090f; color:#ededf5; }
+    :root {
+      --bg:#09090f; --s1:#0d0d18; --s2:#12121f;
+      --blue:#5b9bf5; --gold:#f0c040; --green:#1fd97a; --red:#f5445f;
+      --txt:#ededf5; --txt2:#9191ae; --txt3:#5a5a78;
+      --border:rgba(255,255,255,.06);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--txt); line-height:1.7; }
+
     .topbar {
-      height:52px; background:#0f0f18; border-bottom:1px solid #2a2a3c;
-      display:flex; align-items:center; padding:0 40px; position:sticky; top:0; z-index:10;
+      height:52px; background:#0b0b15; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; padding:0 32px;
+      position:sticky; top:0; z-index:100; backdrop-filter:blur(12px);
     }
-    .logo { font-size:17px; font-weight:900; text-decoration:none; color:#ededf5; }
-    .logo span { color:#f0c040; }
-    .back { margin-left:auto; font-size:12px; color:#6a6a85; text-decoration:none; }
-    .back:hover { color:#ededf5; }
-    .wrap { max-width:720px; margin:0 auto; padding:60px 24px 80px; }
-    .badge {
-      display:inline-block; background:#5b9bf515; border:1px solid #5b9bf540;
-      border-radius:20px; padding:5px 14px; margin-bottom:20px;
-      font-family:'JetBrains Mono',monospace; font-size:10px; color:#5b9bf5;
-      text-transform:uppercase; letter-spacing:1.5px;
+    .logo { font-size:16px; font-weight:900; text-decoration:none; color:var(--txt); display:flex; align-items:center; gap:8px; }
+    .logo-mark { width:26px; height:26px; background:var(--gold); border-radius:7px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:900; font-size:13px; color:#07070e; }
+    .logo-name span { color:var(--gold); }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:20px; }
+    .back { font-size:12px; color:var(--txt3); text-decoration:none; transition:color .2s; }
+    .back:hover { color:var(--txt); }
+    .topbar-badge { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); background:rgba(91,155,245,.1); border:1px solid rgba(91,155,245,.2); padding:3px 10px; border-radius:20px; letter-spacing:1px; }
+
+    .layout { display:grid; grid-template-columns:260px 1fr; max-width:1100px; margin:0 auto; min-height:calc(100vh - 52px); }
+
+    .sidebar {
+      padding:40px 0 60px 32px; position:sticky; top:52px;
+      height:calc(100vh - 52px); overflow-y:auto; border-right:1px solid var(--border);
     }
-    h1 { font-size:32px; font-weight:900; margin-bottom:8px; }
-    .updated { font-size:12px; color:#6a6a85; margin-bottom:48px; }
-    h2 { font-size:16px; font-weight:700; color:#5b9bf5; margin:36px 0 12px; text-transform:uppercase; letter-spacing:0.5px; }
-    p { font-size:14px; color:#b0b0c8; line-height:1.8; margin-bottom:12px; }
-    ul { padding-left:20px; margin-bottom:12px; }
-    li { font-size:14px; color:#b0b0c8; line-height:1.8; margin-bottom:4px; }
-    .divider { border:none; border-top:1px solid #2a2a3c; margin:40px 0; }
-    .highlight {
-      background:#15151f; border:1px solid #2a2a3c; border-left:3px solid #5b9bf5;
-      border-radius:8px; padding:16px 20px; margin:16px 0;
+    .sidebar::-webkit-scrollbar { width:3px; }
+    .sidebar::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
+    .sidebar-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt3); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+    .nav-item {
+      display:flex; align-items:center; gap:10px;
+      padding:7px 12px 7px 0; margin-bottom:2px;
+      text-decoration:none; color:var(--txt3); font-size:13px; font-weight:500;
+      border-radius:6px; transition:color .2s; position:relative;
     }
-    .highlight p { margin:0; }
-    table { width:100%; border-collapse:collapse; margin:16px 0; }
-    th { background:#15151f; padding:10px 14px; text-align:left; font-size:11px; color:#6a6a85; text-transform:uppercase; letter-spacing:1px; border:1px solid #2a2a3c; }
-    td { padding:10px 14px; font-size:13px; color:#b0b0c8; border:1px solid #2a2a3c; vertical-align:top; }
+    .nav-item:hover { color:var(--txt); }
+    .nav-item.active { color:var(--blue); }
+    .nav-item.active::before {
+      content:''; position:absolute; left:-32px; top:50%; transform:translateY(-50%);
+      width:3px; height:20px; background:var(--blue); border-radius:0 2px 2px 0;
+    }
+    .nav-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); width:18px; flex-shrink:0; }
+    .nav-item.active .nav-num { color:var(--blue); }
+    .sidebar-divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+    .sidebar-contact { font-size:12px; color:var(--txt3); line-height:1.7; }
+    .sidebar-contact a { color:var(--blue); text-decoration:none; }
+    .lgpd-badge { display:flex; align-items:center; gap:6px; background:rgba(91,155,245,.08); border:1px solid rgba(91,155,245,.2); border-radius:8px; padding:10px 12px; margin-top:16px; }
+    .lgpd-badge-text { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--blue); letter-spacing:1px; line-height:1.4; }
+
+    .main { padding:48px 60px 80px; max-width:760px; }
+
+    .hero { margin-bottom:52px; }
+    .hero-badge { display:inline-flex; align-items:center; gap:7px; background:rgba(91,155,245,.08); border:1px solid rgba(91,155,245,.2); border-radius:20px; padding:5px 14px; margin-bottom:20px; }
+    .hero-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--blue); }
+    .hero-badge span { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--blue); letter-spacing:1.5px; text-transform:uppercase; }
+    .hero h1 { font-size:36px; font-weight:900; line-height:1.15; margin-bottom:12px; letter-spacing:-.02em; }
+    .hero-meta { font-size:12px; color:var(--txt3); margin-bottom:28px; }
+    .hero-meta span { color:var(--txt2); }
+    .hero-summary { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+    .summary-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+    .summary-icon { margin-bottom:8px; }
+    .summary-title { font-size:13px; font-weight:700; color:var(--txt); margin-bottom:3px; }
+    .summary-desc { font-size:11px; color:var(--txt3); line-height:1.5; }
+
+    .section { margin-bottom:56px; scroll-margin-top:80px; }
+    .section-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .section-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .icon-blue { background:rgba(91,155,245,.12); }
+    .icon-gold { background:rgba(240,192,64,.12); }
+    .icon-green{ background:rgba(31,217,122,.12); }
+    .icon-red  { background:rgba(245,68,95,.12); }
+    .icon-gray { background:rgba(255,255,255,.06); }
+    .section-title-wrap { flex:1; }
+    .section-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); letter-spacing:1px; margin-bottom:4px; }
+    .section-title { font-size:18px; font-weight:800; color:var(--txt); letter-spacing:-.01em; }
+
+    p { font-size:14px; color:var(--txt2); line-height:1.85; margin-bottom:14px; }
+    p strong { color:var(--txt); }
+    ul { padding-left:0; margin-bottom:16px; list-style:none; }
+    ul li { font-size:14px; color:var(--txt2); line-height:1.8; margin-bottom:8px; padding-left:20px; position:relative; }
+    ul li::before { content:'—'; position:absolute; left:0; color:var(--txt3); font-size:12px; }
+    ul li strong { color:var(--txt); }
+    a { color:var(--blue); }
+
+    .block { border-radius:10px; padding:18px 22px; margin:18px 0 22px; }
+    .block-blue  { background:rgba(91,155,245,.06); border:1px solid rgba(91,155,245,.18); }
+    .block-gold  { background:rgba(240,192,64,.06);  border:1px solid rgba(240,192,64,.18); }
+    .block-green { background:rgba(31,217,122,.06);  border:1px solid rgba(31,217,122,.18); }
+    .block p { margin:0; font-size:13.5px; line-height:1.8; }
+    .block-blue  p { color:#7a9fd8; }
+    .block-gold  p { color:#d4aa38; }
+    .block-green p { color:#48a878; }
+    .block p strong { color:var(--txt); }
+    .block-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; font-weight:600; }
+    .block-blue  .block-label { color:var(--blue); }
+    .block-gold  .block-label { color:var(--gold); }
+    .block-green .block-label { color:var(--green); }
+
+    /* DATA TABLE */
+    .table-wrap { overflow-x:auto; margin:16px 0 24px; border-radius:10px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { background:var(--s1); color:var(--txt2); font-weight:600; padding:12px 16px; text-align:left; border-bottom:1px solid var(--border); }
+    td { padding:12px 16px; border-bottom:1px solid rgba(255,255,255,.03); color:var(--txt2); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(255,255,255,.02); }
+    td strong { color:var(--txt); }
+    .tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 8px; border-radius:4px; }
+    .tag-blue  { background:rgba(91,155,245,.15); color:var(--blue); }
+    .tag-gold  { background:rgba(240,192,64,.15); color:var(--gold); }
+    .tag-green { background:rgba(31,217,122,.15); color:var(--green); }
+
+    /* RIGHTS GRID */
+    .rights-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0 24px; }
+    .right-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; gap:12px; }
+    .right-card-icon { width:34px; height:34px; border-radius:8px; background:rgba(91,155,245,.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .right-card-content {}
+    .right-card-title { font-size:13px; font-weight:700; color:var(--txt); margin-bottom:3px; }
+    .right-card-desc { font-size:11px; color:var(--txt3); line-height:1.5; }
+
+    /* SECURITY LIST */
+    .security-list { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; }
+    .security-item { display:flex; align-items:flex-start; gap:10px; background:var(--s1); border:1px solid var(--border); border-radius:8px; padding:12px 14px; font-size:13px; color:var(--txt2); }
+    .security-item svg { flex-shrink:0; margin-top:1px; }
+
+    /* COOKIE GRID */
+    .cookie-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:16px 0; }
+    .cookie-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:14px; }
+    .cookie-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .cookie-card-title { font-size:13px; font-weight:700; color:var(--txt); }
+    .cookie-required { font-size:10px; font-family:'JetBrains Mono',monospace; }
+    .required { color:var(--red); }
+    .optional { color:var(--green); }
+    .cookie-card-desc { font-size:11px; color:var(--txt3); line-height:1.5; }
+
+    .footer { border-top:1px solid var(--border); padding:32px 60px; display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto; }
+    .footer-left { font-size:12px; color:var(--txt3); }
+    .footer-right { display:flex; gap:20px; }
+    .footer-right a { font-size:12px; color:var(--txt3); text-decoration:none; transition:color .2s; }
+    .footer-right a:hover { color:var(--blue); }
+
+    @media(max-width:768px) {
+      .layout { grid-template-columns:1fr; }
+      .sidebar { display:none; }
+      .main { padding:32px 20px 60px; }
+      .hero-summary, .rights-grid, .security-list, .cookie-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
 
   <div class="topbar">
-    <a href="site.html" class="logo">Gestor<span>Bet</span></a>
-    <a href="site.html" class="back">← Voltar ao site</a>
-  </div>
-
-  <div class="wrap">
-    <div class="badge">Privacidade</div>
-    <h1>Política de Privacidade</h1>
-    <p class="updated">Última atualização: [DATA]</p>
-
-    <div class="highlight">
-      <p>Sua privacidade é importante para nós. Esta política descreve como coletamos, usamos e protegemos seus dados pessoais, em conformidade com a <strong>LGPD (Lei nº 13.709/2018)</strong>.</p>
+    <a href="index.html" class="logo">
+      <div class="logo-mark">G</div>
+      <div class="logo-name">Grivo<span>.bet</span></div>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge">LGPD</span>
+      <a href="index.html" class="back">← Voltar ao site</a>
     </div>
-
-    <h2>1. Dados que coletamos</h2>
-    <table>
-      <tr>
-        <th>Dado</th>
-        <th>Por quê coletamos</th>
-      </tr>
-      <tr>
-        <td>Nome e e-mail</td>
-        <td>Criação e gestão da conta</td>
-      </tr>
-      <tr>
-        <td>Dados de pagamento</td>
-        <td>Processamento da assinatura (via gateway externo)</td>
-      </tr>
-      <tr>
-        <td>Dados de uso</td>
-        <td>Melhorar a plataforma e suporte ao usuário</td>
-      </tr>
-      <tr>
-        <td>Endereço IP</td>
-        <td>Segurança e prevenção de fraudes</td>
-      </tr>
-    </table>
-
-    <h2>2. Como usamos seus dados</h2>
-    <ul>
-      <li>Fornecer e manter o serviço do GestorBet</li>
-      <li>Processar pagamentos e gerenciar assinaturas</li>
-      <li>Enviar e-mails transacionais (boas-vindas, cobrança, recuperação de senha)</li>
-      <li>Enviar comunicações de marketing, quando você consentiu</li>
-      <li>Melhorar a plataforma com base no uso agregado</li>
-    </ul>
-
-    <h2>3. Compartilhamento de dados</h2>
-    <p>Não vendemos seus dados. Compartilhamos apenas com:</p>
-    <ul>
-      <li><strong>Processador de pagamentos</strong> — para cobranças de assinatura</li>
-      <li><strong>Ferramenta de e-mail</strong> — para envio de comunicações</li>
-      <li><strong>Autoridades legais</strong> — quando exigido por lei</li>
-    </ul>
-
-    <h2>4. Seus direitos (LGPD)</h2>
-    <p>Você tem direito a:</p>
-    <ul>
-      <li>Acessar os dados que temos sobre você</li>
-      <li>Corrigir dados incorretos</li>
-      <li>Solicitar a exclusão dos seus dados</li>
-      <li>Revogar o consentimento de marketing a qualquer momento</li>
-      <li>Portabilidade dos seus dados</li>
-    </ul>
-    <p>Para exercer esses direitos, entre em contato: <a href="mailto:[EMAIL_SUPORTE]" style="color:#5b9bf5;">[EMAIL_SUPORTE]</a></p>
-
-    <h2>5. Cookies</h2>
-    <p>Usamos cookies essenciais para funcionamento da plataforma (sessão de login) e cookies analíticos para entender o uso do site. Você pode desativar cookies analíticos nas configurações do seu navegador.</p>
-
-    <h2>6. Segurança</h2>
-    <p>Utilizamos criptografia HTTPS em toda a plataforma. Senhas são armazenadas com hash seguro. Dados de pagamento são processados exclusivamente pelo gateway contratado — não armazenamos dados de cartão.</p>
-
-    <h2>7. Retenção de dados</h2>
-    <p>Mantemos seus dados enquanto sua conta estiver ativa. Após o cancelamento, os dados são excluídos em até 90 dias, salvo obrigação legal de retenção.</p>
-
-    <h2>8. Contato</h2>
-    <p>Dúvidas sobre privacidade? Fale com nosso encarregado de dados (DPO): <a href="mailto:[EMAIL_SUPORTE]" style="color:#5b9bf5;">[EMAIL_SUPORTE]</a></p>
-
-    <hr class="divider">
-    <p style="font-size:12px;color:#3a3a50;text-align:center;">© [ANO] GestorBet. Todos os direitos reservados.</p>
   </div>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-label">Política de Privacidade</div>
+      <nav id="sidebar-nav">
+        <a class="nav-item active" href="#p1"><span class="nav-num">01</span>Controlador de Dados</a>
+        <a class="nav-item" href="#p2"><span class="nav-num">02</span>Dados que Coletamos</a>
+        <a class="nav-item" href="#p3"><span class="nav-num">03</span>Como Usamos</a>
+        <a class="nav-item" href="#p4"><span class="nav-num">04</span>Base Legal (LGPD)</a>
+        <a class="nav-item" href="#p5"><span class="nav-num">05</span>Compartilhamento</a>
+        <a class="nav-item" href="#p6"><span class="nav-num">06</span>Transferência Internacional</a>
+        <a class="nav-item" href="#p7"><span class="nav-num">07</span>Retenção e Exclusão</a>
+        <a class="nav-item" href="#p8"><span class="nav-num">08</span>Segurança</a>
+        <a class="nav-item" href="#p9"><span class="nav-num">09</span>Seus Direitos</a>
+        <a class="nav-item" href="#p10"><span class="nav-num">10</span>Cookies</a>
+        <a class="nav-item" href="#p11"><span class="nav-num">11</span>Menores de Idade</a>
+        <a class="nav-item" href="#p12"><span class="nav-num">12</span>Links Externos</a>
+        <a class="nav-item" href="#p13"><span class="nav-num">13</span>Alterações</a>
+        <a class="nav-item" href="#p14"><span class="nav-num">14</span>DPO / Contato</a>
+      </nav>
+      <hr class="sidebar-divider">
+      <div class="lgpd-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="lgpd-badge-text">Em conformidade<br>com a LGPD<br>Lei 13.709/2018</div>
+      </div>
+      <hr class="sidebar-divider">
+      <div class="sidebar-contact">Privacidade:<br><a href="mailto:privacidade@grivo.bet">privacidade@grivo.bet</a></div>
+    </aside>
+
+    <main class="main">
+
+      <div class="hero">
+        <div class="hero-badge"><div class="hero-badge-dot"></div><span>LGPD · Versão 1.0 · Maio 2025</span></div>
+        <h1>Política de<br>Privacidade</h1>
+        <p class="hero-meta">Última atualização: <span>07 de maio de 2025</span> &nbsp;·&nbsp; Em conformidade com a <span>LGPD (Lei 13.709/2018)</span></p>
+        <div class="hero-summary">
+          <div class="summary-card">
+            <div class="summary-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="summary-title">Não vendemos dados</div>
+            <div class="summary-desc">Seus dados jamais são vendidos a terceiros sob nenhuma circunstância.</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="summary-title">8 direitos garantidos</div>
+            <div class="summary-desc">Acesso, correção, exclusão, portabilidade e mais — tudo assegurado pela LGPD.</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="summary-title">Somente maiores de 18</div>
+            <div class="summary-desc">Não coletamos dados de menores. Contas identificadas são encerradas imediatamente.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block block-blue">
+        <div class="block-label">Compromisso</div>
+        <p>Sua privacidade é levada a sério no Grivo.bet. Esta Política descreve de forma transparente quais dados coletamos, como os utilizamos, com quem compartilhamos e quais são os seus direitos como titular de dados pessoais.</p>
+      </div>
+
+      <!-- P1 -->
+      <div class="section" id="p1">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 01</div>
+            <div class="section-title">Quem somos — Controlador de Dados</div>
+          </div>
+        </div>
+        <p>O <strong>Grivo.bet</strong> é o controlador dos dados pessoais coletados por meio da plataforma disponível em <a href="https://grivo.bet">grivo.bet</a> e seus subdomínios.</p>
+        <p>Para exercer seus direitos ou esclarecer dúvidas, entre em contato: <a href="mailto:privacidade@grivo.bet">privacidade@grivo.bet</a></p>
+      </div>
+
+      <!-- P2 -->
+      <div class="section" id="p2">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 02</div>
+            <div class="section-title">Dados que Coletamos</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Categoria</th><th>Dados coletados</th><th>Forma de coleta</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Cadastro</strong></td><td>Nome, e-mail, senha (hash irreversível)</td><td><span class="tag tag-gold">Você fornece</span></td></tr>
+              <tr><td><strong>Pagamento</strong></td><td>Dados de cobrança via gateway (não armazenamos cartão)</td><td><span class="tag tag-blue">Gateway</span></td></tr>
+              <tr><td><strong>Uso do app</strong></td><td>Sessões, estratégias usadas, config. de banca, histórico de resultados</td><td><span class="tag tag-blue">Automático</span></td></tr>
+              <tr><td><strong>Técnicos</strong></td><td>IP, dispositivo, SO, navegador, logs de acesso</td><td><span class="tag tag-blue">Automático</span></td></tr>
+              <tr><td><strong>Suporte</strong></td><td>Conteúdo de mensagens enviadas ao suporte</td><td><span class="tag tag-gold">Você fornece</span></td></tr>
+              <tr><td><strong>Marketing</strong></td><td>Abertura e cliques em e-mails, origem de cadastro</td><td><span class="tag tag-green">Consentimento</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="block block-green">
+          <p><strong>Não coletamos dados sensíveis</strong> conforme definidos pela LGPD (origem racial, saúde, biometria, convicção religiosa etc.). Os dados de apostas registrados na plataforma são informados pelo próprio usuário — o Grivo.bet não acessa contas em casas de apostas.</p>
+        </div>
+      </div>
+
+      <!-- P3 -->
+      <div class="section" id="p3">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 03</div>
+            <div class="section-title">Como Usamos seus Dados</div>
+          </div>
+        </div>
+        <ul>
+          <li>Criar e gerenciar sua conta na plataforma;</li>
+          <li>Processar pagamentos de assinatura e emitir cobranças;</li>
+          <li>Fornecer e aprimorar os recursos do Grivo.bet;</li>
+          <li>Enviar comunicações de serviço (confirmações, faturas, avisos de segurança);</li>
+          <li>Enviar marketing e novidades <strong>somente com seu consentimento;</strong></li>
+          <li>Detectar e prevenir fraudes e violações dos Termos de Uso;</li>
+          <li>Cumprir obrigações legais e regulatórias;</li>
+          <li>Analisar uso agregado e anônimo para melhorias.</li>
+        </ul>
+      </div>
+
+      <!-- P4 -->
+      <div class="section" id="p4">
+        <div class="section-header">
+          <div class="section-icon icon-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 04</div>
+            <div class="section-title">Base Legal (LGPD)</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Finalidade</th><th>Base legal</th></tr></thead>
+            <tbody>
+              <tr><td>Criação e gestão de conta</td><td><span class="tag tag-blue">Execução de contrato — art. 7º, V</span></td></tr>
+              <tr><td>Processamento de pagamentos</td><td><span class="tag tag-blue">Execução de contrato — art. 7º, V</span></td></tr>
+              <tr><td>Comunicações de serviço</td><td><span class="tag tag-blue">Execução de contrato — art. 7º, V</span></td></tr>
+              <tr><td>Prevenção de fraudes e segurança</td><td><span class="tag tag-gold">Interesse legítimo — art. 7º, IX</span></td></tr>
+              <tr><td>Obrigações legais</td><td><span class="tag tag-gold">Obrigação legal — art. 7º, II</span></td></tr>
+              <tr><td>Marketing e promoções</td><td><span class="tag tag-green">Consentimento — art. 7º, I</span></td></tr>
+              <tr><td>Análise e melhoria da plataforma</td><td><span class="tag tag-gold">Interesse legítimo — art. 7º, IX</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- P5 -->
+      <div class="section" id="p5">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 05</div>
+            <div class="section-title">Compartilhamento de Dados</div>
+          </div>
+        </div>
+        <div class="block block-green">
+          <p><strong>O Grivo.bet não vende dados pessoais.</strong> Compartilhamos apenas quando necessário para operar o serviço ou cumprir obrigações legais.</p>
+        </div>
+        <ul>
+          <li><strong>Provedores de serviço:</strong> hospedagem, pagamentos, e-mail, análise — sob contratos de confidencialidade;</li>
+          <li><strong>Obrigação legal:</strong> quando exigido por lei, ordem judicial ou autoridade competente;</li>
+          <li><strong>Proteção de direitos:</strong> para investigar fraudes ou proteger a segurança da plataforma;</li>
+          <li><strong>Reorganização societária:</strong> em fusão ou aquisição, com manutenção das mesmas proteções.</li>
+        </ul>
+      </div>
+
+      <!-- P6 -->
+      <div class="section" id="p6">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 06</div>
+            <div class="section-title">Transferência Internacional de Dados</div>
+          </div>
+        </div>
+        <p>Alguns provedores de serviço podem estar localizados fora do Brasil. Nesses casos, garantimos que as transferências ocorrem apenas para países com grau de proteção adequado, ou mediante cláusulas contratuais padrão que asseguram proteção equivalente à prevista pela LGPD.</p>
+      </div>
+
+      <!-- P7 -->
+      <div class="section" id="p7">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 07</div>
+            <div class="section-title">Retenção e Exclusão de Dados</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Categoria</th><th>Período de retenção</th></tr></thead>
+            <tbody>
+              <tr><td>Conta ativa</td><td>Enquanto a conta estiver ativa</td></tr>
+              <tr><td>Após cancelamento</td><td>Até 5 anos (obrigações legais e fiscais)</td></tr>
+              <tr><td>Dados de marketing</td><td>Excluídos na revogação do consentimento</td></tr>
+              <tr><td>Logs de segurança</td><td>12 meses</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Após o prazo de retenção, os dados são excluídos de forma segura ou anonimizados de modo irreversível.</p>
+      </div>
+
+      <!-- P8 -->
+      <div class="section" id="p8">
+        <div class="section-header">
+          <div class="section-icon icon-green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 08</div>
+            <div class="section-title">Segurança</div>
+          </div>
+        </div>
+        <div class="security-list">
+          <div class="security-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Criptografia TLS em trânsito e em repouso</div>
+          <div class="security-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Senhas em hash irreversível</div>
+          <div class="security-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Acesso restrito por função</div>
+          <div class="security-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Monitoramento contínuo de acessos</div>
+          <div class="security-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Testes periódicos de segurança</div>
+          <div class="security-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Notificação à ANPD em caso de incidente</div>
+        </div>
+      </div>
+
+      <!-- P9 -->
+      <div class="section" id="p9">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 09</div>
+            <div class="section-title">Seus Direitos como Titular</div>
+          </div>
+        </div>
+        <p>Nos termos da LGPD, você tem direito a:</p>
+        <div class="rights-grid">
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Acesso</div><div class="right-card-desc">Saber quais dados pessoais tratamos e como.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Correção</div><div class="right-card-desc">Corrigir dados incompletos, inexatos ou desatualizados.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Exclusão</div><div class="right-card-desc">Solicitar exclusão de dados tratados com consentimento.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Portabilidade</div><div class="right-card-desc">Receber seus dados em formato estruturado.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Oposição</div><div class="right-card-desc">Opor-se ao tratamento baseado em interesse legítimo.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Revogação</div><div class="right-card-desc">Revogar consentimento a qualquer momento, sem custo.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Informação</div><div class="right-card-desc">Saber com quem compartilhamos seus dados.</div></div>
+          </div>
+          <div class="right-card">
+            <div class="right-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg></div>
+            <div class="right-card-content"><div class="right-card-title">Revisão</div><div class="right-card-desc">Revisão de decisões automatizadas que afetem seus interesses.</div></div>
+          </div>
+        </div>
+        <p>Para exercer seus direitos: <a href="mailto:privacidade@grivo.bet">privacidade@grivo.bet</a> — respondemos em até <strong>15 dias úteis</strong>.</p>
+      </div>
+
+      <!-- P10 -->
+      <div class="section" id="p10">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 10</div>
+            <div class="section-title">Cookies e Tecnologias de Rastreamento</div>
+          </div>
+        </div>
+        <div class="cookie-grid">
+          <div class="cookie-card">
+            <div class="cookie-card-top">
+              <div class="cookie-card-title">Essenciais</div>
+              <span class="cookie-required required">Obrigatório</span>
+            </div>
+            <div class="cookie-card-desc">Mantêm sessão autenticada e preferências. Não podem ser desativados.</div>
+          </div>
+          <div class="cookie-card">
+            <div class="cookie-card-top">
+              <div class="cookie-card-title">Análise</div>
+              <span class="cookie-required optional">Opcional</span>
+            </div>
+            <div class="cookie-card-desc">Entendem como você usa a plataforma para melhorias. Podem ser desativados.</div>
+          </div>
+          <div class="cookie-card">
+            <div class="cookie-card-top">
+              <div class="cookie-card-title">Marketing</div>
+              <span class="cookie-required optional">Opcional</span>
+            </div>
+            <div class="cookie-card-desc">Rastreiam conversões e anúncios. Somente com consentimento.</div>
+          </div>
+        </div>
+        <p>Gerencie suas preferências nas configurações do navegador ou no painel de preferências da plataforma.</p>
+      </div>
+
+      <!-- P11 -->
+      <div class="section" id="p11">
+        <div class="section-header">
+          <div class="section-icon icon-red">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 11</div>
+            <div class="section-title">Menores de Idade</div>
+          </div>
+        </div>
+        <div class="block block-gold">
+          <p>O Grivo.bet é destinado exclusivamente a pessoas com <strong>18 anos ou mais</strong>. Não coletamos dados de menores. Contas identificadas de menores são encerradas e dados excluídos imediatamente.</p>
+        </div>
+        <p>Se você é responsável por um menor que utilizou a plataforma, entre em contato com <a href="mailto:privacidade@grivo.bet">privacidade@grivo.bet</a>.</p>
+      </div>
+
+      <!-- P12 -->
+      <div class="section" id="p12">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 12</div>
+            <div class="section-title">Links Externos</div>
+          </div>
+        </div>
+        <p>O Grivo.bet pode conter links para sites de terceiros, incluindo casas de apostas. Esta Política não se aplica a esses sites. O Grivo.bet não se responsabiliza pelas práticas de privacidade de sites externos.</p>
+      </div>
+
+      <!-- P13 -->
+      <div class="section" id="p13">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 13</div>
+            <div class="section-title">Alterações desta Política</div>
+          </div>
+        </div>
+        <p>Alterações significativas serão comunicadas por e-mail e por aviso na plataforma com antecedência mínima de <strong>15 dias</strong>. O uso continuado após a data de vigência implica aceitação da nova Política.</p>
+        <p>A versão em vigor é sempre a disponível em <a href="https://grivo.bet/privacidade">grivo.bet/privacidade</a>.</p>
+      </div>
+
+      <!-- P14 -->
+      <div class="section" id="p14">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">SEÇÃO 14</div>
+            <div class="section-title">Encarregado de Proteção de Dados (DPO)</div>
+          </div>
+        </div>
+        <div class="block block-blue">
+          <div class="block-label">Contato DPO</div>
+          <p><strong>E-mail:</strong> <a href="mailto:privacidade@grivo.bet">privacidade@grivo.bet</a><br>
+          <strong>Assunto:</strong> "LGPD — [descreva sua solicitação]"</p>
+        </div>
+        <p>Você também pode contatar a <strong>Autoridade Nacional de Proteção de Dados (ANPD)</strong> em <a href="https://www.gov.br/anpd" target="_blank" rel="noopener">gov.br/anpd</a> caso entenda que seus direitos não foram atendidos adequadamente.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-left">© 2025 Grivo.bet · Todos os direitos reservados</div>
+    <div class="footer-right">
+      <a href="termos.html">Termos de Uso</a>
+      <a href="index.html">Voltar ao site</a>
+    </div>
+  </footer>
+
+  <script>
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navItems.forEach(item => item.classList.remove('active'));
+          const active = document.querySelector(`.nav-item[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin:'-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
 
 </body>
 </html>

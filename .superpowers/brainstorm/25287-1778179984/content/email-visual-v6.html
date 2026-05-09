@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grivo.bet — Preview de E-mail</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#111; font-family:'Outfit',Arial,sans-serif; padding:40px 20px; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+  .label { color:#555; font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; font-family:'JetBrains Mono',monospace; }
+  .subject-bar { width:100%; max-width:560px; background:#0e0e18; border:1px solid rgba(255,255,255,.07); border-radius:10px 10px 0 0; padding:14px 24px; }
+  .subject-label { color:#444; font-size:10px; letter-spacing:1.5px; font-family:'JetBrains Mono',monospace; margin-bottom:5px; }
+  .subject-text { color:#f0c040; font-size:13px; font-weight:600; margin-bottom:3px; }
+  .preview-text { color:#3a3a50; font-size:11px; }
+  .email { width:100%; max-width:560px; background:#07070e; border:1px solid rgba(255,255,255,.06); border-top:none; border-radius:0 0 12px 12px; overflow:hidden; position:relative; }
+  .deco-roulette { position:absolute; top:30px; right:-16px; pointer-events:none; opacity:.6; filter:drop-shadow(0 0 18px rgba(240,192,64,.3)); }
+  .deco-ball { position:absolute; top:38px; left:-12px; pointer-events:none; opacity:.65; filter:drop-shadow(0 4px 12px rgba(0,0,0,.5)); }
+  .email-glow { position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:420px; height:280px; background:radial-gradient(ellipse 60% 60% at 50% 40%, rgba(240,192,64,.09) 0%, transparent 70%); pointer-events:none; }
+  .gold-line { width:100%; height:1px; background:linear-gradient(90deg, transparent 0%, #f0c040 30%, #1fd97a 70%, transparent 100%); }
+  .email-body { padding:48px 44px 40px; position:relative; z-index:1; }
+  .logo-wrap { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:44px; }
+  .logo-mark { width:34px; height:34px; background:#f0c040; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:900; font-size:16px; color:#07070e; }
+  .logo-name { font-size:15px; font-weight:800; letter-spacing:-.01em; color:#ededf7; }
+  .logo-name span { color:#f0c040; }
+  .eyebrow { display:flex; align-items:center; justify-content:center; gap:7px; margin-bottom:20px; }
+  .eyebrow-badge { background:rgba(240,192,64,.1); border:1px solid rgba(240,192,64,.22); color:#f0c040; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:600; letter-spacing:.08em; font-family:'JetBrains Mono',monospace; }
+  .eyebrow-dot { width:5px; height:5px; border-radius:50%; background:#f0c040; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);} }
+  .headline { text-align:center; font-size:30px; font-weight:900; line-height:1.25; color:#ededf7; margin-bottom:8px; letter-spacing:-.02em; }
+  .headline-gold { background:linear-gradient(135deg,#f0c040 0%,#ffd97a 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .sep { width:40px; height:1px; background:linear-gradient(90deg,transparent,rgba(240,192,64,.4),transparent); margin:0 auto 36px; }
+  .subtext { text-align:center; color:#9191ae; font-size:14px; line-height:1.8; margin-bottom:36px; max-width:360px; margin-left:auto; margin-right:auto; }
+  .subtext strong { color:#ededf7; font-weight:600; }
+  .strat-heading { text-align:center; color:#ededf7; font-size:16px; font-weight:700; margin-bottom:6px; letter-spacing:-.01em; }
+  .strat-sub { text-align:center; color:#9191ae; font-size:12px; margin-bottom:20px; line-height:1.6; }
+  .strat-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:20px; }
+  .strat-card { background:#0d0d1a; border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:14px 12px; text-align:center; }
+  .strat-card-icon { font-size:20px; margin-bottom:6px; }
+  .strat-card-name { color:#ededf7; font-size:12px; font-weight:600; margin-bottom:3px; }
+  .strat-card-desc { color:#5a5a78; font-size:10px; line-height:1.4; }
+  .strat-divider { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+  .strat-divider-line { flex:1; height:1px; background:rgba(255,255,255,.05); }
+  .strat-divider-text { color:#3a3a52; font-size:10px; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+  .benefit-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .benefit-card { background:#0c0c19; border:1px solid rgba(255,255,255,.055); border-radius:12px; padding:16px 14px; text-align:center; }
+  .benefit-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; }
+  .benefit-icon-green { background:rgba(31,217,122,.12); }
+  .benefit-icon-gold  { background:rgba(240,192,64,.12); }
+  .benefit-icon-blue  { background:rgba(123,140,255,.12); }
+  .benefit-title { color:#ededf7; font-size:12px; font-weight:700; margin-bottom:4px; }
+  .benefit-desc { color:#5a5a78; font-size:10px; line-height:1.5; }
+  .cta-wrap { text-align:center; margin-top:28px; margin-bottom:40px; }
+  .cta-btn { display:inline-block; background:linear-gradient(135deg,#c89a20 0%,#f0c040 100%); color:#07070e; text-decoration:none; padding:16px 44px; border-radius:9999px; font-size:14px; font-weight:800; letter-spacing:.01em; }
+  .cta-sub { margin-top:12px; color:#3a3a52; font-size:11px; }
+  .email-footer { border-top:1px solid rgba(255,255,255,.04); padding:22px 44px; text-align:center; }
+  .footer-txt { color:#3a3a52; font-size:11px; line-height:1.9; }
+  .footer-txt a { color:#4a4a64; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="label">preview · e-mail de captação — grivo.bet</div>
+
+<div class="subject-bar">
+  <div class="subject-label">ASSUNTO</div>
+  <div class="subject-text">Estratégia bate sorte. Sempre.</div>
+  <div class="preview-text">Conheça a ferramenta que organiza o setup perfeito de operação para você.</div>
+</div>
+
+<div class="email">
+  <div class="email-glow"></div>
+  <div class="gold-line"></div>
+
+  <!-- ROLETA -->
+  <div class="deco-roulette">
+    <svg width="110" height="110" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="rimGrad" cx="40%" cy="30%" r="70%"><stop offset="0%" stop-color="#3a2800"/><stop offset="100%" stop-color="#100c00"/></radialGradient>
+        <radialGradient id="hubGrad" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#4a4a4a"/><stop offset="100%" stop-color="#0a0a0a"/></radialGradient>
+      </defs>
+      <circle cx="55" cy="55" r="53" fill="url(#rimGrad)" stroke="#f0c040" stroke-width="2.5"/>
+      <circle cx="55" cy="55" r="50" fill="none" stroke="#c89a20" stroke-width=".6" opacity=".6"/>
+      <path d="M55,55 L55,2 A53,53 0 0,1 82,9 Z" fill="#1a7a3a"/>
+      <path d="M55,55 L82,9  A53,53 0 0,1 104,29 Z" fill="#c0392b"/>
+      <path d="M55,55 L104,29 A53,53 0 0,1 108,58 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L108,58 A53,53 0 0,1 97,85 Z" fill="#c0392b"/>
+      <path d="M55,55 L97,85  A53,53 0 0,1 74,104 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L74,104 A53,53 0 0,1 44,108 Z" fill="#c0392b"/>
+      <path d="M55,55 L44,108 A53,53 0 0,1 17,99 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L17,99  A53,53 0 0,1 4,72 Z" fill="#c0392b"/>
+      <path d="M55,55 L4,72   A53,53 0 0,1 4,38 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L4,38   A53,53 0 0,1 22,14 Z" fill="#c0392b"/>
+      <path d="M55,55 L22,14  A53,53 0 0,1 46,2 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L46,2   A53,53 0 0,1 55,2 Z" fill="#c0392b"/>
+      <line x1="55" y1="2"   x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="82" y1="9"   x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="104" y1="29" x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="108" y1="58" x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="97" y1="85"  x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="74" y1="104" x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="44" y1="108" x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="17" y1="99"  x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="4"  y1="72"  x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="4"  y1="38"  x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="22" y1="14"  x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <line x1="46" y1="2"   x2="55" y2="55" stroke="#f0c040" stroke-width=".7" opacity=".7"/>
+      <text x="55"  y="16"  text-anchor="middle" fill="#fff" font-size="6" font-family="Arial" font-weight="bold">0</text>
+      <text x="76"  y="22"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">32</text>
+      <text x="99"  y="42"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">15</text>
+      <text x="99"  y="70"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">19</text>
+      <text x="78"  y="94"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">4</text>
+      <text x="50"  y="104" text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">21</text>
+      <text x="22"  y="94"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">2</text>
+      <text x="8"   y="70"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">25</text>
+      <text x="8"   y="42"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">17</text>
+      <text x="26"  y="22"  text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">34</text>
+      <text x="42"  y="9"   text-anchor="middle" fill="#fff" font-size="5.5" font-family="Arial">6</text>
+      <circle cx="55" cy="55" r="33" fill="#111" stroke="#f0c040" stroke-width="1.8"/>
+      <circle cx="55" cy="55" r="29" fill="#181818" stroke="#555" stroke-width=".6"/>
+      <line x1="55" y1="26" x2="55" y2="84" stroke="#2e2e2e" stroke-width="1.2"/>
+      <line x1="26" y1="55" x2="84" y2="55" stroke="#2e2e2e" stroke-width="1.2"/>
+      <line x1="34" y1="34" x2="76" y2="76" stroke="#2e2e2e" stroke-width="1.2"/>
+      <line x1="76" y1="34" x2="34" y2="76" stroke="#2e2e2e" stroke-width="1.2"/>
+      <circle cx="55" cy="55" r="11" fill="url(#hubGrad)" stroke="#f0c040" stroke-width="1.8"/>
+      <circle cx="55" cy="55" r="5"  fill="#f0c040"/>
+      <circle cx="53" cy="53" r="1.5" fill="rgba(255,255,255,.5)"/>
+      <circle cx="55" cy="6" r="4.5" fill="white" stroke="#ddd" stroke-width=".8"/>
+      <circle cx="54" cy="5" r="1.5" fill="rgba(255,255,255,.8)"/>
+    </svg>
+  </div>
+
+  <!-- BOLA -->
+  <div class="deco-ball">
+    <svg width="92" height="92" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="ballGrad" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e8e8e8"/><stop offset="100%" stop-color="#c0c0c0"/></radialGradient>
+        <clipPath id="ballClip"><circle cx="44" cy="44" r="40"/></clipPath>
+        <filter id="ballShadow"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,.4)"/></filter>
+      </defs>
+      <ellipse cx="44" cy="83" rx="26" ry="4" fill="rgba(0,0,0,.25)"/>
+      <circle cx="44" cy="44" r="40" fill="url(#ballGrad)" filter="url(#ballShadow)"/>
+      <polygon clip-path="url(#ballClip)" fill="#1a1a1a" stroke="#07070e" stroke-width=".5" points="44,32 55.41,40.29 51.06,53.71 36.94,53.71 32.59,40.29"/>
+      <polygon clip-path="url(#ballClip)" fill="#1a1a1a" stroke="#07070e" stroke-width=".5" points="44,32 55.41,23.71 51.06,10.29 36.94,10.29 32.59,23.71"/>
+      <polygon clip-path="url(#ballClip)" fill="#1a1a1a" stroke="#07070e" stroke-width=".5" points="55.41,40.29 66.82,48.58 78.23,40.29 73.88,26.87 59.76,26.87"/>
+      <polygon clip-path="url(#ballClip)" fill="#1a1a1a" stroke="#07070e" stroke-width=".5" points="51.06,53.71 46.70,67.13 58.11,75.42 69.52,67.13 65.17,53.71"/>
+      <polygon clip-path="url(#ballClip)" fill="#1a1a1a" stroke="#07070e" stroke-width=".5" points="36.94,53.71 22.83,53.71 18.48,67.13 29.89,75.42 41.30,67.13"/>
+      <polygon clip-path="url(#ballClip)" fill="#1a1a1a" stroke="#07070e" stroke-width=".5" points="32.59,40.29 28.24,26.87 14.12,26.87 9.77,40.29 21.18,48.58"/>
+      <g clip-path="url(#ballClip)" stroke="#1a1a1a" stroke-width=".8" opacity=".4">
+        <line x1="55.41" y1="23.71" x2="59.76" y2="26.87"/>
+        <line x1="66.82" y1="48.58" x2="65.17" y2="53.71"/>
+        <line x1="46.70" y1="67.13" x2="41.30" y2="67.13"/>
+        <line x1="22.83" y1="53.71" x2="21.18" y2="48.58"/>
+        <line x1="28.24" y1="26.87" x2="32.59" y2="23.71"/>
+      </g>
+      <ellipse cx="33" cy="27" rx="10" ry="7" fill="rgba(255,255,255,.55)" transform="rotate(-35 33 27)"/>
+      <circle cx="44" cy="44" r="40" fill="none" stroke="#bbb" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="email-body">
+
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <div class="logo-mark">G</div>
+      <div class="logo-name">Grivo<span>.bet</span></div>
+    </div>
+
+    <!-- EYEBROW -->
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <div class="eyebrow-badge">CASSINO · ESPORTES</div>
+      <div class="eyebrow-dot"></div>
+    </div>
+
+    <!-- HEADLINE -->
+    <div class="headline">
+      Quer ser lucrativo<br>
+      <span class="headline-gold">no cassino e esportes?</span>
+    </div>
+    <div class="sep"></div>
+    <p class="subtext">
+      Conheça a ferramenta que integra as principais estratégias avançadas do mercado e organiza o <strong>setup perfeito de operação</strong> para você.
+    </p>
+
+    <!-- ESTRATÉGIAS -->
+    <div class="strat-heading">Mais de 10 estratégias prontas para usar</div>
+    <div class="strat-sub">Escolha a que mais combina com seu estilo de jogo</div>
+
+    <div class="strat-grid">
+      <div class="strat-card">
+        <div class="strat-card-icon">📈</div>
+        <div class="strat-card-name">Martingale</div>
+        <div class="strat-card-desc">Recupera perdas dobrando a aposta</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-card-icon">🌀</div>
+        <div class="strat-card-name">Fibonacci</div>
+        <div class="strat-card-desc">Progressão pela sequência áurea</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-card-icon">⚖️</div>
+        <div class="strat-card-name">D'Alembert</div>
+        <div class="strat-card-desc">Ajuste gradual de risco</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-card-icon">🏆</div>
+        <div class="strat-card-name">Oscar's Grind</div>
+        <div class="strat-card-desc">Lucro consistente passo a passo</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-card-icon">🎯</div>
+        <div class="strat-card-name">Flat Betting</div>
+        <div class="strat-card-desc">Controle total sem variações</div>
+      </div>
+      <div class="strat-card" style="background:rgba(240,192,64,.06); border-color:rgba(240,192,64,.18);">
+        <div class="strat-card-icon">✨</div>
+        <div class="strat-card-name" style="color:#f0c040;">+ muito mais</div>
+        <div class="strat-card-desc" style="color:#7a6a30;">Novas estratégias todo mês</div>
+      </div>
+    </div>
+
+    <div class="strat-divider">
+      <div class="strat-divider-line"></div>
+      <div class="strat-divider-text">o que você controla</div>
+      <div class="strat-divider-line"></div>
+    </div>
+
+    <div class="benefit-row">
+      <div class="benefit-card">
+        <div class="benefit-icon benefit-icon-green">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="benefit-title">Modo Defesa</div>
+        <div class="benefit-desc">Para quando sua banca precisa de proteção</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon benefit-icon-gold">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="benefit-title">Modo Ataque</div>
+        <div class="benefit-desc">Maximize o lucro nas sequências positivas</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon benefit-icon-blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7b8cff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="benefit-title">Banca ao vivo</div>
+        <div class="benefit-desc">Resultados e saldo em tempo real</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a href="https://grivo.bet" class="cta-btn">Conhecer o Grivo.bet →</a>
+      <div class="cta-sub">Sem cartão &nbsp;·&nbsp; Sem compromisso</div>
+    </div>
+
+  </div>
+
+  <div class="email-footer">
+    <div class="footer-txt">
+      Você recebeu este e-mail porque demonstrou interesse em apostas.<br>
+      <a href="#">Cancelar inscrição</a> &nbsp;·&nbsp; <a href="https://grivo.bet/privacidade">Privacidade</a> &nbsp;·&nbsp; <a href="https://grivo.bet/termos">Termos</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

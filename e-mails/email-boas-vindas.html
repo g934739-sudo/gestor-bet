@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grivo.bet — E-mail de Boas-vindas</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#111; font-family:'Outfit',Arial,sans-serif; padding:40px 20px; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+
+  .label { color:#555; font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; font-family:'JetBrains Mono',monospace; }
+
+  .subject-bar { width:100%; max-width:560px; background:#0e0e18; border:1px solid rgba(255,255,255,.07); border-radius:10px 10px 0 0; padding:14px 24px; }
+  .subject-label { color:#444; font-size:10px; letter-spacing:1.5px; font-family:'JetBrains Mono',monospace; margin-bottom:5px; }
+  .subject-text { color:#1fd97a; font-size:13px; font-weight:600; margin-bottom:3px; }
+  .preview-text { color:#3a3a50; font-size:11px; }
+
+  .email { width:100%; max-width:560px; background:#07070e; border:1px solid rgba(255,255,255,.06); border-top:none; border-radius:0 0 12px 12px; overflow:hidden; position:relative; }
+
+  .email-glow { position:absolute; top:-40px; left:50%; transform:translateX(-50%); width:460px; height:260px; background:radial-gradient(ellipse 60% 60% at 50% 40%, rgba(31,217,122,.07) 0%, transparent 70%); pointer-events:none; }
+
+  .green-line { width:100%; height:2px; background:linear-gradient(90deg, transparent 0%, #1fd97a 40%, #f0c040 70%, transparent 100%); }
+
+  .email-body { padding:48px 44px 40px; position:relative; z-index:1; }
+
+  /* logo */
+  .logo-wrap { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:48px; }
+  .logo-bars { display:flex; flex-direction:column; gap:4px; }
+  .bar { height:3px; border-radius:2px; background:#f0c040; }
+  .b1 { width:20px; }
+  .b2 { width:14px; opacity:.55; }
+  .b3 { width:20px; opacity:.2; }
+  .logo-name { font-family:'Outfit',sans-serif; font-size:17px; font-weight:700; letter-spacing:-.5px; color:#ededf7; }
+  .logo-name em { font-style:normal; color:#2e2e48; font-weight:300; }
+  .logo-dot { color:#f0c040; }
+
+  /* hero */
+  .badge-wrap { display:flex; justify-content:center; margin-bottom:20px; }
+  .badge { background:rgba(31,217,122,.1); border:1px solid rgba(31,217,122,.25); color:#1fd97a; padding:5px 14px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:.1em; font-family:'JetBrains Mono',monospace; display:flex; align-items:center; gap:6px; }
+  .badge-dot { width:6px; height:6px; border-radius:50%; background:#1fd97a; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);} }
+
+  .headline { text-align:center; font-size:32px; font-weight:900; line-height:1.2; color:#ededf7; margin-bottom:12px; letter-spacing:-.03em; }
+  .headline-green { color:#1fd97a; }
+
+  .sep { width:40px; height:1px; background:linear-gradient(90deg,transparent,rgba(31,217,122,.35),transparent); margin:0 auto 28px; }
+
+  .subtext { text-align:center; color:#7a7a96; font-size:14px; line-height:1.8; margin-bottom:40px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .subtext strong { color:#ededf7; font-weight:600; }
+
+  /* próximos passos */
+  .steps-title { font-size:13px; font-weight:700; color:#4a4a62; text-transform:uppercase; letter-spacing:.1em; text-align:center; margin-bottom:16px; }
+  .steps { display:flex; flex-direction:column; gap:10px; margin-bottom:40px; }
+  .step { display:flex; align-items:flex-start; gap:14px; background:#0d0d1a; border:1px solid rgba(255,255,255,.05); border-radius:12px; padding:16px 18px; }
+  .step-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; margin-top:1px; font-family:'JetBrains Mono',monospace; }
+  .step-num-1 { background:rgba(31,217,122,.12); color:#1fd97a; border:1px solid rgba(31,217,122,.2); }
+  .step-num-2 { background:rgba(240,192,64,.1); color:#f0c040; border:1px solid rgba(240,192,64,.2); }
+  .step-num-3 { background:rgba(91,155,245,.1); color:#5b9bf5; border:1px solid rgba(91,155,245,.2); }
+  .step-content {}
+  .step-title { font-size:13px; font-weight:700; color:#ededf7; margin-bottom:3px; }
+  .step-desc { font-size:12px; color:#5a5a78; line-height:1.55; }
+
+  /* CTA */
+  .cta-wrap { text-align:center; margin-bottom:40px; }
+  .cta-btn { display:inline-block; background:linear-gradient(135deg,#17b864 0%,#1fd97a 100%); color:#06120d; text-decoration:none; padding:17px 52px; border-radius:9999px; font-size:15px; font-weight:800; letter-spacing:.01em; }
+  .cta-sub { margin-top:12px; color:#2e2e4a; font-size:11px; }
+  .cta-sub a { color:#3a3a58; }
+
+  /* destaque */
+  .highlight { background:rgba(240,192,64,.05); border:1px solid rgba(240,192,64,.1); border-radius:12px; padding:18px 20px; margin-bottom:40px; display:flex; align-items:flex-start; gap:12px; }
+  .highlight-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+  .highlight-text { font-size:12px; color:#6a6a86; line-height:1.65; }
+  .highlight-text strong { color:#f0c040; font-weight:600; }
+
+  /* footer */
+  .email-footer { border-top:1px solid rgba(255,255,255,.04); padding:22px 44px; text-align:center; }
+  .footer-txt { color:#3a3a52; font-size:11px; line-height:1.9; }
+  .footer-txt a { color:#4a4a64; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<p class="label">E-mail · Boas-vindas</p>
+
+<div class="subject-bar">
+  <p class="subject-label">ASSUNTO</p>
+  <p class="subject-text">Bem-vindo ao Grivo.bet — sua conta está pronta ✓</p>
+  <p class="preview-text">Acesse agora e comece sua primeira sessão com estratégia.</p>
+</div>
+
+<div class="email">
+  <div class="email-glow"></div>
+  <div class="green-line"></div>
+
+  <div class="email-body">
+
+    <!-- logo -->
+    <div class="logo-wrap">
+      <div class="logo-bars">
+        <div class="bar b1"></div>
+        <div class="bar b2"></div>
+        <div class="bar b3"></div>
+      </div>
+      <div class="logo-name">Grivo<span class="logo-dot">.</span><em>bet</em></div>
+    </div>
+
+    <!-- hero -->
+    <div class="badge-wrap">
+      <div class="badge"><span class="badge-dot"></span> Conta ativada</div>
+    </div>
+
+    <h1 class="headline">Você está dentro.<br><span class="headline-green">Agora é estratégia.</span></h1>
+    <div class="sep"></div>
+
+    <p class="subtext">
+      Sua assinatura foi confirmada. A partir de agora, você tem acesso completo à plataforma que vai transformar a forma como você aposta — <strong>com método, disciplina e controle real sobre a banca.</strong>
+    </p>
+
+    <!-- próximos passos -->
+    <p class="steps-title">Por onde começar</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num step-num-1">01</div>
+        <div class="step-content">
+          <p class="step-title">Acesse sua conta</p>
+          <p class="step-desc">Entre com o e-mail e senha que você cadastrou. Sua sessão está pronta para uso imediato.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-2">02</div>
+        <div class="step-content">
+          <p class="step-title">Configure sua banca inicial</p>
+          <p class="step-desc">Defina o valor da sua banca, escolha a estratégia e os limites de Stop Loss e Stop Win.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-3">03</div>
+        <div class="step-content">
+          <p class="step-title">Inicie sua primeira sessão</p>
+          <p class="step-desc">Com tudo configurado, o Grivo calcula os stakes automaticamente — você só faz a jogada.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a href="https://grivo.bet/login" class="cta-btn">Acessar minha conta →</a>
+      <p class="cta-sub">Dificuldades para acessar? <a href="mailto:suporte@grivo.bet">suporte@grivo.bet</a></p>
+    </div>
+
+    <!-- destaque -->
+    <div class="highlight">
+      <div class="highlight-icon">💡</div>
+      <p class="highlight-text">
+        <strong>Dica para começar bem:</strong> configure sua banca com um valor que você está confortável em gerenciar. O Grivo.bet vai proteger seu capital automaticamente — mas o melhor resultado vem de quem opera com consistência e paciência.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="email-footer">
+    <div class="footer-txt">
+      Você recebeu este e-mail porque criou uma conta no Grivo.bet.<br>
+      <a href="#">Cancelar inscrição</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

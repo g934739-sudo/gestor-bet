@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview — grivo.bet</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #09090f; font-family: 'Outfit', sans-serif; height: 100vh; display: flex; flex-direction: column; }
+
+  .tabs {
+    display: flex;
+    background: #111118;
+    border-bottom: 1px solid #1e1e2e;
+    padding: 0 16px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .tab {
+    padding: 12px 20px;
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+
+  .tab:hover { color: #aaa; }
+
+  .tab.active {
+    color: #f0c040;
+    border-bottom-color: #f0c040;
+  }
+
+  .frames {
+    flex: 1;
+    position: relative;
+  }
+
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+  }
+
+  iframe.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab active" onclick="show('email', this)">📧 Email de captação</div>
+  <div class="tab" onclick="show('termos', this)">📋 Termos de Uso</div>
+  <div class="tab" onclick="show('privacidade', this)">🔒 Política de Privacidade</div>
+</div>
+
+<div class="frames">
+  <iframe id="email" class="active" src="http://localhost:8080/e-mails/email-captacao.html"></iframe>
+  <iframe id="termos" src="http://localhost:8080/termos.html"></iframe>
+  <iframe id="privacidade" src="http://localhost:8080/privacidade.html"></iframe>
+</div>
+
+<script>
+  function show(id, tab) {
+    document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    tab.classList.add('active');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GestorBet — Preview de E-mail v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#111;
+    font-family:'Outfit',Arial,sans-serif;
+    padding:40px 20px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .label {
+    color:#555;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:16px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .subject-bar {
+    width:100%;
+    max-width:560px;
+    background:#0e0e18;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:10px 10px 0 0;
+    padding:14px 24px;
+  }
+  .subject-label { color:#444; font-size:10px; letter-spacing:1.5px; font-family:'JetBrains Mono',monospace; margin-bottom:5px; }
+  .subject-text { color:#f0c040; font-size:13px; font-weight:600; margin-bottom:3px; }
+  .preview-text { color:#3a3a50; font-size:11px; }
+
+  .email {
+    width:100%;
+    max-width:560px;
+    background:#07070e;
+    border:1px solid rgba(255,255,255,.06);
+    border-top:none;
+    border-radius:0 0 12px 12px;
+    overflow:hidden;
+    position:relative;
+  }
+  .deco-roulette {
+    position:absolute;
+    top:30px; right:-18px;
+    pointer-events:none;
+    opacity:.55;
+    filter:drop-shadow(0 0 18px rgba(240,192,64,.3));
+  }
+  .deco-ball {
+    position:absolute;
+    top:44px; left:-14px;
+    pointer-events:none;
+    opacity:.5;
+    filter:drop-shadow(0 0 14px rgba(255,255,255,.15));
+  }
+  .email-glow {
+    position:absolute;
+    top:-60px; left:50%;
+    transform:translateX(-50%);
+    width:420px; height:280px;
+    background:radial-gradient(ellipse 60% 60% at 50% 40%, rgba(240,192,64,.09) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .gold-line {
+    width:100%;
+    height:1px;
+    background:linear-gradient(90deg, transparent 0%, #f0c040 30%, #1fd97a 70%, transparent 100%);
+  }
+  .email-body {
+    padding:48px 44px 40px;
+    position:relative;
+    z-index:1;
+  }
+  .logo-wrap {
+    display:flex; align-items:center; justify-content:center;
+    gap:10px; margin-bottom:44px;
+  }
+  .logo-mark {
+    width:34px; height:34px;
+    background:#f0c040;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:900; font-size:16px; color:#07070e;
+  }
+  .logo-name { font-size:15px; font-weight:800; letter-spacing:-.01em; color:#ededf7; }
+  .logo-name span { color:#f0c040; }
+  .eyebrow { display:flex; align-items:center; justify-content:center; gap:7px; margin-bottom:20px; }
+  .eyebrow-badge {
+    background:rgba(240,192,64,.1);
+    border:1px solid rgba(240,192,64,.22);
+    color:#f0c040; padding:4px 12px; border-radius:20px;
+    font-size:10px; font-weight:600; letter-spacing:.08em;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .eyebrow-dot {
+    width:5px; height:5px; border-radius:50%;
+    background:#f0c040; animation:pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:.4; transform:scale(.7); }
+  }
+  .headline {
+    text-align:center; font-size:30px; font-weight:900;
+    line-height:1.25; color:#ededf7; margin-bottom:8px; letter-spacing:-.02em;
+  }
+  .headline-gold {
+    background:linear-gradient(135deg, #f0c040 0%, #ffd97a 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .sep { width:40px; height:1px; background:linear-gradient(90deg, transparent, rgba(240,192,64,.4), transparent); margin:0 auto 36px; }
+  .subtext {
+    text-align:center; color:#9191ae; font-size:14px; line-height:1.8;
+    margin-bottom:36px; max-width:360px; margin-left:auto; margin-right:auto;
+  }
+  .subtext strong { color:#ededf7; font-weight:600; }
+  .strat-block {
+    background:#0c0c17; border:1px solid rgba(255,255,255,.055);
+    border-radius:12px; padding:22px 24px; margin-bottom:28px;
+  }
+  .strat-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; color:#f0c040; font-weight:600; margin-bottom:14px; }
+  .strat-pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .pill { background:#12121f; border:1px solid rgba(255,255,255,.07); color:#9191ae; font-size:11px; padding:5px 14px; border-radius:20px; font-family:'JetBrains Mono',monospace; }
+  .pill-gold { background:rgba(240,192,64,.12); border:1px solid rgba(240,192,64,.25); color:#f0c040; font-weight:600; }
+  .strat-divider { width:100%; height:1px; background:rgba(255,255,255,.04); margin-bottom:16px; }
+  .strat-features { display:flex; gap:6px; flex-wrap:wrap; }
+  .feat-item { display:flex; align-items:center; gap:6px; color:#9191ae; font-size:11px; background:#0f0f1c; border:1px solid rgba(255,255,255,.05); padding:5px 12px; border-radius:8px; }
+  .feat-dot-green { width:4px; height:4px; border-radius:50%; background:#1fd97a; flex-shrink:0; }
+  .feat-dot-gold  { width:4px; height:4px; border-radius:50%; background:#f0c040; flex-shrink:0; }
+  .feat-dot-blue  { width:4px; height:4px; border-radius:50%; background:#7b8cff; flex-shrink:0; }
+  .cta-wrap { text-align:center; margin-bottom:40px; }
+  .cta-btn {
+    display:inline-block;
+    background:linear-gradient(135deg, #c89a20 0%, #f0c040 100%);
+    color:#07070e; text-decoration:none;
+    padding:16px 44px; border-radius:9999px;
+    font-size:14px; font-weight:800; letter-spacing:.01em;
+  }
+  .cta-sub { margin-top:12px; color:#3a3a52; font-size:11px; }
+  .email-footer { border-top:1px solid rgba(255,255,255,.04); padding:22px 44px; text-align:center; }
+  .footer-txt { color:#3a3a52; font-size:11px; line-height:1.9; }
+  .footer-txt a { color:#4a4a64; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="label">preview · e-mail de captação v3</div>
+
+<div class="subject-bar">
+  <div class="subject-label">ASSUNTO</div>
+  <div class="subject-text">Estratégia bate sorte. Sempre.</div>
+  <div class="preview-text">Conheça a ferramenta que organiza o setup perfeito de operação para você.</div>
+</div>
+
+<div class="email">
+  <div class="email-glow"></div>
+  <div class="gold-line"></div>
+
+  <!-- ROULETTE — cartoon elegante com cores reais -->
+  <div class="deco-roulette">
+    <svg width="110" height="110" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- outer rim gold -->
+      <circle cx="55" cy="55" r="53" fill="url(#rimGrad)" />
+      <!-- sectors alternating red/black/green -->
+      <!-- 0 = green top -->
+      <path d="M55,55 L55,4 A51,51 0 0,1 75,8 Z" fill="#1a7a3a"/>
+      <!-- red sectors -->
+      <path d="M55,55 L75,8 A51,51 0 0,1 100,25 Z" fill="#c0392b"/>
+      <path d="M55,55 L100,25 A51,51 0 0,1 106,55 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L106,55 A51,51 0 0,1 100,85 Z" fill="#c0392b"/>
+      <path d="M55,55 L100,85 A51,51 0 0,1 75,102 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L75,102 A51,51 0 0,1 55,106 Z" fill="#c0392b"/>
+      <path d="M55,55 L55,106 A51,51 0 0,1 35,102 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L35,102 A51,51 0 0,1 10,85 Z" fill="#c0392b"/>
+      <path d="M55,55 L10,85 A51,51 0 0,1 4,55 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L4,55 A51,51 0 0,1 10,25 Z" fill="#c0392b"/>
+      <path d="M55,55 L10,25 A51,51 0 0,1 35,8 Z" fill="#1a1a1a"/>
+      <path d="M55,55 L35,8 A51,51 0 0,1 55,4 Z" fill="#c0392b"/>
+      <!-- gold dividers between sectors -->
+      <line x1="55" y1="4" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="75" y1="8" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="100" y1="25" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="106" y1="55" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="100" y1="85" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="75" y1="102" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="55" y1="106" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="35" y1="102" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="10" y1="85" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="4" y1="55" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="10" y1="25" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <line x1="35" y1="8" x2="55" y2="55" stroke="#f0c040" stroke-width=".8" opacity=".6"/>
+      <!-- inner ring -->
+      <circle cx="55" cy="55" r="33" fill="#0e0e0e" stroke="#f0c040" stroke-width="1.5"/>
+      <circle cx="55" cy="55" r="28" fill="#151515" stroke="#c89a20" stroke-width=".8"/>
+      <!-- spokes -->
+      <line x1="55" y1="27" x2="55" y2="83" stroke="#2a2a2a" stroke-width="1"/>
+      <line x1="27" y1="55" x2="83" y2="55" stroke="#2a2a2a" stroke-width="1"/>
+      <line x1="35" y1="35" x2="75" y2="75" stroke="#2a2a2a" stroke-width="1"/>
+      <line x1="75" y1="35" x2="35" y2="75" stroke="#2a2a2a" stroke-width="1"/>
+      <!-- center hub -->
+      <circle cx="55" cy="55" r="10" fill="url(#hubGrad)" stroke="#f0c040" stroke-width="1.5"/>
+      <circle cx="55" cy="55" r="4" fill="#f0c040"/>
+      <!-- outer gold border -->
+      <circle cx="55" cy="55" r="53" fill="none" stroke="#f0c040" stroke-width="2"/>
+      <circle cx="55" cy="55" r="50" fill="none" stroke="#c89a20" stroke-width=".5" opacity=".5"/>
+      <!-- small ball -->
+      <circle cx="55" cy="9" r="4" fill="#ededf7" stroke="#ccc" stroke-width=".5"/>
+      <circle cx="54" cy="8" r="1.5" fill="rgba(255,255,255,.6)"/>
+      <!-- number hints -->
+      <text x="55" y="20" text-anchor="middle" fill="#fff" font-size="5.5" font-family="monospace" font-weight="bold">0</text>
+      <text x="93" y="45" text-anchor="middle" fill="#fff" font-size="5" font-family="monospace">7</text>
+      <text x="17" y="45" text-anchor="middle" fill="#fff" font-size="5" font-family="monospace">3</text>
+      <defs>
+        <radialGradient id="rimGrad" cx="50%" cy="30%" r="60%">
+          <stop offset="0%" stop-color="#3a2800"/>
+          <stop offset="100%" stop-color="#1a1200"/>
+        </radialGradient>
+        <radialGradient id="hubGrad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#3a3a3a"/>
+          <stop offset="100%" stop-color="#0a0a0a"/>
+        </radialGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- FOOTBALL — cartoon clássico preto e branco -->
+  <div class="deco-ball">
+    <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="ballGrad" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#d0d0d0"/>
+        </radialGradient>
+        <clipPath id="ballClip">
+          <circle cx="44" cy="44" r="41"/>
+        </clipPath>
+      </defs>
+      <!-- shadow -->
+      <ellipse cx="44" cy="82" rx="28" ry="5" fill="rgba(0,0,0,.3)"/>
+      <!-- ball base -->
+      <circle cx="44" cy="44" r="41" fill="url(#ballGrad)"/>
+      <!-- black patches — classic football pattern -->
+      <!-- center pentagon -->
+      <polygon points="44,30 55,38 51,51 37,51 33,38" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- top pentagon -->
+      <polygon points="44,6 56,14 53,26 35,26 32,14" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- top-right -->
+      <polygon points="67,18 78,30 73,42 61,40 57,27" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- right -->
+      <polygon points="80,50 83,64 72,72 62,64 64,51" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- bottom-right -->
+      <polygon points="62,72 66,84 53,88 46,78 51,67" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- bottom-left -->
+      <polygon points="37,67 42,78 29,86 19,78 24,67" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- left -->
+      <polygon points="8,50 24,51 26,65 16,73 5,64" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- top-left -->
+      <polygon points="21,18 31,27 27,40 15,42 10,30" fill="#1a1a1a" clip-path="url(#ballClip)"/>
+      <!-- highlight -->
+      <ellipse cx="34" cy="28" rx="9" ry="6" fill="rgba(255,255,255,.5)" transform="rotate(-30 34 28)"/>
+      <!-- border -->
+      <circle cx="44" cy="44" r="41" fill="none" stroke="#aaa" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="email-body">
+
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <div class="logo-mark">G</div>
+      <div class="logo-name">Gestor<span>Bet</span></div>
+    </div>
+
+    <!-- EYEBROW -->
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <div class="eyebrow-badge">CASSINO · ESPORTES</div>
+      <div class="eyebrow-dot"></div>
+    </div>
+
+    <!-- HEADLINE -->
+    <div class="headline">
+      Quer ser lucrativo<br>
+      <span class="headline-gold">no cassino e esportes?</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <p class="subtext">
+      Conheça a ferramenta que integra as principais estratégias avançadas do mercado e organiza o <strong>setup perfeito de operação</strong> para você.
+    </p>
+
+    <div class="strat-block">
+      <div class="strat-label">// ESTRATÉGIAS DISPONÍVEIS</div>
+      <div class="strat-pills">
+        <span class="pill">Martingale</span>
+        <span class="pill">Fibonacci</span>
+        <span class="pill">Oscar's Grind</span>
+        <span class="pill">D'Alembert</span>
+        <span class="pill">Flat Betting</span>
+        <span class="pill pill-gold">+ muito mais</span>
+      </div>
+      <div class="strat-divider"></div>
+      <div class="strat-features">
+        <div class="feat-item"><div class="feat-dot-green"></div> Modo Defesa</div>
+        <div class="feat-item"><div class="feat-dot-gold"></div> Modo Ataque</div>
+        <div class="feat-item"><div class="feat-dot-blue"></div> Banca em tempo real</div>
+      </div>
+    </div>
+
+    <div class="cta-wrap">
+      <a href="https://gestorbet.com.br" class="cta-btn">Conhecer o GestorBet →</a>
+      <div class="cta-sub">Sem cartão &nbsp;·&nbsp; Sem compromisso</div>
+    </div>
+
+  </div>
+
+  <div class="email-footer">
+    <div class="footer-txt">
+      Você recebeu este e-mail porque demonstrou interesse em apostas.<br>
+      <a href="#">Cancelar inscrição</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

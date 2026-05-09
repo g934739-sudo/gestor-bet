@@ -27,18 +27,24 @@ window._supa = supabase.createClient(
 
 (async () => {
   const redirectToLogin = () => {
-    // Limpa o estado local antes de mandar para o login.
-    try { localStorage.removeItem('gb_st'); } catch (_) {}
+    try { localStorage.removeItem('gb_st'); localStorage.removeItem('gb_access'); localStorage.removeItem('gb_refresh'); } catch (_) {}
     window.location.replace('login.html');
   };
 
-  // Pequeno retry para cobrir o caso de o storage ainda estar sendo hidratado
-  // imediatamente após o redirect do login.
+  // Tenta restaurar sessão a partir dos tokens salvos pelo login.html.
+  // Isso contorna qualquer problema de storageKey/hydration do SDK.
   let session = null;
-  for (let i = 0; i < 10; i++) {
+  const accessToken  = localStorage.getItem('gb_access');
+  const refreshToken = localStorage.getItem('gb_refresh');
+  if (accessToken && refreshToken) {
+    const { data: restored } = await window._supa.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    session = restored?.session ?? null;
+  }
+
+  // Fallback: tenta getSession() caso o SDK já tenha a sessão em memória.
+  if (!session) {
     const { data } = await window._supa.auth.getSession();
-    if (data?.session) { session = data.session; break; }
-    await new Promise(r => setTimeout(r, 50));
+    session = data?.session ?? null;
   }
 
   if (!session) { redirectToLogin(); return; }

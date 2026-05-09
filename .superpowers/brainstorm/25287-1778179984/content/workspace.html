@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workspace — grivo.bet</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #09090f; font-family: 'Outfit', sans-serif; height: 100vh; display: flex; flex-direction: column; color: #fff; }
+
+  .tabbar {
+    display: flex;
+    background: #0d0d18;
+    border-bottom: 1px solid #1a1a28;
+    padding: 0 16px;
+    gap: 2px;
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 11px 18px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .tab:hover { color: #888; }
+  .tab.active { color: #f0c040; border-bottom-color: #f0c040; }
+
+  .panels { flex: 1; position: relative; overflow: hidden; }
+  .panel { position: absolute; inset: 0; display: none; overflow-y: auto; }
+  .panel.active { display: block; }
+  #app.active { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+  iframe { width: 100%; height: 100%; border: none; }
+
+  /* ─── LOGOS PANEL ─── */
+  .logos-panel { padding: 32px; }
+  h2 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+  .sub { font-size: 12px; color: #444; margin-bottom: 28px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .option {
+    border: 1px solid #1a1a28;
+    border-radius: 14px;
+    padding: 22px 18px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .option:hover { border-color: #2a2a3c; transform: translateY(-1px); }
+  .option.selected { border-color: #f0c040; box-shadow: 0 0 0 1px #f0c040; }
+
+  .preview {
+    height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px; padding-bottom: 16px;
+    border-bottom: 1px solid #141420;
+  }
+
+  .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #333; margin-bottom: 5px; }
+  h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  p { font-size: 11px; color: #4a4a60; line-height: 1.55; }
+  .tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 8px; font-weight: 500; }
+
+  .check {
+    position: absolute; top: 12px; right: 12px;
+    width: 18px; height: 18px;
+    border: 1.5px solid #222; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; transition: all 0.2s;
+  }
+  .option.selected .check { background: #f0c040; border-color: #f0c040; color: #09090f; }
+
+  /* ── Logo previews ── */
+  /* A - Premium */
+  .pa { display:flex;align-items:center;gap:10px; }
+  .mark-a { width:38px;height:38px;background:linear-gradient(135deg,#f0c040,#d4a020);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#09090f; }
+  .word-a { font-size:20px;font-weight:700;letter-spacing:-0.5px; }
+  .word-a span { color:#f0c040; }
+
+  /* B - Técnico */
+  .pb { display:flex;align-items:center;gap:10px; }
+  .mark-b { width:36px;height:36px;border:2px solid #5b9bf5;border-radius:7px;display:flex;align-items:center;justify-content:center; }
+  .mark-b svg { width:20px;height:20px; }
+  .word-b { font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;letter-spacing:-0.5px;color:#e0e8ff; }
+  .word-b span { color:#5b9bf5; }
+
+  /* C - Bold */
+  .pc { display:flex;align-items:center;gap:12px; }
+  .mark-c { width:36px;height:36px;background:linear-gradient(135deg,#1fd97a,#15b060);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#09090f; }
+  .word-c { font-size:21px;font-weight:900;letter-spacing:-1px;text-transform:uppercase; }
+  .word-c span { color:#1fd97a; }
+
+  /* D - Minimalista */
+  .word-d { font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;letter-spacing:-1.5px; }
+  .word-d em { font-style:normal;color:#3a3a50;font-weight:300; }
+  .dot-d { color:#f0c040; }
+
+  /* E - Escudo */
+  .pe { display:flex;align-items:center;gap:10px; }
+  .shield-svg { width:32px;height:38px; }
+  .word-e { font-size:18px;font-weight:800;letter-spacing:-0.5px; }
+  .word-e small { display:block;font-size:9px;font-weight:500;letter-spacing:0.15em;color:#555;text-transform:uppercase;margin-top:1px; }
+
+  /* F - Neon */
+  .pf { display:flex;align-items:center;gap:8px; }
+  .mark-f { width:32px;height:32px;border:1.5px solid #1fd97a;border-radius:5px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(31,217,122,0.35),inset 0 0 6px rgba(31,217,122,0.1);font-size:14px;font-weight:900;color:#1fd97a;text-shadow:0 0 6px #1fd97a; }
+  .word-f { font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700; }
+  .word-f span { color:#1fd97a;text-shadow:0 0 8px rgba(31,217,122,0.5); }
+
+  /* G - Geométrico */
+  .pg { display:flex;align-items:center;gap:10px; }
+  .geo-svg { width:36px;height:36px; }
+  .word-g { font-size:20px;font-weight:800;letter-spacing:-0.8px; }
+  .word-g span { color:#f0c040;font-weight:300; }
+
+  /* H - Tipográfico */
+  .ph { display:flex;flex-direction:column;align-items:center;text-align:center; }
+  .typo-main { font-size:26px;font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(135deg,#fff 0%,#888 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+  .typo-dot { font-size:10px;font-weight:500;letter-spacing:0.3em;color:#f0c040;text-transform:uppercase;margin-top:2px; }
+
+  /* I - Circular */
+  .pi { display:flex;align-items:center;gap:10px; }
+  .mark-i { width:38px;height:38px;background:#09090f;border:2px solid #f0c040;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#f0c040;position:relative;overflow:hidden; }
+  .mark-i::after { content:'';position:absolute;right:0;top:50%;width:10px;height:2px;background:#f0c040;transform:translateY(-50%); }
+  .word-i { font-size:20px;font-weight:700;letter-spacing:-0.5px; }
+  .word-i b { color:#f0c040;font-weight:900; }
+  .word-i em { font-style:normal;color:#444;font-size:17px; }
+</style>
+</head>
+<body>
+
+<div class="tabbar">
+  <div class="tab active" onclick="show('logos',this)">🎨 Logo</div>
+  <div class="tab" onclick="show('site',this)">🌐 Site</div>
+  <div class="tab" onclick="show('login',this)">🔑 Login</div>
+  <div class="tab" onclick="show('app',this)">⚙️ Software</div>
+  <div class="tab" onclick="show('email',this)">📧 Email Captação</div>
+  <div class="tab" onclick="show('boas-vindas',this)">🎉 Email Boas-vindas</div>
+  <div class="tab" onclick="show('termos',this)">📋 Termos</div>
+  <div class="tab" onclick="show('privacidade',this)">🔒 Privacidade</div>
+</div>
+
+<div class="panels">
+
+  <!-- LOGOS -->
+  <div class="panel active" id="logos">
+    <div class="logos-panel">
+      <h2>Direções de personalidade para o logo</h2>
+      <p class="sub">Clique para selecionar a que mais combina com a Grivo.bet</p>
+
+      <div class="grid">
+
+        <!-- A -->
+        <div class="option" onclick="pick(this,'a')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="pa">
+              <div class="mark-a">G</div>
+              <div class="word-a">Grivo<span>.bet</span></div>
+            </div>
+          </div>
+          <div class="lbl">Direção A</div>
+          <h3>Premium & Exclusivo</h3>
+          <p>Ícone dourado + wordmark. Sofisticado, caro, autoritário.</p>
+          <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Ouro · Luxo · Autoridade</span>
+        </div>
+
+        <!-- B -->
+        <div class="option" onclick="pick(this,'b')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="pb">
+              <div class="mark-b">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2.5" stroke-linecap="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+              <div class="word-b">Grivo<span>.bet</span></div>
+            </div>
+          </div>
+          <div class="lbl">Direção B</div>
+          <h3>Técnico & Preciso</h3>
+          <p>Ícone de sinal vital + monospace. Parece plataforma de análise.</p>
+          <span class="tag" style="background:rgba(91,155,245,0.08);color:#5b9bf5;border:1px solid rgba(91,155,245,0.2);">Dados · Análise · Controle</span>
+        </div>
+
+        <!-- C -->
+        <div class="option" onclick="pick(this,'c')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="pc">
+              <div class="mark-c">G</div>
+              <div class="word-c">Grivo<span>.bet</span></div>
+            </div>
+          </div>
+          <div class="lbl">Direção C</div>
+          <h3>Arrojado & Energético</h3>
+          <p>Hexágono verde + caixa alta. Transmite vitória e momentum.</p>
+          <span class="tag" style="background:rgba(31,217,122,0.08);color:#1fd97a;border:1px solid rgba(31,217,122,0.2);">Vitória · Energia · Impacto</span>
+        </div>
+
+        <!-- D -->
+        <div class="option" onclick="pick(this,'d')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+          </div>
+          <div class="lbl">Direção D</div>
+          <h3>Minimalista & Refinado</h3>
+          <p>Só tipografia. Sem símbolo. Elegância pela ausência.</p>
+          <span class="tag" style="background:rgba(255,255,255,0.04);color:#666;border:1px solid #1e1e2e;">Clean · Tipográfico · Maduro</span>
+        </div>
+
+        <!-- E -->
+        <div class="option" onclick="pick(this,'e')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="pe">
+              <svg class="shield-svg" viewBox="0 0 38 44" fill="none">
+                <path d="M19 2L4 8v14c0 9.4 6.4 18.2 15 21 8.6-2.8 15-11.6 15-21V8L19 2z" fill="rgba(240,192,64,0.07)" stroke="#f0c040" stroke-width="1.5"/>
+                <text x="19" y="28" text-anchor="middle" font-family="Outfit" font-weight="900" font-size="16" fill="#f0c040">G</text>
+              </svg>
+              <div class="word-e">Grivo<small>.bet platform</small></div>
+            </div>
+          </div>
+          <div class="lbl">Direção E</div>
+          <h3>Escudo & Institucional</h3>
+          <p>Escudo com "G". Proteção, credibilidade, confiança.</p>
+          <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Confiança · Segurança · Credibilidade</span>
+        </div>
+
+        <!-- F -->
+        <div class="option" onclick="pick(this,'f')">
+          <div class="check">✓</div>
+          <div class="preview" style="background:rgba(31,217,122,0.02);border-radius:8px;">
+            <div class="pf">
+              <div class="mark-f">G</div>
+              <div class="word-f">grivo<span>.bet</span></div>
+            </div>
+          </div>
+          <div class="lbl">Direção F</div>
+          <h3>Cyber & Neon</h3>
+          <p>Verde neon + monospace. Interface de hacker, apostador diferenciado.</p>
+          <span class="tag" style="background:rgba(31,217,122,0.08);color:#1fd97a;border:1px solid rgba(31,217,122,0.2);">Tech · Hacker · Edge</span>
+        </div>
+
+        <!-- G -->
+        <div class="option" onclick="pick(this,'g')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="pg">
+              <svg class="geo-svg" viewBox="0 0 40 40" fill="none">
+                <polygon points="20,4 36,32 4,32" fill="none" stroke="#f0c040" stroke-width="2"/>
+                <line x1="20" y1="4" x2="20" y2="32" stroke="#f0c040" stroke-width="1" opacity="0.35"/>
+                <line x1="4" y1="32" x2="36" y2="32" stroke="#f0c040" stroke-width="1" opacity="0.35"/>
+                <circle cx="20" cy="22" r="3" fill="#f0c040"/>
+              </svg>
+              <div class="word-g">Grivo<span>.bet</span></div>
+            </div>
+          </div>
+          <div class="lbl">Direção G</div>
+          <h3>Geométrico & Abstrato</h3>
+          <p>Triângulo ascendente com ponto. Estratégia, cálculo, foco.</p>
+          <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Estratégia · Foco · Moderno</span>
+        </div>
+
+        <!-- H -->
+        <div class="option" onclick="pick(this,'h')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="ph">
+              <div class="typo-main">GRIVO</div>
+              <div class="typo-dot">· bet ·</div>
+            </div>
+          </div>
+          <div class="lbl">Direção H</div>
+          <h3>Tipográfico Impactante</h3>
+          <p>Caixa alta, peso máximo, gradiente. ".bet" como elemento decorativo.</p>
+          <span class="tag" style="background:rgba(255,255,255,0.04);color:#666;border:1px solid #1e1e2e;">Força · Presença · Marcante</span>
+        </div>
+
+        <!-- I -->
+        <div class="option" onclick="pick(this,'i')">
+          <div class="check">✓</div>
+          <div class="preview">
+            <div class="pi">
+              <div class="mark-i">G</div>
+              <div class="word-i"><b>Grivo</b><em>.bet</em></div>
+            </div>
+          </div>
+          <div class="lbl">Direção I</div>
+          <h3>Símbolo Circular</h3>
+          <p>"G" em círculo dourado. Simples, versátil, reconhecível como ícone/avatar.</p>
+          <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Versátil · Reconhecível · Clássico</span>
+        </div>
+
+      </div>
+
+      <!-- Variações do Minimalista com símbolo -->
+      <div style="margin-top:24px;padding-top:24px;border-top:1px solid #1a1a28;">
+        <p class="sub" style="margin-bottom:16px;">↳ Variações do Minimalista Refinado com símbolo discreto</p>
+        <div class="grid">
+
+          <!-- J: diamante -->
+          <div class="option" onclick="pick(this,'j')">
+            <div class="check">✓</div>
+            <div class="preview">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect x="7" y="1" width="8.5" height="8.5" rx="1" transform="rotate(45 7 1)" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+                </svg>
+                <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+              </div>
+            </div>
+            <div class="lbl">Direção J</div>
+            <h3>Diamante + Wordmark</h3>
+            <p>Losango fino dourado à esquerda. Discreto, precioso, elegante — evoca valor e raridade.</p>
+            <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Valor · Raridade · Sofisticação</span>
+          </div>
+
+          <!-- K: linha ascendente -->
+          <div class="option" onclick="pick(this,'k')">
+            <div class="check">✓</div>
+            <div class="preview">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <svg width="18" height="22" viewBox="0 0 18 22" fill="none">
+                  <line x1="2" y1="20" x2="16" y2="4" stroke="#f0c040" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="16" cy="4" r="2" fill="#f0c040"/>
+                  <line x1="2" y1="20" x2="16" y2="20" stroke="#444" stroke-width="1" stroke-linecap="round"/>
+                </svg>
+                <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+              </div>
+            </div>
+            <div class="lbl">Direção K</div>
+            <h3>Linha Ascendente + Wordmark</h3>
+            <p>Seta diagonal ascendente, estilo gráfico de retorno. Evoca lucro, crescimento, estratégia vencedora.</p>
+            <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Lucro · Crescimento · Estratégia</span>
+          </div>
+
+          <!-- L: monograma fino -->
+          <div class="option" onclick="pick(this,'l')">
+            <div class="check">✓</div>
+            <div class="preview">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                  <circle cx="14" cy="14" r="12.5" stroke="#f0c040" stroke-width="1"/>
+                  <text x="14" y="19" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="13" fill="#f0c040">G</text>
+                </svg>
+                <div class="word-d" style="font-size:20px;">grivo<span class="dot-d">.</span><em>bet</em></div>
+              </div>
+            </div>
+            <div class="lbl">Direção L</div>
+            <h3>Monograma Fino + Wordmark</h3>
+            <p>Círculo com traço fino contendo o "G". Versátil como favicon e avatar, sem perder a leveza minimalista.</p>
+            <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Versátil · Leve · Atemporal</span>
+          </div>
+
+          <!-- M: barra tripla -->
+          <div class="option" onclick="pick(this,'m')">
+            <div class="check">✓</div>
+            <div class="preview">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
+                  <rect x="0" y="14" width="14" height="2.5" rx="1.25" fill="#f0c040" opacity="0.4"/>
+                  <rect x="0" y="8.5" width="10" height="2.5" rx="1.25" fill="#f0c040" opacity="0.7"/>
+                  <rect x="0" y="3" width="14" height="2.5" rx="1.25" fill="#f0c040"/>
+                </svg>
+                <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+              </div>
+            </div>
+            <div class="lbl">Direção M</div>
+            <h3>Barras de Progresso + Wordmark</h3>
+            <p>Três barras em opacidades decrescentes — símbolo de gestão, controle e disciplina financeira.</p>
+            <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Gestão · Controle · Disciplina</span>
+          </div>
+
+          <!-- N: asterisco fino -->
+          <div class="option" onclick="pick(this,'n')">
+            <div class="check">✓</div>
+            <div class="preview">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <line x1="10" y1="2" x2="10" y2="18" stroke="#f0c040" stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="2" y1="10" x2="18" y2="10" stroke="#f0c040" stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="4.1" y1="4.1" x2="15.9" y2="15.9" stroke="#f0c040" stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="15.9" y1="4.1" x2="4.1" y2="15.9" stroke="#f0c040" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+                <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+              </div>
+            </div>
+            <div class="lbl">Direção N</div>
+            <h3>Asterisco + Wordmark</h3>
+            <p>Asterisco de 4 eixos em ouro fino. Sutil como uma estrela, matemático como um eixo — remete a precisão e cálculo.</p>
+            <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Precisão · Cálculo · Elegância</span>
+          </div>
+
+          <!-- O: chevron -->
+          <div class="option" onclick="pick(this,'o')">
+            <div class="check">✓</div>
+            <div class="preview">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
+                  <polyline points="2,18 10,10 2,2" stroke="#f0c040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+              </div>
+            </div>
+            <div class="lbl">Direção O</div>
+            <h3>Chevron + Wordmark</h3>
+            <p>Uma seta "›" discreta antes do nome. Mínima, direcional — transmite avanço, próximo nível, movimento para frente.</p>
+            <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Avanço · Direção · Limpo</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IFRAMES -->
+  <div class="panel" id="site"><iframe src="http://localhost:8080/index.html?v=1778184748"></iframe></div>
+  <div class="panel" id="login"><iframe src="http://localhost:8080/login.html?v=1778184748"></iframe></div>
+  <div class="panel" id="app" style="display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <p style="color:#444;font-size:13px;">O software requer autenticação real — não funciona em iframe.</p>
+    <a href="http://localhost:8080/app.html" target="_blank" style="background:#f0c040;color:#09090f;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">Abrir em nova aba →</a>
+  </div>
+  <div class="panel" id="email"><iframe src="http://localhost:8080/e-mails/email-captacao.html?v=1778184748"></iframe></div>
+  <div class="panel" id="boas-vindas"><iframe src="http://localhost:8080/e-mails/email-boas-vindas.html?v=1778184748"></iframe></div>
+  <div class="panel" id="termos"><iframe src="http://localhost:8080/termos.html?v=1778184748"></iframe></div>
+  <div class="panel" id="privacidade"><iframe src="http://localhost:8080/privacidade.html?v=1778184748"></iframe></div>
+
+</div>
+
+<script>
+  function show(id, tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    tab.classList.add('active');
+  }
+  function pick(el, choice) {
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    if (window.__sendEvent) window.__sendEvent({ type:'click', choice, text: el.querySelector('h3').textContent });
+  }
+</script>
+</body>
+</html>

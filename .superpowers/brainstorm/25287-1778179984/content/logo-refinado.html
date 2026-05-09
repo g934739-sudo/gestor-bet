@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Refinado</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #09090f; font-family: 'Outfit', sans-serif; padding: 36px 32px; color: #fff; min-height: 100vh; }
+
+  h2 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+  .sub { font-size: 12px; color: #444; margin-bottom: 32px; }
+  .section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #333; margin-bottom: 14px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    border: 1px solid #1a1a28;
+    border-radius: 14px;
+    padding: 32px 20px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .card:hover { border-color: #2a2a3c; transform: translateY(-1px); }
+  .card.selected { border-color: #f0c040; box-shadow: 0 0 0 1px #f0c040; }
+
+  .preview {
+    display: flex; align-items: center; justify-content: center;
+    height: 80px;
+    margin-bottom: 20px; padding-bottom: 20px;
+    border-bottom: 1px solid #111120;
+  }
+
+  .check {
+    position: absolute; top: 12px; right: 12px;
+    width: 18px; height: 18px;
+    border: 1.5px solid #222; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; transition: all 0.2s;
+  }
+  .card.selected .check { background: #f0c040; border-color: #f0c040; color: #09090f; }
+
+  .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #333; margin-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  p { font-size: 11px; color: #444; line-height: 1.5; }
+
+  /* ─── COM BARRAS ─── */
+
+  /* M1 - Space Grotesk 700, barras opacidade */
+  .m1 { display:flex;align-items:center;gap:12px; }
+  .bars-1 { display:flex;flex-direction:column;gap:4px; }
+  .bar { height:3px; border-radius:2px; background:#f0c040; }
+  .b1 { width:20px; }
+  .b2 { width:14px; opacity:0.6; }
+  .b3 { width:20px; opacity:0.25; }
+  .w-m1 { font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; letter-spacing:-1px; color:#fff; }
+  .w-m1 em { font-style:normal; color:#3a3a55; font-weight:300; }
+  .d-m1 { color:#f0c040; }
+
+  /* M2 - Outfit 800, barras altura */
+  .m2 { display:flex;align-items:center;gap:12px; }
+  .bars-2 { display:flex;align-items:flex-end;gap:3px; }
+  .bv { width:4px; border-radius:2px; background:#f0c040; }
+  .bv1 { height:18px; }
+  .bv2 { height:12px; opacity:0.55; }
+  .bv3 { height:7px; opacity:0.25; }
+  .w-m2 { font-family:'Outfit',sans-serif; font-size:24px; font-weight:800; letter-spacing:-1.2px; }
+  .w-m2 em { font-style:normal; color:#333; font-weight:300; font-size:20px; }
+  .d-m2 { color:#f0c040; }
+
+  /* M3 - Inter 600, barras largura decrescente + cores */
+  .m3 { display:flex;align-items:center;gap:14px; }
+  .bars-3 { display:flex;flex-direction:column;gap:4px; }
+  .bh { height:2.5px; border-radius:2px; }
+  .bh1 { width:22px; background:#f0c040; }
+  .bh2 { width:16px; background:#f0c040; opacity:0.5; }
+  .bh3 { width:10px; background:#f0c040; opacity:0.2; }
+  .w-m3 { font-family:'Inter',sans-serif; font-size:20px; font-weight:600; letter-spacing:-0.5px; color:#e8e8f0; }
+  .w-m3 em { font-style:normal; color:#2e2e45; font-weight:300; }
+  .d-m3 { color:#f0c040; }
+
+  /* ─── SEM BARRAS ─── */
+
+  /* D1 - Space Grotesk puro, peso 700 */
+  .w-d1 { font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:700; letter-spacing:-1.5px; }
+  .w-d1 em { font-style:normal; color:#2e2e45; font-weight:300; }
+  .dot-d1 { color:#f0c040; }
+
+  /* D2 - Outfit 800, .bet menor */
+  .d2-wrap { display:flex;align-items:baseline;gap:1px; }
+  .d2-main { font-family:'Outfit',sans-serif; font-size:28px; font-weight:800; letter-spacing:-1.5px; color:#fff; }
+  .d2-dot { color:#f0c040; font-size:28px; }
+  .d2-bet { font-family:'Outfit',sans-serif; font-size:16px; font-weight:300; color:#333; letter-spacing:0.05em; }
+
+  /* D3 - Inter com .bet em gold */
+  .d3-wrap { display:flex;align-items:baseline; }
+  .d3-main { font-family:'Inter',sans-serif; font-size:24px; font-weight:700; letter-spacing:-1px; color:#fff; }
+  .d3-suffix { font-family:'Inter',sans-serif; font-size:24px; font-weight:300; color:#f0c040; letter-spacing:-0.5px; }
+</style>
+</head>
+<body>
+
+<h2>Refinando o logo Grivo.bet</h2>
+<p class="sub">Escolha a variação com e sem símbolo que mais agrada</p>
+
+<!-- COM BARRAS -->
+<div class="section-title">Com barras de progresso</div>
+<div class="row">
+
+  <div class="card" onclick="pick(this,'m1')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="m1">
+        <div class="bars-1">
+          <div class="bar b1"></div>
+          <div class="bar b2"></div>
+          <div class="bar b3"></div>
+        </div>
+        <div class="w-m1">Grivo<span class="d-m1">.</span><em>bet</em></div>
+      </div>
+    </div>
+    <div class="lbl">M1</div>
+    <h3>Barras horizontais · Space Grotesk</h3>
+    <p>Barras em opacidade decrescente. Wordmark em peso 700 com ".bet" em peso leve.</p>
+  </div>
+
+  <div class="card" onclick="pick(this,'m2')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="m2">
+        <div class="bars-2">
+          <div class="bv bv1"></div>
+          <div class="bv bv2"></div>
+          <div class="bv bv3"></div>
+        </div>
+        <div class="w-m2">Grivo<span class="d-m2">.</span><em>bet</em></div>
+      </div>
+    </div>
+    <div class="lbl">M2</div>
+    <h3>Barras verticais · Outfit 800</h3>
+    <p>Barras em altura decrescente (estilo sinal). Wordmark em peso máximo, mais impactante.</p>
+  </div>
+
+  <div class="card" onclick="pick(this,'m3')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="m3">
+        <div class="bars-3">
+          <div class="bh bh1"></div>
+          <div class="bh bh2"></div>
+          <div class="bh bh3"></div>
+        </div>
+        <div class="w-m3">Grivo<span class="d-m3">.</span><em>bet</em></div>
+      </div>
+    </div>
+    <div class="lbl">M3</div>
+    <h3>Barras finas · Inter 600</h3>
+    <p>Traços ultra-finos, largura decrescente. Wordmark em Inter — mais neutro e corporativo.</p>
+  </div>
+
+</div>
+
+<!-- SEM BARRAS -->
+<div class="section-title">Wordmark puro (sem símbolo)</div>
+<div class="row">
+
+  <div class="card" onclick="pick(this,'d1')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="w-d1">Grivo<span class="dot-d1">.</span><em>bet</em></div>
+    </div>
+    <div class="lbl">D1</div>
+    <h3>Space Grotesk 700</h3>
+    <p>".bet" em peso leve, quase invisível. Elegância discreta — o nome fala sozinho.</p>
+  </div>
+
+  <div class="card" onclick="pick(this,'d2')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="d2-wrap">
+        <div class="d2-main">Grivo</div>
+        <div class="d2-dot">.</div>
+        <div class="d2-bet">bet</div>
+      </div>
+    </div>
+    <div class="lbl">D2</div>
+    <h3>Outfit 800 · bet menor</h3>
+    <p>"Grivo" em peso máximo, ".bet" pequeno e leve — hierarquia clara entre marca e extensão.</p>
+  </div>
+
+  <div class="card" onclick="pick(this,'d3')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="d3-wrap">
+        <div class="d3-main">Grivo</div>
+        <div class="d3-suffix">.bet</div>
+      </div>
+    </div>
+    <div class="lbl">D3</div>
+    <h3>Inter · .bet em gold</h3>
+    <p>"Grivo" em branco, ".bet" em dourado leve. O ponto dourado é o único elemento de cor — funciona como assinatura da marca.</p>
+  </div>
+
+</div>
+
+<script>
+  let selected = {};
+  function pick(el, choice) {
+    const group = choice[0];
+    document.querySelectorAll('.card').forEach(c => {
+      if (c.getAttribute('data-group') === group) c.classList.remove('selected');
+    });
+    el.classList.add('selected');
+    el.setAttribute('data-group', group);
+    selected[group] = choice;
+    if (window.__sendEvent) window.__sendEvent({ type:'click', choice, text: el.querySelector('h3').textContent });
+  }
+</script>
+</body>
+</html>

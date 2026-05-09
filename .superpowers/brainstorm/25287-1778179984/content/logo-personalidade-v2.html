@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo — Personalidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090f;
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    padding: 32px;
+    color: #fff;
+  }
+
+  h2 { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #555; margin-bottom: 28px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .option {
+    border: 1px solid #1e1e2e;
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .option:hover { border-color: #2e2e40; transform: translateY(-2px); }
+  .option.selected { border-color: #f0c040; box-shadow: 0 0 0 1px #f0c040; }
+
+  .preview {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1a1a28;
+  }
+
+  .label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #3a3a50;
+    margin-bottom: 6px;
+  }
+  h3 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+  p { font-size: 12px; color: #555; line-height: 1.6; }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  .check {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 20px; height: 20px;
+    border: 1.5px solid #2a2a3a;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+  .option.selected .check { background: #f0c040; border-color: #f0c040; color: #09090f; }
+
+  /* ── D: Minimalista ── */
+  .word-d {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    color: #fff;
+  }
+  .word-d em { font-style: normal; color: #444; font-weight: 300; }
+  .dot-d { color: #f0c040; }
+
+  /* ── E: Escudo / Institucional ── */
+  .shield {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .shield-mark {
+    width: 38px; height: 44px;
+    position: relative;
+  }
+  .shield-mark svg { width: 100%; height: 100%; }
+  .word-e {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .word-e small {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: #666;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  /* ── F: Neon / Cyber ── */
+  .neon-wrap { display: flex; align-items: center; gap: 8px; }
+  .neon-mark {
+    width: 36px; height: 36px;
+    border: 1.5px solid #1fd97a;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 12px rgba(31,217,122,0.4), inset 0 0 8px rgba(31,217,122,0.1);
+    font-size: 16px; font-weight: 900;
+    color: #1fd97a;
+    text-shadow: 0 0 8px #1fd97a;
+  }
+  .word-f {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 19px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255,255,255,0.1);
+  }
+  .word-f span { color: #1fd97a; text-shadow: 0 0 10px rgba(31,217,122,0.6); }
+
+  /* ── G: Geométrico Abstrato ── */
+  .geo-wrap { display: flex; align-items: center; gap: 10px; }
+  .geo-mark { width: 40px; height: 40px; position: relative; }
+  .geo-mark svg { width: 100%; height: 100%; }
+  .word-g {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    color: #fff;
+  }
+  .word-g span { color: #f0c040; font-weight: 300; }
+
+  /* ── H: Tipográfico Bold ── */
+  .typo-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .typo-main {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .typo-dot {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    color: #f0c040;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* ── I: Símbolo G transformado ── */
+  .g-wrap { display: flex; align-items: center; gap: 10px; }
+  .g-mark {
+    width: 42px; height: 42px;
+    background: #09090f;
+    border: 2px solid #f0c040;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900;
+    color: #f0c040;
+    position: relative;
+    overflow: hidden;
+  }
+  .g-mark::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 50%;
+    width: 12px; height: 2px;
+    background: #f0c040;
+    transform: translateY(-50%);
+  }
+  .word-i {
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .word-i b { color: #f0c040; font-weight: 900; }
+  .word-i em { font-style: normal; color: #555; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<h2>Mais direções de personalidade</h2>
+<p class="sub">Clique para selecionar a que mais combina com a Grivo.bet</p>
+
+<div class="grid">
+
+  <!-- D -->
+  <div class="option" onclick="pick(this,'d')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="word-d">grivo<span class="dot-d">.</span><em>bet</em></div>
+    </div>
+    <div class="label">Direção D</div>
+    <h3>Minimalista & Refinado</h3>
+    <p>Só tipografia. Sem símbolo. Nome em peso pesado com o ".bet" em contraste sutil — elegância pela ausência.</p>
+    <span class="tag" style="background:rgba(255,255,255,0.05);color:#888;border:1px solid #222;">Clean · Tipográfico · Maduro</span>
+  </div>
+
+  <!-- E -->
+  <div class="option" onclick="pick(this,'e')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="shield">
+        <div class="shield-mark">
+          <svg viewBox="0 0 38 44" fill="none">
+            <path d="M19 2L4 8v14c0 9.4 6.4 18.2 15 21 8.6-2.8 15-11.6 15-21V8L19 2z" fill="rgba(240,192,64,0.08)" stroke="#f0c040" stroke-width="1.5"/>
+            <text x="19" y="28" text-anchor="middle" font-family="Outfit" font-weight="900" font-size="16" fill="#f0c040">G</text>
+          </svg>
+        </div>
+        <div class="word-e">
+          Grivo
+          <small>.bet platform</small>
+        </div>
+      </div>
+    </div>
+    <div class="label">Direção E</div>
+    <h3>Escudo & Institucional</h3>
+    <p>Escudo com o "G" dentro. Transmite proteção, credibilidade, segurança. Ideal para gerar confiança imediata.</p>
+    <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Confiança · Segurança · Credibilidade</span>
+  </div>
+
+  <!-- F -->
+  <div class="option" onclick="pick(this,'f')">
+    <div class="check">✓</div>
+    <div class="preview" style="background:rgba(31,217,122,0.02);border-radius:8px;">
+      <div class="neon-wrap">
+        <div class="neon-mark">G</div>
+        <div class="word-f">grivo<span>.bet</span></div>
+      </div>
+    </div>
+    <div class="label">Direção F</div>
+    <h3>Cyber & Neon</h3>
+    <p>Verde neon com brilho, monospace, borda luminosa. Parece uma interface de hacker — para apostadores que se sentem superiores ao sistema.</p>
+    <span class="tag" style="background:rgba(31,217,122,0.08);color:#1fd97a;border:1px solid rgba(31,217,122,0.2);">Tech · Hacker · Edge</span>
+  </div>
+
+</div>
+
+<div class="grid">
+
+  <!-- G -->
+  <div class="option" onclick="pick(this,'g')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="geo-wrap">
+        <div class="geo-mark">
+          <svg viewBox="0 0 40 40" fill="none">
+            <!-- triângulo dourado -->
+            <polygon points="20,4 36,32 4,32" fill="none" stroke="#f0c040" stroke-width="2"/>
+            <!-- linha interna -->
+            <line x1="20" y1="4" x2="20" y2="32" stroke="#f0c040" stroke-width="1" opacity="0.4"/>
+            <line x1="4" y1="32" x2="36" y2="32" stroke="#f0c040" stroke-width="1" opacity="0.4"/>
+            <!-- ponto central -->
+            <circle cx="20" cy="22" r="3" fill="#f0c040"/>
+          </svg>
+        </div>
+        <div class="word-g">Grivo<span>.bet</span></div>
+      </div>
+    </div>
+    <div class="label">Direção G</div>
+    <h3>Geométrico & Abstrato</h3>
+    <p>Símbolo geométrico independente do "G" — triângulo ascendente com ponto focal. Evoca estratégia, cálculo, foco no alvo.</p>
+    <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Estratégia · Foco · Moderno</span>
+  </div>
+
+  <!-- H -->
+  <div class="option" onclick="pick(this,'h')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="typo-wrap">
+        <div class="typo-main">GRIVO</div>
+        <div class="typo-dot">· bet ·</div>
+      </div>
+    </div>
+    <div class="label">Direção H</div>
+    <h3>Tipográfico Impactante</h3>
+    <p>Nome em caixa alta, peso máximo, gradiente sutil. O ".bet" separado com bolinhas como elemento decorativo discreto.</p>
+    <span class="tag" style="background:rgba(255,255,255,0.05);color:#888;border:1px solid #222;">Força · Presença · Marcante</span>
+  </div>
+
+  <!-- I -->
+  <div class="option" onclick="pick(this,'i')">
+    <div class="check">✓</div>
+    <div class="preview">
+      <div class="g-wrap">
+        <div class="g-mark">G</div>
+        <div class="word-i"><b>Grivo</b><em>.bet</em></div>
+      </div>
+    </div>
+    <div class="label">Direção I</div>
+    <h3>Símbolo Circular</h3>
+    <p>O "G" dentro de um círculo dourado — simples, versátil, fácil de usar como favicon, avatar e ícone de app. Clássico mas atual.</p>
+    <span class="tag" style="background:rgba(240,192,64,0.08);color:#f0c040;border:1px solid rgba(240,192,64,0.2);">Versátil · Reconhecível · Clássico</span>
+  </div>
+
+</div>
+
+<script>
+  function pick(el, choice) {
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    if (window.__sendEvent) window.__sendEvent({ type: 'click', choice, text: el.querySelector('h3').textContent });
+  }
+</script>
+</body>
+</html>

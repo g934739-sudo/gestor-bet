@@ -3,101 +3,563 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GestorBet — Termos de Uso</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <title>Grivo.bet — Termos de Uso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-    body { font-family:'Outfit',sans-serif; background:#09090f; color:#ededf5; }
+    :root {
+      --bg:#09090f; --s1:#0d0d18; --s2:#12121f;
+      --gold:#f0c040; --red:#f5445f; --green:#1fd97a; --blue:#5b9bf5;
+      --txt:#ededf5; --txt2:#9191ae; --txt3:#5a5a78;
+      --border:rgba(255,255,255,.06);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--txt); line-height:1.7; }
+
+    /* TOPBAR */
     .topbar {
-      height:52px; background:#0f0f18; border-bottom:1px solid #2a2a3c;
-      display:flex; align-items:center; padding:0 40px; position:sticky; top:0; z-index:10;
+      height:52px; background:#0b0b15; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; padding:0 32px;
+      position:sticky; top:0; z-index:100; backdrop-filter:blur(12px);
     }
-    .logo { font-size:17px; font-weight:900; text-decoration:none; color:#ededf5; }
-    .logo span { color:#f0c040; }
-    .back { margin-left:auto; font-size:12px; color:#6a6a85; text-decoration:none; }
-    .back:hover { color:#ededf5; }
-    .wrap { max-width:720px; margin:0 auto; padding:60px 24px 80px; }
-    .badge {
-      display:inline-block; background:#f0c04015; border:1px solid #f0c04040;
-      border-radius:20px; padding:5px 14px; margin-bottom:20px;
-      font-family:'JetBrains Mono',monospace; font-size:10px; color:#f0c040;
-      text-transform:uppercase; letter-spacing:1.5px;
+    .logo { font-size:16px; font-weight:900; text-decoration:none; color:var(--txt); display:flex; align-items:center; gap:8px; }
+    .logo-mark { width:26px; height:26px; background:var(--gold); border-radius:7px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:900; font-size:13px; color:#07070e; }
+    .logo-name span { color:var(--gold); }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:20px; }
+    .back { font-size:12px; color:var(--txt3); text-decoration:none; transition:color .2s; }
+    .back:hover { color:var(--txt); }
+    .topbar-badge { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--gold); background:rgba(240,192,64,.1); border:1px solid rgba(240,192,64,.2); padding:3px 10px; border-radius:20px; letter-spacing:1px; }
+
+    /* LAYOUT */
+    .layout { display:grid; grid-template-columns:260px 1fr; max-width:1100px; margin:0 auto; min-height:calc(100vh - 52px); }
+
+    /* SIDEBAR */
+    .sidebar {
+      padding:40px 0 60px 32px;
+      position:sticky; top:52px; height:calc(100vh - 52px);
+      overflow-y:auto; border-right:1px solid var(--border);
     }
-    h1 { font-size:32px; font-weight:900; margin-bottom:8px; }
-    .updated { font-size:12px; color:#6a6a85; margin-bottom:48px; }
-    h2 { font-size:16px; font-weight:700; color:#f0c040; margin:36px 0 12px; text-transform:uppercase; letter-spacing:0.5px; }
-    p { font-size:14px; color:#b0b0c8; line-height:1.8; margin-bottom:12px; }
-    ul { padding-left:20px; margin-bottom:12px; }
-    li { font-size:14px; color:#b0b0c8; line-height:1.8; margin-bottom:4px; }
-    .divider { border:none; border-top:1px solid #2a2a3c; margin:40px 0; }
-    .highlight {
-      background:#15151f; border:1px solid #2a2a3c; border-left:3px solid #f0c040;
-      border-radius:8px; padding:16px 20px; margin:16px 0;
+    .sidebar::-webkit-scrollbar { width:3px; }
+    .sidebar::-webkit-scrollbar-track { background:transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
+    .sidebar-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt3); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; margin-top:8px; }
+    .nav-item {
+      display:flex; align-items:center; gap:10px;
+      padding:7px 12px 7px 0; margin-bottom:2px;
+      text-decoration:none; color:var(--txt3); font-size:13px; font-weight:500;
+      border-radius:6px; transition:color .2s; position:relative;
     }
-    .highlight p { margin:0; }
+    .nav-item:hover { color:var(--txt); }
+    .nav-item.active { color:var(--gold); }
+    .nav-item.active::before {
+      content:''; position:absolute; left:-32px; top:50%; transform:translateY(-50%);
+      width:3px; height:20px; background:var(--gold); border-radius:0 2px 2px 0;
+    }
+    .nav-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); width:18px; flex-shrink:0; }
+    .nav-item.active .nav-num { color:var(--gold); }
+    .sidebar-divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+    .sidebar-contact { font-size:12px; color:var(--txt3); line-height:1.7; }
+    .sidebar-contact a { color:var(--gold); text-decoration:none; }
+
+    /* MAIN CONTENT */
+    .main { padding:48px 60px 80px; max-width:760px; }
+
+    /* HERO */
+    .hero { margin-bottom:52px; }
+    .hero-badge { display:inline-flex; align-items:center; gap:7px; background:rgba(240,192,64,.08); border:1px solid rgba(240,192,64,.2); border-radius:20px; padding:5px 14px; margin-bottom:20px; }
+    .hero-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--gold); }
+    .hero-badge span { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; }
+    .hero h1 { font-size:36px; font-weight:900; line-height:1.15; margin-bottom:12px; letter-spacing:-.02em; }
+    .hero-meta { font-size:12px; color:var(--txt3); margin-bottom:28px; }
+    .hero-meta span { color:var(--txt2); }
+    .hero-summary { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+    .summary-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+    .summary-icon { margin-bottom:8px; }
+    .summary-title { font-size:13px; font-weight:700; color:var(--txt); margin-bottom:3px; }
+    .summary-desc { font-size:11px; color:var(--txt3); line-height:1.5; }
+
+    /* SECTIONS */
+    .section { margin-bottom:56px; scroll-margin-top:80px; }
+    .section-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .section-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .icon-gold { background:rgba(240,192,64,.12); }
+    .icon-red  { background:rgba(245,68,95,.12); }
+    .icon-green{ background:rgba(31,217,122,.12); }
+    .icon-blue { background:rgba(91,155,245,.12); }
+    .icon-gray { background:rgba(255,255,255,.06); }
+    .section-title-wrap { flex:1; }
+    .section-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); letter-spacing:1px; margin-bottom:4px; }
+    .section-title { font-size:18px; font-weight:800; color:var(--txt); letter-spacing:-.01em; }
+
+    p { font-size:14px; color:var(--txt2); line-height:1.85; margin-bottom:14px; }
+    p strong { color:var(--txt); }
+    ul { padding-left:0; margin-bottom:16px; list-style:none; }
+    ul li { font-size:14px; color:var(--txt2); line-height:1.8; margin-bottom:8px; padding-left:20px; position:relative; }
+    ul li::before { content:'—'; position:absolute; left:0; color:var(--txt3); font-size:12px; }
+    ul li strong { color:var(--txt); }
+    a { color:var(--gold); }
+
+    /* BLOCKS */
+    .block { border-radius:10px; padding:18px 22px; margin:18px 0 22px; }
+    .block-gold { background:rgba(240,192,64,.06); border:1px solid rgba(240,192,64,.18); }
+    .block-red  { background:rgba(245,68,95,.06);  border:1px solid rgba(245,68,95,.2); }
+    .block-green{ background:rgba(31,217,122,.06); border:1px solid rgba(31,217,122,.18); }
+    .block p { margin:0; font-size:13.5px; line-height:1.8; }
+    .block-gold p { color:#d4aa38; }
+    .block-red  p { color:#c87080; }
+    .block-green p { color:#48a878; }
+    .block p strong { color:var(--txt); }
+    .block-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; font-weight:600; }
+    .block-gold .block-label { color:var(--gold); }
+    .block-red  .block-label { color:var(--red); }
+    .block-green .block-label { color:var(--green); }
+
+    /* CHECKLIST */
+    .checklist { list-style:none; padding:0; margin-bottom:16px; }
+    .checklist li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--txt2); line-height:1.7; margin-bottom:10px; padding-left:0; }
+    .checklist li::before { display:none; }
+    .check-icon { width:18px; height:18px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+    .check-green { background:rgba(31,217,122,.15); }
+    .check-red   { background:rgba(245,68,95,.15); }
+
+    /* PROHIBITED GRID */
+    .prohibited-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; }
+    .prohibited-item { display:flex; align-items:flex-start; gap:10px; background:var(--s1); border:1px solid var(--border); border-radius:8px; padding:12px 14px; font-size:13px; color:var(--txt2); line-height:1.5; }
+    .prohibited-item svg { flex-shrink:0; margin-top:1px; }
+
+    /* PAYMENT CARDS */
+    .payment-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+    .payment-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .payment-card-icon { margin-bottom:8px; }
+    .payment-card-title { font-size:13px; font-weight:700; color:var(--txt); margin-bottom:4px; }
+    .payment-card-desc { font-size:12px; color:var(--txt3); line-height:1.5; }
+
+    /* FOOTER */
+    .footer { border-top:1px solid var(--border); padding:32px 60px; display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto; }
+    .footer-left { font-size:12px; color:var(--txt3); }
+    .footer-right { display:flex; gap:20px; }
+    .footer-right a { font-size:12px; color:var(--txt3); text-decoration:none; transition:color .2s; }
+    .footer-right a:hover { color:var(--gold); }
+
+    @media(max-width:768px) {
+      .layout { grid-template-columns:1fr; }
+      .sidebar { display:none; }
+      .main { padding:32px 20px 60px; }
+      .hero-summary { grid-template-columns:1fr; }
+      .prohibited-grid, .payment-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
 
   <div class="topbar">
-    <a href="site.html" class="logo">Gestor<span>Bet</span></a>
-    <a href="site.html" class="back">← Voltar ao site</a>
+    <a href="index.html" class="logo">
+      <div class="logo-mark">G</div>
+      <div class="logo-name">Grivo<span>.bet</span></div>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge">Legal</span>
+      <a href="index.html" class="back">← Voltar ao site</a>
+    </div>
   </div>
 
-  <div class="wrap">
-    <div class="badge">Legal</div>
-    <h1>Termos de Uso</h1>
-    <p class="updated">Última atualização: [DATA]</p>
+  <div class="layout">
 
-    <div class="highlight">
-      <p>Ao criar uma conta ou utilizar o GestorBet, você declara ter lido, compreendido e concordado com estes Termos de Uso.</p>
-    </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-label">Termos de Uso</div>
 
-    <h2>1. Sobre o GestorBet</h2>
-    <p>O GestorBet é uma ferramenta de gestão de apostas que auxilia o usuário na execução de estratégias de apostas por meio de cálculos automáticos de stake, controle de stop loss, stop win e dashboard de resultados.</p>
-    <p>O GestorBet é um software de apoio à gestão. <strong>Não garantimos lucros, não realizamos apostas em nome do usuário e não somos uma casa de apostas.</strong></p>
+      <nav id="sidebar-nav">
+        <a class="nav-item active" href="#s1"><span class="nav-num">01</span>Definições</a>
+        <a class="nav-item" href="#s2"><span class="nav-num">02</span>Sobre o Grivo.bet</a>
+        <a class="nav-item" href="#s3"><span class="nav-num">03</span>Natureza do Serviço</a>
+        <a class="nav-item" href="#s4"><span class="nav-num">04</span>Isenção de Responsabilidade</a>
+        <a class="nav-item" href="#s5"><span class="nav-num">05</span>Elegibilidade</a>
+        <a class="nav-item" href="#s6"><span class="nav-num">06</span>Conta do Usuário</a>
+        <a class="nav-item" href="#s7"><span class="nav-num">07</span>Assinaturas e Pagamentos</a>
+        <a class="nav-item" href="#s8"><span class="nav-num">08</span>Condutas Proibidas</a>
+        <a class="nav-item" href="#s9"><span class="nav-num">09</span>Limitação de Responsabilidade</a>
+        <a class="nav-item" href="#s10"><span class="nav-num">10</span>Propriedade Intelectual</a>
+        <a class="nav-item" href="#s11"><span class="nav-num">11</span>Disponibilidade</a>
+        <a class="nav-item" href="#s12"><span class="nav-num">12</span>Rescisão</a>
+        <a class="nav-item" href="#s13"><span class="nav-num">13</span>Lei e Foro</a>
+        <a class="nav-item" href="#s14"><span class="nav-num">14</span>Disposições Gerais</a>
+        <a class="nav-item" href="#s15"><span class="nav-num">15</span>Contato</a>
+      </nav>
 
-    <h2>2. Elegibilidade</h2>
-    <ul>
-      <li>Você deve ter no mínimo 18 anos de idade para usar o GestorBet.</li>
-      <li>O uso da plataforma é permitido somente onde apostas esportivas e de cassino são legalmente permitidas.</li>
-      <li>É de responsabilidade do usuário verificar a legalidade das apostas em sua jurisdição.</li>
-    </ul>
+      <hr class="sidebar-divider">
 
-    <h2>3. Conta do usuário</h2>
-    <p>Você é responsável por manter a confidencialidade de suas credenciais de acesso. Qualquer atividade realizada em sua conta é de sua responsabilidade. Em caso de uso não autorizado, notifique-nos imediatamente em <a href="mailto:[EMAIL_SUPORTE]" style="color:#f0c040;">[EMAIL_SUPORTE]</a>.</p>
+      <div class="sidebar-contact">
+        Dúvidas?<br>
+        <a href="mailto:suporte@grivo.bet">suporte@grivo.bet</a>
+      </div>
+    </aside>
 
-    <h2>4. Assinaturas e pagamentos</h2>
-    <ul>
-      <li>O GestorBet oferece planos mensais, trimestrais e anuais.</li>
-      <li>As cobranças são realizadas automaticamente no período contratado.</li>
-      <li>Você pode cancelar sua assinatura a qualquer momento, com efeito no próximo ciclo de cobrança.</li>
-      <li>Oferecemos garantia de reembolso integral de 7 dias a partir da data de compra.</li>
-    </ul>
+    <!-- CONTENT -->
+    <main class="main">
 
-    <h2>5. Uso permitido</h2>
-    <p>Você concorda em usar o GestorBet apenas para fins legais e pessoais. É proibido:</p>
-    <ul>
-      <li>Compartilhar sua conta com terceiros</li>
-      <li>Reproduzir, vender ou redistribuir o software</li>
-      <li>Tentar acessar sistemas ou dados de outros usuários</li>
-      <li>Usar a plataforma para fins fraudulentos</li>
-    </ul>
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-badge"><div class="hero-badge-dot"></div><span>Versão 1.0 · Maio 2025</span></div>
+        <h1>Termos<br>de Uso</h1>
+        <p class="hero-meta">Última atualização: <span>07 de maio de 2025</span> &nbsp;·&nbsp; Versão <span>1.0</span></p>
 
-    <h2>6. Isenção de responsabilidade</h2>
-    <div class="highlight">
-      <p>Apostas envolvem risco financeiro. O GestorBet auxilia na execução de estratégias, mas <strong>não garante resultados financeiros positivos</strong>. Jogue com responsabilidade e apenas com valores que pode se dar ao luxo de perder.</p>
-    </div>
+        <div class="hero-summary">
+          <div class="summary-card">
+            <div class="summary-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="summary-title">Ferramenta, não casa de apostas</div>
+            <div class="summary-desc">Somos software de gestão. Não realizamos apostas nem movimentamos valores.</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="summary-title">Sem garantia de lucro</div>
+            <div class="summary-desc">Apostas envolvem risco real. Nenhuma estratégia elimina a possibilidade de perda.</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="summary-title">Garantia de 7 dias</div>
+            <div class="summary-desc">Reembolso integral nos primeiros 7 dias corridos após a contratação.</div>
+          </div>
+        </div>
+      </div>
 
-    <h2>7. Alterações nos termos</h2>
-    <p>Podemos atualizar estes termos a qualquer momento. Notificaremos os usuários por e-mail em caso de alterações relevantes. O uso contínuo da plataforma após as alterações implica concordância com os novos termos.</p>
+      <div class="block block-gold">
+        <div class="block-label">Importante</div>
+        <p>Ao acessar, criar uma conta ou utilizar qualquer recurso do Grivo.bet, você declara ter lido, compreendido e concordado integralmente com estes Termos. Caso não concorde, não utilize a plataforma.</p>
+      </div>
 
-    <h2>8. Contato</h2>
-    <p>Dúvidas sobre estes termos? Entre em contato: <a href="mailto:[EMAIL_SUPORTE]" style="color:#f0c040;">[EMAIL_SUPORTE]</a></p>
+      <!-- S1 -->
+      <div class="section" id="s1">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 01</div>
+            <div class="section-title">Definições</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>"Grivo" ou "Grivo.bet":</strong> a plataforma de software disponível em grivo.bet e seus subdomínios, incluindo todos os recursos, funcionalidades e conteúdos.</li>
+          <li><strong>"Usuário" ou "você":</strong> qualquer pessoa física que acessa ou utiliza a plataforma.</li>
+          <li><strong>"Serviço":</strong> as funcionalidades oferecidas, incluindo cálculo de stakes, controle de sessões, estratégias de gestão de banca e dashboard de resultados.</li>
+          <li><strong>"Casa de Apostas":</strong> plataformas de terceiros onde o Usuário realiza apostas, completamente independentes do Grivo.bet.</li>
+          <li><strong>"Banca":</strong> o montante financeiro gerenciado pelo Usuário, depositado e controlado exclusivamente em casas de apostas de terceiros.</li>
+        </ul>
+      </div>
 
-    <hr class="divider">
-    <p style="font-size:12px;color:#3a3a50;text-align:center;">© [ANO] GestorBet. Todos os direitos reservados.</p>
+      <!-- S2 -->
+      <div class="section" id="s2">
+        <div class="section-header">
+          <div class="section-icon icon-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 02</div>
+            <div class="section-title">Sobre o Grivo.bet</div>
+          </div>
+        </div>
+        <p>O Grivo.bet é uma ferramenta de software para gestão e organização de apostas. A plataforma auxilia o usuário na estruturação de sessões, execução de estratégias matemáticas, controle de limites e visualização de histórico de resultados.</p>
+        <div class="block block-gold">
+          <p><strong>O Grivo.bet não é uma casa de apostas, não realiza apostas em nome do Usuário, não movimenta valores financeiros e não possui qualquer relação com plataformas de apostas de terceiros.</strong> Funciona exclusivamente como ferramenta de organização e suporte à decisão.</p>
+        </div>
+      </div>
+
+      <!-- S3 -->
+      <div class="section" id="s3">
+        <div class="section-header">
+          <div class="section-icon icon-red">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 03</div>
+            <div class="section-title">Natureza do Serviço e Ausência de Aconselhamento</div>
+          </div>
+        </div>
+        <div class="block block-red">
+          <div class="block-label">Atenção</div>
+          <p><strong>O Grivo.bet não presta aconselhamento financeiro, não oferece dicas de apostas e não realiza análises preditivas de resultados.</strong> As estratégias disponíveis (Martingale, Fibonacci, D'Alembert, Oscar's Grind, Flat Betting e similares) são métodos matemáticos de gestão de banca de uso amplamente documentado. Sua aplicação não garante lucro e não elimina o risco inerente às apostas.</p>
+        </div>
+        <p>Nenhuma informação, cálculo, sugestão ou resultado exibido pela plataforma deve ser interpretado como garantia de retorno financeiro ou recomendação de investimento. O Usuário é o único responsável por suas decisões de aposta.</p>
+        <p>O resultado de qualquer aposta depende exclusivamente de fatores externos — sorte, desempenho esportivo, resultados de jogos de cassino — sobre os quais o Grivo.bet não tem qualquer controle ou influência.</p>
+      </div>
+
+      <!-- S4 -->
+      <div class="section" id="s4">
+        <div class="section-header">
+          <div class="section-icon icon-red">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 04</div>
+            <div class="section-title">Isenção de Responsabilidade por Perdas Financeiras</div>
+          </div>
+        </div>
+        <div class="block block-red">
+          <div class="block-label">Cláusula de Isenção</div>
+          <p><strong>O Grivo.bet não se responsabiliza, em nenhuma hipótese, por perdas financeiras decorrentes do uso da plataforma.</strong> Apostas envolvem risco real de perda de capital. O uso de qualquer estratégia de gestão de banca não garante lucros e pode resultar em perda parcial ou total dos valores apostados.</p>
+        </div>
+        <p>Ao utilizar o Grivo.bet, o Usuário reconhece e aceita expressamente que:</p>
+        <ul class="checklist">
+          <li><div class="check-icon check-red"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>Apostas são atividades de alto risco financeiro;</li>
+          <li><div class="check-icon check-red"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>A aplicação de estratégias matemáticas não elimina o risco de perda;</li>
+          <li><div class="check-icon check-red"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>Qualquer perda financeira é de responsabilidade exclusiva do Usuário;</li>
+          <li><div class="check-icon check-red"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>O Grivo.bet não pode ser responsabilizado por perdas em apostas realizadas com ou sem auxílio da plataforma;</li>
+          <li><div class="check-icon check-red"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>O Usuário deve apostar apenas valores que pode perder sem comprometer seu sustento;</li>
+          <li><div class="check-icon check-red"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>Resultados passados exibidos no histórico não são garantia de resultados futuros.</li>
+        </ul>
+        <p>O Usuário concorda que não buscará responsabilizar o Grivo.bet ou seus sócios, funcionários, representantes ou parceiros por perdas financeiras de qualquer natureza, incluindo perdas diretas, indiretas, incidentais ou consequenciais.</p>
+      </div>
+
+      <!-- S5 -->
+      <div class="section" id="s5">
+        <div class="section-header">
+          <div class="section-icon icon-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 05</div>
+            <div class="section-title">Elegibilidade e Restrições de Uso</div>
+          </div>
+        </div>
+        <ul class="checklist">
+          <li><div class="check-icon check-green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Ter no mínimo <strong>18 (dezoito) anos de idade;</strong></li>
+          <li><div class="check-icon check-green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Estar em jurisdição onde o uso de ferramentas de gestão de apostas é legalmente permitido;</li>
+          <li><div class="check-icon check-green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Utilizar a plataforma para fins pessoais e não comerciais.</li>
+        </ul>
+        <p>É de responsabilidade exclusiva do Usuário verificar a legalidade das apostas na sua jurisdição. Ao se cadastrar, o Usuário declara, sob sua inteira responsabilidade, que atende a todos os requisitos acima.</p>
+      </div>
+
+      <!-- S6 -->
+      <div class="section" id="s6">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 06</div>
+            <div class="section-title">Conta do Usuário</div>
+          </div>
+        </div>
+        <p>O Usuário é responsável por manter a confidencialidade de suas credenciais. É vedado compartilhar conta com terceiros. Toda atividade realizada através da conta é de sua responsabilidade exclusiva.</p>
+        <p>O Grivo.bet pode suspender ou encerrar contas com indícios de uso compartilhado, fraude ou violação destes Termos, sem aviso prévio e sem reembolso.</p>
+        <p>Em caso de acesso não autorizado, notifique imediatamente: <a href="mailto:suporte@grivo.bet">suporte@grivo.bet</a></p>
+      </div>
+
+      <!-- S7 -->
+      <div class="section" id="s7">
+        <div class="section-header">
+          <div class="section-icon icon-green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 07</div>
+            <div class="section-title">Assinaturas e Pagamentos</div>
+          </div>
+        </div>
+        <div class="payment-grid">
+          <div class="payment-card">
+            <div class="payment-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1fd97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+            <div class="payment-card-title">Assinatura recorrente</div>
+            <div class="payment-card-desc">Cobrança automática no início de cada período contratado.</div>
+          </div>
+          <div class="payment-card">
+            <div class="payment-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="payment-card-title">Garantia de 7 dias</div>
+            <div class="payment-card-desc">Reembolso integral nos primeiros 7 dias corridos da primeira contratação.</div>
+          </div>
+          <div class="payment-card">
+            <div class="payment-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="payment-card-title">Cancelamento flexível</div>
+            <div class="payment-card-desc">Cancele a qualquer momento. Acesso ativo até o fim do período pago.</div>
+          </div>
+          <div class="payment-card">
+            <div class="payment-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="payment-card-title">Aviso de alteração de preço</div>
+            <div class="payment-card-desc">Preços alterados com 30 dias de antecedência. Não afeta assinaturas em vigência.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S8 -->
+      <div class="section" id="s8">
+        <div class="section-header">
+          <div class="section-icon icon-red">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 08</div>
+            <div class="section-title">Uso Permitido e Condutas Proibidas</div>
+          </div>
+        </div>
+        <p>O Usuário concorda em utilizar o Grivo.bet exclusivamente para fins pessoais e lícitos. São expressamente proibidas:</p>
+        <div class="prohibited-grid">
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Compartilhar conta ou credenciais com terceiros</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reproduzir, vender ou redistribuir o software</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Engenharia reversa ou descompilação</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Tentar acessar contas de outros usuários</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Uso para fins fraudulentos ou ilegais</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Interferir no funcionamento da plataforma</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Uso de bots ou automações não autorizadas</div>
+          <div class="prohibited-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Criar múltiplas contas para burlar limites</div>
+        </div>
+        <p>Qualquer violação autoriza o Grivo.bet a encerrar o acesso imediatamente e sem reembolso.</p>
+      </div>
+
+      <!-- S9 -->
+      <div class="section" id="s9">
+        <div class="section-header">
+          <div class="section-icon icon-red">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f5445f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 09</div>
+            <div class="section-title">Limitação de Responsabilidade</div>
+          </div>
+        </div>
+        <p>O Grivo.bet é fornecido <strong>"no estado em que se encontra"</strong>, sem garantias expressas ou implícitas de ausência de erros ou adequação a finalidade específica.</p>
+        <p>Na máxima extensão permitida pela legislação brasileira, o Grivo.bet e seus sócios, representantes e colaboradores não serão responsáveis por:</p>
+        <ul>
+          <li>Perdas financeiras de qualquer natureza, incluindo perdas em apostas;</li>
+          <li>Perda de lucros, receitas ou dados;</li>
+          <li>Interrupções, erros ou falhas temporárias no serviço;</li>
+          <li>Danos por acesso não autorizado decorrente de negligência do Usuário na guarda de credenciais;</li>
+          <li>Danos indiretos, incidentais, especiais ou consequenciais;</li>
+          <li>Decisões de aposta tomadas com base em dados da plataforma.</li>
+        </ul>
+        <div class="block block-gold">
+          <p>Em qualquer hipótese, a responsabilidade total do Grivo.bet fica limitada ao valor pago pelo Usuário nos últimos <strong>3 (três) meses</strong> de assinatura.</p>
+        </div>
+      </div>
+
+      <!-- S10 -->
+      <div class="section" id="s10">
+        <div class="section-header">
+          <div class="section-icon icon-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="14.31" y1="8" x2="20.05" y2="17.94"/><line x1="9.69" y1="8" x2="21.17" y2="8"/><line x1="7.38" y1="12" x2="13.12" y2="2.06"/><line x1="9.69" y1="16" x2="3.95" y2="6.06"/><line x1="14.31" y1="16" x2="2.83" y2="16"/><line x1="16.62" y1="12" x2="10.88" y2="21.94"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 10</div>
+            <div class="section-title">Propriedade Intelectual</div>
+          </div>
+        </div>
+        <p>Todo o conteúdo, código, design, marca, logotipo, textos e funcionalidades do Grivo.bet são de propriedade exclusiva da empresa operadora e protegidos pela legislação de propriedade intelectual aplicável.</p>
+        <p>A assinatura concede ao Usuário uma <strong>licença limitada, pessoal, intransferível e revogável</strong> para uso da plataforma nos termos aqui estabelecidos. Nenhum direito de propriedade é transferido ao Usuário.</p>
+      </div>
+
+      <!-- S11 -->
+      <div class="section" id="s11">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 11</div>
+            <div class="section-title">Disponibilidade e Modificações do Serviço</div>
+          </div>
+        </div>
+        <p>O Grivo.bet empreende esforços razoáveis para manter a plataforma disponível continuamente, mas não garante disponibilidade ininterrupta. Manutenções podem ocorrer sem aviso prévio.</p>
+        <p>Reservamo-nos o direito de modificar, adicionar ou remover funcionalidades a qualquer momento, sem que isso gere direito a reembolso ou indenização.</p>
+        <p>Alterações materiais nestes Termos serão comunicadas com antecedência mínima de <strong>15 dias</strong> por e-mail. O uso continuado implica aceitação dos novos termos.</p>
+      </div>
+
+      <!-- S12 -->
+      <div class="section" id="s12">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 12</div>
+            <div class="section-title">Rescisão</div>
+          </div>
+        </div>
+        <p>O Usuário pode encerrar sua conta a qualquer momento, cancelando a assinatura e solicitando exclusão de dados conforme a Política de Privacidade.</p>
+        <p>O Grivo.bet pode suspender ou encerrar o acesso em caso de violação destes Termos ou conduta fraudulenta, sem aviso prévio. Nos demais casos de encerramento unilateral, será oferecido reembolso proporcional ao período não utilizado.</p>
+      </div>
+
+      <!-- S13 -->
+      <div class="section" id="s13">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 13</div>
+            <div class="section-title">Lei Aplicável e Foro</div>
+          </div>
+        </div>
+        <p>Estes Termos são regidos pelas leis da <strong>República Federativa do Brasil</strong>. Fica eleito o foro da comarca de <strong>São Paulo – SP</strong> como competente para dirimir quaisquer controvérsias, com renúncia expressa a qualquer outro foro, por mais privilegiado que seja.</p>
+        <p>Antes de recorrer ao judiciário, o Usuário concorda em buscar resolução amigável com a equipe do Grivo.bet em <a href="mailto:suporte@grivo.bet">suporte@grivo.bet</a>, com prazo de <strong>30 dias</strong> para tentativa de acordo.</p>
+      </div>
+
+      <!-- S14 -->
+      <div class="section" id="s14">
+        <div class="section-header">
+          <div class="section-icon icon-gray">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9191ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 14</div>
+            <div class="section-title">Disposições Gerais</div>
+          </div>
+        </div>
+        <ul>
+          <li>A nulidade de qualquer cláusula não afeta as demais, que permanecem em pleno vigor.</li>
+          <li>A tolerância com qualquer descumprimento não constitui renúncia ao direito de exigir cumprimento posterior.</li>
+          <li>Estes Termos constituem o acordo integral entre o Usuário e o Grivo.bet, substituindo quaisquer entendimentos anteriores.</li>
+          <li>O Usuário não pode ceder seus direitos ou obrigações a terceiros sem consentimento prévio por escrito do Grivo.bet.</li>
+        </ul>
+      </div>
+
+      <!-- S15 -->
+      <div class="section" id="s15">
+        <div class="section-header">
+          <div class="section-icon icon-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="section-title-wrap">
+            <div class="section-num">CLÁUSULA 15</div>
+            <div class="section-title">Contato</div>
+          </div>
+        </div>
+        <div class="block block-gold">
+          <p><strong>E-mail:</strong> <a href="mailto:suporte@grivo.bet">suporte@grivo.bet</a><br>
+          <strong>Site:</strong> <a href="https://grivo.bet">grivo.bet</a></p>
+        </div>
+      </div>
+
+    </main>
   </div>
+
+  <footer class="footer">
+    <div class="footer-left">© 2025 Grivo.bet · Todos os direitos reservados</div>
+    <div class="footer-right">
+      <a href="privacidade.html">Política de Privacidade</a>
+      <a href="index.html">Voltar ao site</a>
+    </div>
+  </footer>
+
+  <script>
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navItems.forEach(item => item.classList.remove('active'));
+          const active = document.querySelector(`.nav-item[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin:'-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
 
 </body>
 </html>

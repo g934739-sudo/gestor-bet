@@ -38,7 +38,22 @@
       "Bash(npx vite *)",
       "Bash(open -a \"Google Chrome\" http://localhost:5173)",
       "Bash(git -C /Users/lucaendrigo/Documents/Projetos/gestor-bet status)",
-      "Bash(git -C /Users/lucaendrigo/Documents/Projetos/gestor-bet log --oneline -5)"
+      "Bash(git -C /Users/lucaendrigo/Documents/Projetos/gestor-bet log --oneline -5)",
+      "Bash(open -a \"Google Chrome\" /Users/lucaendrigo/Documents/Projetos/gestor-bet/login.html)",
+      "Bash(open -a \"Google Chrome\" \"/Users/lucaendrigo/Downloads/Fundamentos de Vibe Design/Banco de Referências/Design Systems/temas_escuros/lumina-video/design-system.html\")",
+      "Bash(open \"/Users/lucaendrigo/Downloads/Fundamentos de Vibe Design/Banco de Referências/Design Systems/temas_escuros/lumina-video/design-system.html\")",
+      "Bash(open -a \"Google Chrome\" \"http://localhost:8765/login.html\")",
+      "Read(//Users/lucaendrigo/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/**)",
+      "Bash(bash scripts/start-server.sh --project-dir /Users/lucaendrigo/Documents/Projetos/gestor-bet)",
+      "Bash(open /Users/lucaendrigo/Documents/Projetos/gestor-bet/e-mails/email-captacao.html)",
+      "Bash(open /Users/lucaendrigo/Documents/Projetos/gestor-bet/termos.html)",
+      "Bash(open /Users/lucaendrigo/Documents/Projetos/gestor-bet/privacidade.html)",
+      "Bash(python3 -m http.server 8080)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(open \"http://localhost:8080/e-mails/email-captacao.html\")",
+      "Bash(open \"http://localhost:8080/termos.html\")",
+      "Bash(open \"http://localhost:8080/privacidade.html\")",
+      "Bash(curl -s http://localhost:52495)"
     ]
   }
 }

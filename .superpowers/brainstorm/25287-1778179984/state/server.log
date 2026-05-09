@@ -1,0 +1,29 @@
+{"type":"server-started","port":52495,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:52495","screen_dir":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content","state_dir":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/state"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/estilo-visual.html"}
+{"source":"user-event","type":"click","text":"GESTORBET\n      Sua banca.Sob controle.\n      \n        +R$ 847 na última semana\n        usando Stop Loss automático\n      \n      \n        Ver como funciona →\n      \n    \n    \n      Dark Green\n      Verde que remete a lucro e crescimento. Tom mais técnico e orientado a resultados.","choice":"dark-green","id":null,"timestamp":1778180022593}
+{"source":"user-event","type":"click","text":"GESTORBET\n      Método.Não sorte.\n      Apostadores lucrativos seguem sistema.Nós automatizamos o seu.\n      \n        Quero conhecer →\n      \n    \n    \n      Minimal Claro\n      Fundo branco, tipografia forte. Destaca em caixas de entrada. Mais legível em mobile.","choice":"minimal-white","id":null,"timestamp":1778180023199}
+{"source":"user-event","type":"click","text":"GESTORBET\n      Você aposta.Ou segue estratégia?\n      A diferença entre lucrar e perderestá no método.\n      \n        Conhecer o GestorBet →\n      \n    \n    \n      Dark Gold\n      Fundo preto, acento dourado. Sofisticado e premium. Transmite autoridade e exclusividade.","choice":"dark-gold","id":null,"timestamp":1778180024072}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/gancho.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-mockup.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-mockup-v2.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-mockup-v3.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-final.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-visual.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-visual-v2.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-visual-v3.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-visual-v4.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-visual-v5.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/email-visual-v6.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/preview-tabs.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/logo-personalidade.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/logo-personalidade-v2.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-added","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/logo-refinado.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"screen-updated","file":"/Users/lucaendrigo/Documents/Projetos/gestor-bet/.superpowers/brainstorm/25287-1778179984/content/workspace.html"}
+{"type":"server-stopped","reason":"idle timeout"}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo — Personalidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090f;
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    padding: 40px 32px;
+    color: #fff;
+  }
+
+  h2 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .sub { font-size: 14px; color: #666; margin-bottom: 32px; }
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .option {
+    border: 1px solid #1e1e2e;
+    border-radius: 16px;
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option:hover { border-color: #333; transform: translateY(-2px); }
+  .option.selected { border-color: #f0c040 !important; box-shadow: 0 0 0 1px #f0c040; }
+
+  .option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .option.selected::before { opacity: 1; }
+
+  /* A — Premium */
+  .opt-a { background: linear-gradient(135deg, #0d0d18 0%, #12101a 100%); }
+  .opt-a .demo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .mark-a {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #f0c040, #d4a020);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+    color: #09090f;
+    letter-spacing: -1px;
+  }
+  .word-a { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .word-a span { color: #f0c040; }
+
+  /* B — Técnico */
+  .opt-b { background: linear-gradient(135deg, #090f18 0%, #0a1020 100%); }
+  .demo-b {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .mark-b {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #5b9bf5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .mark-b svg { width: 24px; height: 24px; }
+  .word-b { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: #e0e8ff; }
+  .word-b span { color: #5b9bf5; }
+
+  /* C — Bold */
+  .opt-c { background: linear-gradient(135deg, #0f090f 0%, #180a10 100%); }
+  .demo-c {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .mark-c {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mark-c-shape {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #1fd97a, #15b060);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: #09090f;
+  }
+  .word-c { font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; color: #fff; }
+  .word-c span { color: #1fd97a; }
+
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #444;
+    margin-bottom: 8px;
+  }
+
+  h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  p { font-size: 13px; color: #666; line-height: 1.6; }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+  .tag-gold { background: rgba(240,192,64,0.12); color: #f0c040; border: 1px solid rgba(240,192,64,0.2); }
+  .tag-blue { background: rgba(91,155,245,0.12); color: #5b9bf5; border: 1px solid rgba(91,155,245,0.2); }
+  .tag-green { background: rgba(31,217,122,0.12); color: #1fd97a; border: 1px solid rgba(31,217,122,0.2); }
+
+  .check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .option.selected .check { background: #f0c040; border-color: #f0c040; color: #09090f; }
+</style>
+</head>
+<body>
+
+<h2>Qual personalidade o logo deve transmitir?</h2>
+<p class="sub">Escolha a direção visual que melhor representa a marca Grivo.bet</p>
+
+<div class="options">
+
+  <!-- A: Premium -->
+  <div class="option opt-a" onclick="select(this,'a')">
+    <div class="check">✓</div>
+    <div class="demo">
+      <div class="mark-a">G</div>
+      <div class="word-a">Grivo<span>.bet</span></div>
+    </div>
+    <div class="label">Direção A</div>
+    <h3>Premium & Exclusivo</h3>
+    <p>Dourado, elegante, sofisticado. Parece caro. Transmite confiança e autoridade — como uma ferramenta que profissionais sérios usam.</p>
+    <span class="tag tag-gold">Ouro · Luxo · Autoridade</span>
+  </div>
+
+  <!-- B: Técnico -->
+  <div class="option opt-b" onclick="select(this,'b')">
+    <div class="check">✓</div>
+    <div class="demo-b demo">
+      <div class="mark-b">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5b9bf5" stroke-width="2" stroke-linecap="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div class="word-b">Grivo<span>.bet</span></div>
+    </div>
+    <div class="label">Direção B</div>
+    <h3>Técnico & Preciso</h3>
+    <p>Azul, monospace, dados. Parece uma plataforma de análise profissional. Transmite precisão matemática e controle — como um terminal de trading.</p>
+    <span class="tag tag-blue">Dados · Análise · Controle</span>
+  </div>
+
+  <!-- C: Bold -->
+  <div class="option opt-c" onclick="select(this,'c')">
+    <div class="check">✓</div>
+    <div class="demo-c">
+      <div class="mark-c">
+        <div class="mark-c-shape">G</div>
+      </div>
+      <div class="word-c">Grivo<span>.bet</span></div>
+    </div>
+    <div class="label">Direção C</div>
+    <h3>Arrojado & Energético</h3>
+    <p>Verde, geométrico, impactante. Transmite vitória e momentum. Para quem quer comunicar agressividade positiva — uma marca que grita confiança.</p>
+    <span class="tag tag-green">Vitória · Energia · Impacto</span>
+  </div>
+
+</div>
+
+<script>
+  function select(el, choice) {
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    if (window.__sendEvent) window.__sendEvent({ type: 'click', choice, text: el.querySelector('h3').textContent });
+  }
+</script>
+</body>
+</html>

@@ -249,14 +249,10 @@ async function onLogin(e) {
     console.warn('[gb] Falha ao gravar session_token (ignorando):', err);
   }
 
-  // Garantir que a sessão foi persistida no localStorage antes de redirecionar.
-  // Em alguns ambientes a persistência é assíncrona e o redirect pode disparar
-  // antes da gravação — esse loop curto evita que o app.html não encontre sessão.
-  for (let i = 0; i < 20; i++) {
-    const { data: s } = await supa.auth.getSession();
-    if (s?.session) break;
-    await new Promise(r => setTimeout(r, 50));
-  }
+  // Salva tokens diretamente para que app.html possa restaurar a sessão
+  // via setSession() — mais confiável que depender do storageKey do SDK.
+  localStorage.setItem('gb_access', data.session.access_token);
+  localStorage.setItem('gb_refresh', data.session.refresh_token);
 
   window.location.href = 'app.html';
 }

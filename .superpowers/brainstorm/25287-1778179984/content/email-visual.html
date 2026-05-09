@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GestorBet — Preview de E-mail</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#111;
+    font-family:'Outfit',Arial,sans-serif;
+    padding:40px 20px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .label {
+    color:#555;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:16px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .subject-bar {
+    width:100%;
+    max-width:560px;
+    background:#0e0e18;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:10px 10px 0 0;
+    padding:14px 24px;
+    margin-bottom:0;
+  }
+  .subject-label { color:#444; font-size:10px; letter-spacing:1.5px; font-family:'JetBrains Mono',monospace; margin-bottom:5px; }
+  .subject-text { color:#f0c040; font-size:13px; font-weight:600; margin-bottom:3px; }
+  .preview-text { color:#3a3a50; font-size:11px; }
+
+  /* EMAIL WRAPPER */
+  .email {
+    width:100%;
+    max-width:560px;
+    background:#07070e;
+    border:1px solid rgba(255,255,255,.06);
+    border-top:none;
+    border-radius:0 0 12px 12px;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* RADIAL GLOW TOP */
+  .email-glow {
+    position:absolute;
+    top:-80px; left:50%;
+    transform:translateX(-50%);
+    width:400px; height:300px;
+    background:radial-gradient(ellipse 60% 60% at 50% 40%, rgba(240,192,64,.10) 0%, transparent 70%);
+    pointer-events:none;
+  }
+
+  /* GOLD LINE TOP */
+  .gold-line {
+    width:100%;
+    height:1px;
+    background:linear-gradient(90deg, transparent 0%, #f0c040 30%, #1fd97a 70%, transparent 100%);
+  }
+
+  /* INNER CONTENT */
+  .email-body {
+    padding:48px 44px 40px;
+    position:relative;
+    z-index:1;
+  }
+
+  /* LOGO AREA */
+  .logo-wrap {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:44px;
+  }
+  .logo-mark {
+    width:34px; height:34px;
+    background:#f0c040;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:900; font-size:16px;
+    color:#07070e;
+  }
+  .logo-name {
+    font-size:15px; font-weight:800;
+    letter-spacing:-.01em;
+    color:#ededf7;
+  }
+  .logo-name span { color:#f0c040; }
+
+  /* EYEBROW */
+  .eyebrow {
+    display:flex; align-items:center; justify-content:center;
+    gap:7px;
+    margin-bottom:20px;
+  }
+  .eyebrow-badge {
+    background:rgba(240,192,64,.1);
+    border:1px solid rgba(240,192,64,.22);
+    color:#f0c040;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:.08em;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .eyebrow-dot {
+    width:5px; height:5px;
+    border-radius:50%;
+    background:#f0c040;
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:.4; transform:scale(.7); }
+  }
+
+  /* HEADLINE */
+  .headline {
+    text-align:center;
+    font-size:30px;
+    font-weight:900;
+    line-height:1.25;
+    color:#ededf7;
+    margin-bottom:8px;
+    letter-spacing:-.02em;
+  }
+  .headline-gold {
+    background:linear-gradient(135deg, #f0c040 0%, #ffd97a 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+  /* SUBTEXT */
+  .subtext {
+    text-align:center;
+    color:#9191ae;
+    font-size:14px;
+    line-height:1.8;
+    margin-bottom:36px;
+    max-width:360px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .subtext strong { color:#ededf7; font-weight:600; }
+
+  /* SEPARATOR */
+  .sep {
+    width:40px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(240,192,64,.4), transparent);
+    margin:0 auto 36px;
+  }
+
+  /* STRATEGIES BLOCK */
+  .strat-block {
+    background:#0c0c17;
+    border:1px solid rgba(255,255,255,.055);
+    border-radius:12px;
+    padding:22px 24px;
+    margin-bottom:28px;
+  }
+  .strat-label {
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    letter-spacing:2px;
+    color:#f0c040;
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .strat-pills {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .pill {
+    background:#12121f;
+    border:1px solid rgba(255,255,255,.07);
+    color:#9191ae;
+    font-size:11px;
+    padding:5px 14px;
+    border-radius:20px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .pill-gold {
+    background:rgba(240,192,64,.12);
+    border:1px solid rgba(240,192,64,.25);
+    color:#f0c040;
+    font-weight:600;
+  }
+  .strat-divider {
+    width:100%;
+    height:1px;
+    background:rgba(255,255,255,.04);
+    margin-bottom:16px;
+  }
+  .strat-features {
+    display:flex;
+    gap:20px;
+  }
+  .feat-item {
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#9191ae;
+    font-size:12px;
+  }
+  .feat-dot {
+    width:4px; height:4px;
+    border-radius:50%;
+    background:#1fd97a;
+    flex-shrink:0;
+  }
+
+  /* CTA */
+  .cta-wrap {
+    text-align:center;
+    margin-bottom:40px;
+  }
+  .cta-btn {
+    display:inline-block;
+    background:linear-gradient(135deg, #c89a20 0%, #f0c040 100%);
+    color:#07070e;
+    text-decoration:none;
+    padding:16px 44px;
+    border-radius:9999px;
+    font-size:14px;
+    font-weight:800;
+    letter-spacing:.01em;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-sub {
+    margin-top:12px;
+    color:#3a3a52;
+    font-size:11px;
+  }
+
+  /* FOOTER */
+  .email-footer {
+    border-top:1px solid rgba(255,255,255,.04);
+    padding:24px 44px;
+    text-align:center;
+  }
+  .footer-txt {
+    color:#3a3a52;
+    font-size:11px;
+    line-height:1.9;
+  }
+  .footer-txt a { color:#4a4a64; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="label">preview · e-mail de captação</div>
+
+<!-- SUBJECT BAR -->
+<div class="subject-bar">
+  <div class="subject-label">ASSUNTO</div>
+  <div class="subject-text">Estratégia bate sorte. Sempre.</div>
+  <div class="preview-text">Conheça a ferramenta que organiza o setup perfeito de operação para você.</div>
+</div>
+
+<!-- EMAIL -->
+<div class="email">
+  <div class="email-glow"></div>
+  <div class="gold-line"></div>
+
+  <div class="email-body">
+
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <div class="logo-mark">G</div>
+      <div class="logo-name">Gestor<span>Bet</span></div>
+    </div>
+
+    <!-- EYEBROW -->
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <div class="eyebrow-badge">CASSINO · ESPORTES</div>
+      <div class="eyebrow-dot"></div>
+    </div>
+
+    <!-- HEADLINE -->
+    <div class="headline">
+      Quer ser lucrativo<br>
+      <span class="headline-gold">no cassino e esportes?</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- SUBTEXT -->
+    <p class="subtext">
+      Conheça a ferramenta que integra as principais estratégias avançadas do mercado e organiza o <strong>setup perfeito de operação</strong> para você.
+    </p>
+
+    <!-- STRATEGIES -->
+    <div class="strat-block">
+      <div class="strat-label">// ESTRATÉGIAS DISPONÍVEIS</div>
+      <div class="strat-pills">
+        <span class="pill">Martingale</span>
+        <span class="pill">Fibonacci</span>
+        <span class="pill">Oscar's Grind</span>
+        <span class="pill">D'Alembert</span>
+        <span class="pill">Flat Betting</span>
+        <span class="pill pill-gold">+ muito mais</span>
+      </div>
+      <div class="strat-divider"></div>
+      <div class="strat-features">
+        <div class="feat-item"><div class="feat-dot"></div> Stop Loss automático</div>
+        <div class="feat-item"><div class="feat-dot"></div> Stop Win automático</div>
+        <div class="feat-item"><div class="feat-dot"></div> Gestão de banca</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a href="https://gestorbet.com.br" class="cta-btn">Conhecer o GestorBet →</a>
+      <div class="cta-sub">Sem cartão &nbsp;·&nbsp; Sem compromisso</div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="email-footer">
+    <div class="footer-txt">
+      Você recebeu este e-mail porque demonstrou interesse em apostas.<br>
+      <a href="#">Cancelar inscrição</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
