@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GestorBet — Gerencie sua banca como um profissional</title>
+<meta name="description" content="Estratégias automáticas, Stop Loss inteligente e dashboard em tempo real para apostadores de cassino e esportes.">
+<meta property="og:title" content="GestorBet — Gerencie sua banca como um profissional">
+<meta property="og:description" content="Estratégias automáticas, Stop Loss inteligente e dashboard em tempo real — para cassino e apostas esportivas.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23f0c040'/><text x='16' y='22' text-anchor='middle' font-family='monospace' font-weight='900' font-size='18' fill='%2309090f'>G</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─── */
+:root {
+  --bg:      #07070e;
+  --s1:      #0c0c17;
+  --s2:      #12121f;
+  --s3:      #181829;
+  --gold:    #f0c040;
+  --gold2:   #ffd97a;
+  --gdim:    rgba(240,192,64,.1);
+  --gglow:   rgba(240,192,64,.18);
+  --green:   #1fd97a;
+  --red:     #f5445f;
+  --txt:     #ededf7;
+  --txt2:    #9191ae;
+  --border:  rgba(255,255,255,.055);
+  --borderh: rgba(255,255,255,.11);
+  --r14:     14px;
+  --r20:     20px;
+  --r28:     28px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--bg); color:var(--txt);
+  font-family:'Outfit',sans-serif; line-height:1.65;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+
+/* ─── GLOBAL TOP LINE ─── */
+body::before {
+  content:''; position:fixed; top:0; left:0; right:0; height:1px; z-index:300; pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--gold) 30%,var(--green) 70%,transparent 100%);
+  opacity:.5;
+}
+
+/* ─── SCROLL REVEAL ─── */
+.sr {
+  opacity:0; transform:translateY(36px); filter:blur(5px);
+  transition:opacity .85s cubic-bezier(.22,1,.36,1),
+             transform .85s cubic-bezier(.22,1,.36,1),
+             filter .85s cubic-bezier(.22,1,.36,1);
+}
+.sr.in { opacity:1; transform:translateY(0); filter:blur(0); }
+.sr-d1 { transition-delay:.08s; }
+.sr-d2 { transition-delay:.16s; }
+.sr-d3 { transition-delay:.24s; }
+.sr-d4 { transition-delay:.32s; }
+.sr-d5 { transition-delay:.42s; }
+
+/* ─── KEYFRAMES ─── */
+@keyframes beam-fall {
+  0%   { transform:translateY(-100%); opacity:0; }
+  10%  { opacity:.8; }
+  90%  { opacity:.5; }
+  100% { transform:translateY(120vh); opacity:0; }
+}
+@keyframes floating-points {
+  0%   { transform:translateY(0) scale(1);    opacity:1; }
+  85%  { transform:translateY(-52px) scale(.7); opacity:.8; }
+  100% { transform:translateY(-56px) scale(0);  opacity:0; }
+}
+@keyframes spin-beam {
+  from { transform:rotate(0deg); }
+  to   { transform:rotate(360deg); }
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-12px); }
+}
+@keyframes livePulse {
+  0%  { box-shadow:0 0 0 0 rgba(31,217,122,.6); }
+  70% { box-shadow:0 0 0 7px rgba(31,217,122,0); }
+  100%{ box-shadow:0 0 0 0 rgba(31,217,122,0); }
+}
+@keyframes card-stack-rotate {
+  0%,100% { }
+  50%     { }
+}
+
+/* ─── NAV ─── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 5%; height:68px;
+  background:rgba(7,7,14,.75);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  transition:background .35s;
+}
+nav.scrolled { background:rgba(7,7,14,.95); border-bottom-color:var(--borderh); }
+.logo { display:flex; align-items:center; gap:.55rem; text-decoration:none; }
+.logo-mark {
+  width:32px; height:32px; border-radius:9px;
+  background:var(--gold); color:#07070e;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.9rem; font-weight:900; font-family:'JetBrains Mono',monospace;
+  box-shadow:0 0 16px rgba(240,192,64,.3);
+}
+.logo-name { font-weight:800; font-size:1.15rem; color:var(--txt); letter-spacing:-.02em; }
+.logo-name span { color:var(--gold); }
+.nav-links { display:flex; gap:2.2rem; list-style:none; }
+.nav-links a {
+  color:var(--txt2); text-decoration:none; font-size:.875rem; font-weight:500;
+  transition:color .2s; position:relative; padding-bottom:2px;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-2px; left:0; right:0; height:1px;
+  background:var(--gold); transform:scaleX(0); transform-origin:left;
+  transition:transform .3s cubic-bezier(.22,1,.36,1);
+}
+.nav-links a:hover { color:var(--txt); }
+.nav-links a:hover::after { transform:scaleX(1); }
+.nav-btns { display:flex; gap:.7rem; align-items:center; }
+.btn-ghost {
+  background:none; border:1px solid var(--borderh); color:var(--txt);
+  padding:.48rem 1.2rem; border-radius:10px; cursor:pointer;
+  font-family:inherit; font-size:.875rem; font-weight:500;
+  transition:border-color .2s, color .2s;
+}
+.btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+
+/* ─── PARTICLE BUTTON (nav CTA) ─── */
+.btn-particle {
+  position:relative; overflow:hidden; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:.5rem 1.35rem; border-radius:9999px; border:none;
+  background:radial-gradient(ellipse at 50% 0%,rgba(240,192,64,.35) 0%,transparent 70%),
+             linear-gradient(135deg,#c89a20 0%,var(--gold) 100%);
+  color:#07070e; font-size:.875rem; font-weight:700; font-family:inherit;
+  box-shadow:0 0 18px rgba(240,192,64,.35),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:filter .2s,transform .15s;
+}
+.btn-particle:hover { filter:brightness(1.1); transform:translateY(-1px); }
+.btn-particle::before {
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  background:linear-gradient(to bottom,rgba(255,255,255,.2) 0%,transparent 60%);
+  pointer-events:none;
+}
+.btn-particle .point {
+  position:absolute; width:3px; height:3px; border-radius:50%;
+  background:rgba(255,255,255,.9); pointer-events:none;
+  animation:floating-points 2s ease-in-out infinite;
+}
+.btn-particle .point:nth-child(1) { left:10%; animation-delay:0s; }
+.btn-particle .point:nth-child(2) { left:28%; animation-delay:.3s; }
+.btn-particle .point:nth-child(3) { left:44%; animation-delay:.6s; }
+.btn-particle .point:nth-child(4) { left:60%; animation-delay:.2s; }
+.btn-particle .point:nth-child(5) { left:76%; animation-delay:.5s; }
+.btn-particle .point:nth-child(6) { left:88%; animation-delay:.8s; }
+
+/* ─── HERO ─── */
+#hero {
+  min-height:100dvh; position:relative; overflow:hidden;
+  display:flex; align-items:center;
+  padding:100px 5% 80px;
+}
+
+/* Vertical grid lines + falling beams */
+.hero-grid-bg {
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  display:flex; max-width:1400px; margin:0 auto; width:100%;
+  border-right:1px solid rgba(255,255,255,.04);
+}
+.hero-col {
+  flex:1; border-left:1px solid rgba(255,255,255,.04);
+  position:relative; overflow:hidden;
+}
+.hero-col::after {
+  content:attr(data-n); position:absolute; bottom:20px; left:8px;
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; color:rgba(255,255,255,.08);
+}
+.beam {
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:1px; height:30%;
+  background:linear-gradient(to bottom,transparent,var(--gold),transparent);
+}
+.beam-1 { animation:beam-fall 6s linear infinite; animation-delay:0s; }
+.beam-2 { animation:beam-fall 8s linear infinite; animation-delay:2s; height:40%; }
+.beam-3 { animation:beam-fall 7s linear infinite; animation-delay:4s; }
+.beam-4 { animation:beam-fall 9s linear infinite; animation-delay:1s; height:50%; }
+.beam-gold { background:linear-gradient(to bottom,transparent,rgba(240,192,64,.9),transparent); }
+.beam-dim { background:linear-gradient(to bottom,transparent,rgba(240,192,64,.5),transparent); }
+
+/* ambient bg */
+.hero-ambient {
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 60% 55% at 65% 35%,rgba(240,192,64,.06) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 40% at 20% 70%,rgba(31,217,122,.04) 0%,transparent 60%);
+}
+
+.hero-content {
+  position:relative; z-index:1; width:100%;
+  display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center;
+  max-width:1200px; margin:0 auto;
+}
+
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:.5rem;
+  background:var(--gdim); border:1px solid rgba(240,192,64,.22);
+  color:var(--gold); padding:.32rem 1rem; border-radius:20px;
+  font-size:.72rem; font-weight:600; letter-spacing:.06em;
+  margin-bottom:1.8rem; font-family:'JetBrains Mono',monospace;
+}
+.eyebrow-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); animation:livePulse 2s infinite; }
+
+#hero h1 {
+  font-size:clamp(2.8rem,5.5vw,4.6rem); font-weight:900;
+  line-height:1.0; letter-spacing:-.04em; margin-bottom:1.5rem;
+}
+#hero h1 em {
+  font-style:normal;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+#hero p {
+  color:var(--txt2); font-size:1.1rem; line-height:1.72;
+  max-width:460px; margin-bottom:2.5rem;
+}
+.hero-actions { display:flex; gap:.85rem; flex-wrap:wrap; margin-bottom:2.8rem; }
+
+/* ─── ROTATING BEAM CTA BUTTON ─── */
+.btn-beam {
+  position:relative; display:inline-flex; align-items:center; gap:10px;
+  padding:.85rem 1.8rem; border-radius:9999px; cursor:pointer;
+  background:rgba(255,255,255,.04); backdrop-filter:blur(12px);
+  border:none; color:var(--txt); font-size:1rem; font-weight:600;
+  font-family:inherit; letter-spacing:-.01em;
+  transition:background .2s;
+  box-shadow:0 0 24px rgba(240,192,64,.18),0 8px 32px rgba(240,192,64,.1);
+}
+.btn-beam:hover { background:rgba(255,255,255,.07); }
+.btn-beam-ring {
+  position:absolute; inset:-1px; border-radius:9999px; overflow:hidden; pointer-events:none;
+}
+.btn-beam-ring::before {
+  content:'';
+  position:absolute; inset:-100%;
+  width:300%; height:300%;
+  background:conic-gradient(from 0deg,transparent 0deg,transparent 60deg,rgba(240,192,64,.9) 180deg,transparent 300deg,transparent 360deg);
+  animation:spin-beam 3s linear infinite;
+}
+.btn-beam-bg {
+  position:absolute; inset:1px; border-radius:9999px;
+  background:rgba(10,10,20,.95); z-index:0;
+}
+.btn-beam-icon {
+  position:relative; z-index:1;
+  width:28px; height:28px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#c89a20);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 12px rgba(240,192,64,.4);
+}
+.btn-beam-icon svg { width:12px; height:12px; stroke:none; fill:#07070e; }
+.btn-beam span { position:relative; z-index:1; }
+.btn-beam-arrow {
+  position:relative; z-index:1;
+  width:22px; height:22px; border-radius:50%;
+  background:rgba(255,255,255,.1); display:flex; align-items:center; justify-content:center;
+  transition:transform .3s;
+}
+.btn-beam:hover .btn-beam-arrow { transform:translateX(2px); }
+.btn-beam-arrow svg { width:10px; height:10px; stroke:var(--txt2); fill:none; }
+
+.hero-ghost {
+  background:none; border:1px solid var(--borderh); color:var(--txt);
+  padding:.85rem 1.6rem; border-radius:9999px; cursor:pointer;
+  font-family:inherit; font-size:1rem; font-weight:500;
+  transition:border-color .2s,color .2s;
+}
+.hero-ghost:hover { border-color:var(--gold); color:var(--gold); }
+
+.hero-social {
+  display:flex; align-items:center; gap:.85rem;
+  color:var(--txt2); font-size:.84rem;
+}
+.avatars { display:flex; }
+.av {
+  width:30px; height:30px; border-radius:50%;
+  border:2px solid var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.6rem; font-weight:700; margin-left:-9px;
+}
+.av:first-child { margin-left:0; }
+
+/* ─── HERO RIGHT: CARD STACK ─── */
+.hero-right {
+  display:flex; flex-direction:column; align-items:flex-end; gap:2rem;
+}
+.card-stack-wrap {
+  position:relative; width:280px; height:176px;
+  animation:float 6s ease-in-out infinite;
+}
+.card-stack-wrap::before {
+  content:''; position:absolute; inset:-40px;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(240,192,64,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.csi {
+  position:absolute; inset:0; border-radius:14px; overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);
+  background:var(--s1);
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  transition:transform .6s cubic-bezier(0.34,1.56,0.64,1), opacity .5s;
+}
+#csi-3 { transform:translateY(18px) scale(.9); opacity:.35; z-index:10; }
+#csi-2 { transform:translateY(9px) scale(.95); opacity:.6; z-index:20; }
+#csi-1 { transform:translateY(0) scale(1); opacity:1; z-index:30; }
+
+.csi-inner { padding:1.2rem; height:100%; display:flex; flex-direction:column; }
+.csi-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.9rem; }
+.csi-title { font-size:.78rem; font-weight:700; letter-spacing:-.01em; }
+.live-badge {
+  display:flex; align-items:center; gap:.3rem;
+  background:rgba(31,217,122,.1); border:1px solid rgba(31,217,122,.2);
+  color:var(--green); font-size:.6rem; font-weight:700;
+  padding:.18rem .55rem; border-radius:12px;
+}
+.live-dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:livePulse 2s infinite; }
+.csi-kpis { display:grid; grid-template-columns:1fr 1fr; gap:.45rem; margin-bottom:.8rem; }
+.ck { background:var(--s2); border:1px solid var(--border); border-radius:8px; padding:.5rem .7rem; }
+.ck-l { font-size:.58rem; color:var(--txt2); font-family:'JetBrains Mono',monospace; letter-spacing:.05em; margin-bottom:.18rem; }
+.ck-v { font-size:.9rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.csi-prog { display:flex; flex-direction:column; gap:.4rem; }
+.cp-row { display:flex; flex-direction:column; gap:.22rem; }
+.cp-head { display:flex; justify-content:space-between; font-size:.62rem; }
+.cp-track { height:4px; background:rgba(255,255,255,.05); border-radius:2px; overflow:hidden; }
+.cp-fill { height:100%; border-radius:2px; }
+
+/* Card 2 — Fibonacci */
+.csi-inner-2 { padding:1.2rem; height:100%; }
+.csi-label { font-size:.6rem; color:var(--txt2); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.5rem; }
+.csi-rounds { display:flex; gap:.25rem; flex-wrap:wrap; }
+.rd { width:22px; height:22px; border-radius:5px; font-size:.58rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.rd.w { background:rgba(31,217,122,.13); color:var(--green); }
+.rd.l { background:rgba(245,68,95,.1); color:var(--red); }
+
+/* Card 3 */
+.csi-chart { display:flex; align-items:flex-end; gap:2px; height:50px; margin-bottom:.6rem; }
+.cbar { flex:1; border-radius:2px 2px 0 0; min-height:3px; }
+
+/* Interactive steps */
+.hero-steps { display:flex; flex-direction:column; gap:.5rem; width:100%; max-width:280px; }
+.step-item {
+  display:flex; align-items:center; gap:.75rem; padding:.6rem .75rem;
+  border-radius:9px; cursor:pointer;
+  border:1px solid transparent; transition:all .3s;
+}
+.step-item:hover { background:rgba(255,255,255,.04); }
+.step-item.active {
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.1);
+  backdrop-filter:blur(12px);
+  transform:translateX(-8px);
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+}
+.step-badge {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.65rem; font-weight:700;
+  background:transparent; color:var(--txt2); transition:all .3s;
+}
+.step-item.active .step-badge {
+  background:var(--gold); color:#07070e;
+  box-shadow:0 0 12px rgba(240,192,64,.4);
+}
+.step-label { font-size:.82rem; font-weight:500; color:var(--txt2); transition:color .3s; }
+.step-item.active .step-label { color:var(--txt); }
+
+/* ─── PROOF STATS ─── */
+#proof {
+  background:var(--s1);
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+}
+.proof-inner { display:grid; grid-template-columns:repeat(4,1fr); }
+.proof-item {
+  padding:2.2rem 1.5rem; text-align:center; position:relative;
+  border-right:1px solid var(--border); transition:background .3s;
+}
+.proof-item:last-child { border-right:none; }
+.proof-item:hover { background:rgba(255,255,255,.015); }
+.proof-num {
+  display:block; font-size:clamp(2.2rem,4vw,3.2rem); font-weight:800;
+  font-family:'JetBrains Mono',monospace; letter-spacing:-.04em; line-height:1;
+  margin-bottom:.4rem;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.proof-lbl { color:var(--txt2); font-size:.82rem; }
+
+/* ─── EDITORIAL SECTION ─── */
+#editorial {
+  padding:120px 5%;
+  position:relative;
+}
+.editorial-tag {
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family:'JetBrains Mono',monospace; font-size:.68rem;
+  color:var(--gold); letter-spacing:.18em; text-transform:uppercase;
+  margin-bottom:2.5rem; background:var(--gdim);
+  border:1px solid rgba(240,192,64,.18); padding:.3rem .85rem; border-radius:20px;
+}
+.editorial-body {
+  position:relative; max-width:1100px;
+}
+.editorial-glow {
+  position:absolute; top:50%; left:40%; transform:translate(-50%,-50%);
+  width:60%; height:80%;
+  background:radial-gradient(ellipse,rgba(240,192,64,.07) 0%,transparent 70%);
+  pointer-events:none; border-radius:50%;
+}
+.editorial-text {
+  font-size:clamp(2rem,4.5vw,3.8rem); font-weight:700;
+  line-height:1.08; letter-spacing:-.03em;
+  color:rgba(255,255,255,.25);
+}
+.editorial-text strong { color:var(--txt); }
+.editorial-text em {
+  font-style:normal; color:var(--gold);
+}
+
+.editorial-stats {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:2rem; margin-top:5rem; padding-top:4rem;
+  border-top:1px solid var(--border);
+}
+.estat { display:flex; flex-direction:column; gap:.5rem; }
+.estat-num {
+  font-size:clamp(2.8rem,6vw,5rem); font-weight:300; line-height:1;
+  letter-spacing:-.04em; color:var(--txt);
+  font-family:'JetBrains Mono',monospace;
+}
+.estat-lbl { font-size:.95rem; font-weight:500; color:var(--txt2); }
+
+/* ─── SECTION BASE ─── */
+section { padding:120px 5%; }
+.section-tag {
+  display:inline-flex; align-items:center; gap:.45rem;
+  font-family:'JetBrains Mono',monospace; font-size:.68rem;
+  color:var(--gold); letter-spacing:.18em; text-transform:uppercase;
+  margin-bottom:1rem; background:var(--gdim);
+  border:1px solid rgba(240,192,64,.18); padding:.3rem .85rem; border-radius:20px;
+}
+h2.headline {
+  font-size:clamp(2rem,4vw,3.1rem); font-weight:800;
+  line-height:1.1; letter-spacing:-.03em; margin-bottom:.9rem;
+}
+h2.headline em {
+  font-style:normal;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.section-sub {
+  color:var(--txt2); font-size:1.05rem; max-width:520px;
+  line-height:1.72; margin-bottom:3.5rem;
+}
+.section-sub.c { margin:0 auto 3.5rem; text-align:center; max-width:560px; }
+.center-head { text-align:center; display:flex; flex-direction:column; align-items:center; }
+
+/* ─── ABOUT ─── */
+#about { background:var(--s1); }
+.about-layout { display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
+.about-points { display:flex; flex-direction:column; gap:1.75rem; }
+.apoint { display:flex; gap:1.1rem; align-items:flex-start; }
+.apoint-icon {
+  width:42px; height:42px; border-radius:12px; flex-shrink:0;
+  background:var(--gdim); border:1px solid rgba(240,192,64,.15);
+  display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+}
+.apoint-body h4 { font-weight:700; font-size:.95rem; margin-bottom:.3rem; }
+.apoint-body p { color:var(--txt2); font-size:.875rem; line-height:1.6; }
+.about-cards { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+.about-card {
+  background:var(--bg); border:1px solid var(--border); border-radius:var(--r14);
+  padding:1.5rem; cursor:default; position:relative; overflow:hidden;
+  transition:border-color .3s,transform .3s cubic-bezier(.22,1,.36,1);
+}
+.about-card::before {
+  content:''; position:absolute; inset:0; opacity:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 0%,var(--gdim),transparent);
+  transition:opacity .3s;
+}
+.about-card:hover { border-color:rgba(240,192,64,.28); transform:translateY(-3px); }
+.about-card:hover::before { opacity:1; }
+.about-card .icon { font-size:1.7rem; margin-bottom:.65rem; position:relative; }
+.about-card h4 { font-weight:700; font-size:.9rem; margin-bottom:.25rem; position:relative; }
+.about-card p { color:var(--txt2); font-size:.8rem; line-height:1.55; position:relative; }
+
+/* ─── FEATURES BENTO ─── */
+#features { }
+.bento {
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:auto auto auto;
+  gap:1px; background:var(--border);
+  border:1px solid var(--borderh); border-radius:var(--r28); overflow:hidden;
+}
+.bc {
+  background:var(--bg); padding:2rem;
+  position:relative; overflow:hidden;
+  transition:background .5s cubic-bezier(.22,1,.36,1);
+}
+.bc:hover { background:#0b0b16; }
+.bc-wide  { grid-column:span 2; }
+.bc-tall  { grid-column:3; grid-row:1/span 2; display:flex; flex-direction:column; }
+.bc-wide2 { grid-column:span 2; }
+.bc-glow-gold::before {
+  content:''; position:absolute; top:-80px; right:-80px; width:280px; height:280px;
+  background:radial-gradient(circle,rgba(240,192,64,.07) 0%,transparent 70%); pointer-events:none;
+}
+.bc-glow-green::before {
+  content:''; position:absolute; bottom:-60px; left:-60px; width:240px; height:240px;
+  background:radial-gradient(circle,rgba(31,217,122,.07) 0%,transparent 70%); pointer-events:none;
+}
+.bc-icon {
+  width:40px; height:40px; border-radius:11px; margin-bottom:1.1rem;
+  display:flex; align-items:center; justify-content:center; border:1px solid var(--border);
+  transition:transform .35s cubic-bezier(.22,1,.36,1);
+}
+.bc:hover .bc-icon { transform:scale(1.1); }
+.bc-icon svg { width:18px; height:18px; stroke-width:1.6; }
+.bc-icon.y { background:rgba(240,192,64,.07); color:var(--gold); }
+.bc-icon.g { background:rgba(31,217,122,.07); color:var(--green); }
+.bc-tag-sm { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; margin-bottom:.45rem; }
+.bc h3 { font-weight:700; font-size:1.05rem; letter-spacing:-.02em; margin-bottom:.4rem; }
+.bc > .bc-desc { color:var(--txt2); font-size:.84rem; line-height:1.62; }
+.sl-bars { display:flex; flex-direction:column; gap:.85rem; margin-top:1.5rem; }
+.sl-row { display:flex; flex-direction:column; gap:.32rem; }
+.sl-meta { display:flex; justify-content:space-between; font-size:.75rem; }
+.sl-lbl { color:var(--txt2); }
+.sl-val { font-family:'JetBrains Mono',monospace; font-weight:600; }
+.sl-track { height:5px; background:rgba(255,255,255,.04); border-radius:3px; overflow:hidden; }
+.sl-fill { height:100%; border-radius:3px; }
+.bc-badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.67rem; font-weight:600; padding:.2rem .65rem; border-radius:20px; margin-top:1.2rem; letter-spacing:.03em; }
+.bc-badge.g { background:rgba(31,217,122,.08); color:var(--green); border:1px solid rgba(31,217,122,.14); }
+.bc-badge.y { background:rgba(240,192,64,.08); color:var(--gold); border:1px solid rgba(240,192,64,.15); }
+.dash-chart { display:flex; align-items:flex-end; gap:3px; height:78px; margin:1.3rem 0 1.1rem; }
+.dbar { flex:1; border-radius:2px 2px 0 0; min-height:4px; }
+.dash-kpis { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; margin-top:auto; }
+.dk { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:9px; padding:.6rem .75rem; }
+.dk-l { font-size:.6rem; color:var(--txt2); font-family:'JetBrains Mono',monospace; letter-spacing:.06em; margin-bottom:.22rem; }
+.dk-v { font-size:.92rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.modos-list { display:flex; flex-direction:column; gap:.45rem; margin-top:1.3rem; }
+.ml-item {
+  display:flex; align-items:center; gap:.65rem; padding:.6rem .85rem;
+  border-radius:10px; font-size:.83rem; font-weight:500;
+  border:1px solid var(--border); background:rgba(255,255,255,.015);
+  transition:all .3s cubic-bezier(.22,1,.36,1);
+}
+.ml-item.on { background:rgba(240,192,64,.07); border-color:rgba(240,192,64,.2); color:var(--txt); }
+.ml-item:not(.on) { color:var(--txt2); }
+.ml-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.15); flex-shrink:0; }
+.ml-item.on .ml-dot { background:var(--gold); box-shadow:0 0 6px rgba(240,192,64,.5); }
+.banca-list { display:flex; flex-direction:column; gap:.45rem; margin-top:1.3rem; }
+.bl-item { display:flex; justify-content:space-between; align-items:center; padding:.6rem .85rem; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.015); }
+.bl-name { display:flex; align-items:center; gap:.5rem; font-size:.82rem; font-weight:500; }
+.bl-dot { width:7px; height:7px; border-radius:50%; }
+.bl-badge { font-size:.63rem; font-weight:700; padding:.18rem .55rem; border-radius:20px; font-family:'JetBrains Mono',monospace; }
+.hist-rows { margin-top:1.3rem; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.hist-row { display:grid; grid-template-columns:1fr auto auto; gap:1rem; align-items:center; padding:.7rem 1rem; border-bottom:1px solid var(--border); transition:background .2s; }
+.hist-row:last-child { border-bottom:none; }
+.hist-row:hover { background:rgba(255,255,255,.02); }
+.hn { font-weight:600; font-size:.8rem; }
+.hm { color:var(--txt2); font-size:.7rem; font-family:'JetBrains Mono',monospace; margin-top:.1rem; }
+.hroi { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.8rem; }
+.hbadge { font-size:.63rem; font-weight:700; padding:.18rem .55rem; border-radius:20px; white-space:nowrap; }
+.stake-table { margin-top:1.3rem; background:rgba(255,255,255,.025); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.sk-row { display:flex; justify-content:space-between; align-items:center; padding:.58rem 1rem; font-size:.79rem; border-bottom:1px solid var(--border); }
+.sk-row:last-child { border-bottom:none; }
+.sk-k { color:var(--txt2); }
+.sk-v { font-family:'JetBrains Mono',monospace; font-weight:600; }
+.sk-row.result { background:rgba(240,192,64,.04); }
+.sk-row.result .sk-v { color:var(--gold); font-size:.92rem; }
+
+/* ─── STRATEGIES ─── */
+#strategies { background:var(--s1); }
+.strat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.9rem; }
+.sc {
+  background:var(--bg); border:1px solid var(--border); border-radius:var(--r14);
+  padding:1.35rem; display:flex; flex-direction:column; gap:.5rem;
+  transition:border-color .3s,transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s;
+}
+.sc:hover { border-color:rgba(240,192,64,.3); transform:translateY(-5px); box-shadow:0 16px 40px rgba(0,0,0,.3),0 0 0 1px rgba(240,192,64,.06); }
+.sc-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.15rem; }
+.sc-name { font-weight:700; font-size:.9rem; letter-spacing:-.01em; }
+.sc-emoji { font-size:1.4rem; }
+.rb { font-size:.62rem; font-weight:700; padding:.18rem .52rem; border-radius:20px; white-space:nowrap; }
+.rl { background:rgba(31,217,122,.1); color:var(--green); }
+.rm { background:rgba(240,192,64,.1); color:var(--gold); }
+.rh { background:rgba(245,68,95,.1); color:var(--red); }
+.sc-desc { color:var(--txt2); font-size:.8rem; line-height:1.55; }
+.sc-tag { font-size:.7rem; color:var(--txt2); opacity:.65; font-family:'JetBrains Mono',monospace; }
+
+/* ─── PLANS ─── */
+#plans { }
+.plans-wrap { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; max-width:700px; margin:0 auto; }
+.plan-card {
+  background:var(--s1); border:1px solid var(--border); border-radius:var(--r20);
+  padding:2.2rem 2rem; display:flex; flex-direction:column; position:relative; overflow:hidden;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),border-color .3s;
+}
+.plan-card:hover { transform:translateY(-5px); }
+.plan-card.featured {
+  border-color:rgba(240,192,64,.45); background:var(--s2);
+  box-shadow:0 0 0 1px rgba(240,192,64,.18),0 32px 64px rgba(0,0,0,.35),0 0 80px rgba(240,192,64,.08);
+}
+.plan-card.featured::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold) 40%,var(--gold2) 60%,transparent);
+}
+.plan-pop { position:absolute; top:1.15rem; right:1.15rem; background:var(--gold); color:#07070e; font-size:.64rem; font-weight:800; letter-spacing:.04em; padding:.24rem .65rem; border-radius:20px; }
+.plan-tier { font-size:.75rem; font-weight:700; color:var(--txt2); letter-spacing:.12em; text-transform:uppercase; font-family:'JetBrains Mono',monospace; margin-bottom:.8rem; }
+.plan-price { margin-bottom:.35rem; }
+.plan-cur { font-size:.88rem; font-weight:700; color:var(--txt2); vertical-align:top; margin-top:.4rem; display:inline-block; }
+.plan-val { font-size:3.2rem; font-weight:900; line-height:1; letter-spacing:-.05em; }
+.plan-card.featured .plan-val { color:var(--gold); }
+.plan-period { font-size:.82rem; color:var(--txt2); margin-bottom:1.8rem; }
+.plan-divider { height:1px; background:var(--border); margin-bottom:1.5rem; }
+.plan-feats { display:flex; flex-direction:column; gap:.75rem; margin-bottom:2.2rem; flex:1; }
+.pf { display:flex; align-items:flex-start; gap:.65rem; font-size:.875rem; }
+.pf-mark { width:19px; height:19px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:.62rem; margin-top:.15rem; }
+.pf-mark.y { background:var(--gdim); color:var(--gold); }
+.pf-mark.g { background:rgba(31,217,122,.1); color:var(--green); }
+.pf-mark.off { background:var(--s2); color:var(--txt2); opacity:.5; }
+.pf.off { color:var(--txt2); opacity:.45; }
+.plan-btn {
+  width:100%; padding:.8rem; border-radius:11px;
+  font-family:inherit; font-size:.9rem; font-weight:700; cursor:pointer; border:none;
+  transition:all .22s; letter-spacing:-.01em;
+}
+.plan-btn.primary { background:var(--gold); color:#07070e; position:relative; overflow:hidden; }
+.plan-btn.primary::after { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.25) 50%,transparent 62%); transform:translateX(-150%); transition:transform .55s cubic-bezier(.22,1,.36,1); }
+.plan-btn.primary:hover { filter:brightness(1.07); }
+.plan-btn.primary:hover::after { transform:translateX(150%); }
+.plan-btn.secondary { background:none; border:1px solid var(--borderh); color:var(--txt); }
+.plan-btn.secondary:hover { border-color:var(--gold); color:var(--gold); }
+.plans-footnote { text-align:center; color:var(--txt2); font-size:.82rem; margin-top:1.75rem; opacity:.8; }
+
+/* ─── FAQ ─── */
+#faq { background:var(--s1); }
+.faq-list { max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:0; }
+.faq-item { border-bottom:1px solid var(--border); }
+.faq-trigger {
+  width:100%; text-align:left; background:none; border:none; cursor:pointer;
+  color:var(--txt); padding:1.25rem 0; font-family:inherit; font-size:.95rem; font-weight:600;
+  display:flex; justify-content:space-between; align-items:center; gap:1rem;
+  transition:color .2s;
+}
+.faq-trigger:hover { color:var(--gold); }
+.faq-icon-wrap { width:22px; height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--borderh); border-radius:50%; transition:transform .35s cubic-bezier(.22,1,.36,1),background .2s; }
+.faq-trigger[aria-expanded="true"] .faq-icon-wrap { transform:rotate(45deg); background:var(--gdim); border-color:rgba(240,192,64,.3); }
+.faq-icon-wrap svg { width:10px; height:10px; stroke:var(--txt2); }
+.faq-body { max-height:0; overflow:hidden; transition:max-height .45s cubic-bezier(.22,1,.36,1); }
+.faq-body-inner { color:var(--txt2); font-size:.9rem; line-height:1.72; padding-bottom:1.25rem; }
+
+/* ─── CTA FINAL ─── */
+#cta {
+  text-align:center; padding:140px 5%;
+  position:relative; overflow:hidden;
+  background:var(--bg);
+}
+#cta::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(240,192,64,.07) 0%,transparent 65%);
+}
+.cta-eyebrow {
+  display:inline-block; margin-bottom:1.5rem;
+  font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--gold);
+  background:var(--gdim); border:1px solid rgba(240,192,64,.22);
+  padding:.32rem 1rem; border-radius:20px;
+}
+#cta h2 {
+  font-size:clamp(2.4rem,5vw,4rem); font-weight:900;
+  line-height:1.0; letter-spacing:-.04em; margin-bottom:1.25rem;
+}
+#cta h2 em {
+  font-style:normal;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+#cta p { color:var(--txt2); font-size:1.1rem; max-width:480px; margin:0 auto 2.5rem; line-height:1.7; }
+.cta-btn-wrap { display:flex; justify-content:center; margin-bottom:1.5rem; }
+.cta-trust { color:var(--txt2); font-size:.82rem; opacity:.7; }
+
+/* ─── FOOTER ─── */
+footer {
+  background:var(--s1); border-top:1px solid var(--border);
+  padding:2.5rem 5%; display:flex; justify-content:space-between;
+  align-items:center; gap:1rem;
+}
+footer p { color:var(--txt2); font-size:.8rem; }
+.footer-links { display:flex; gap:1.5rem; }
+.footer-links a { color:var(--txt2); text-decoration:none; font-size:.8rem; transition:color .2s; }
+.footer-links a:hover { color:var(--gold); }
+
+/* ─── BACK TO TOP ─── */
+#back-top {
+  position:fixed; bottom:28px; right:28px; z-index:100;
+  width:42px; height:42px; border-radius:50%; border:1px solid var(--borderh);
+  background:rgba(7,7,14,.85); backdrop-filter:blur(16px);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  color:var(--txt2); opacity:0; pointer-events:none; transition:opacity .3s,transform .3s;
+}
+#back-top.show { opacity:1; pointer-events:auto; }
+#back-top:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-2px); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width:900px) {
+  .hero-content { grid-template-columns:1fr; gap:3rem; }
+  .hero-right { align-items:flex-start; }
+  .about-layout { grid-template-columns:1fr; gap:3rem; }
+  .bento { grid-template-columns:1fr; }
+  .bc-wide,.bc-tall,.bc-wide2 { grid-column:auto; grid-row:auto; }
+  .strat-grid { grid-template-columns:1fr 1fr; }
+  .proof-inner { grid-template-columns:1fr 1fr; }
+  .proof-item:nth-child(2) { border-right:none; }
+  .editorial-stats { grid-template-columns:1fr 1fr; }
+  .plans-wrap { grid-template-columns:1fr; max-width:380px; }
+  .nav-links { display:none; }
+  footer { flex-direction:column; text-align:center; }
+}
+@media (max-width:600px) {
+  .strat-grid { grid-template-columns:1fr; }
+  .proof-inner { grid-template-columns:1fr; }
+  .proof-item { border-right:none; border-bottom:1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav id="nav">
+  <a class="logo" href="#">
+    <div class="logo-mark">G</div>
+    <span class="logo-name">Gestor<span>Bet</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">Como funciona</a></li>
+    <li><a href="#features">Funcionalidades</a></li>
+    <li><a href="#strategies">Estratégias</a></li>
+    <li><a href="#plans">Planos</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="btn-ghost" onclick="location.href='login.html'">Entrar</button>
+    <button class="btn-particle" onclick="location.href='#plans'">
+      <i class="point"></i><i class="point"></i><i class="point"></i>
+      <i class="point"></i><i class="point"></i><i class="point"></i>
+      Assinar agora
+    </button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+
+  <!-- Vertical grid lines background -->
+  <div class="hero-grid-bg" aria-hidden="true">
+    <div class="hero-col" data-n="01"></div>
+    <div class="hero-col" data-n="02">
+      <div class="beam beam-1 beam-dim"></div>
+    </div>
+    <div class="hero-col" data-n="03">
+      <div class="beam beam-2 beam-gold"></div>
+    </div>
+    <div class="hero-col" data-n="04">
+      <div class="beam beam-3 beam-dim"></div>
+    </div>
+    <div class="hero-col" data-n="05">
+      <div class="beam beam-4 beam-gold" style="opacity:.5"></div>
+    </div>
+    <div class="hero-col" data-n="06"></div>
+  </div>
+
+  <div class="hero-ambient" aria-hidden="true"></div>
+
+  <div class="hero-content">
+
+    <!-- Left: text -->
+    <div>
+      <div class="hero-eyebrow sr sr-d1">
+        <div class="eyebrow-dot"></div>
+        GestorBet · Versão Pro 2.0
+      </div>
+      <h1 class="sr sr-d2">Pare de apostar<br>no <em>escuro.</em></h1>
+      <p class="sr sr-d3">Estratégias automáticas, Stop Loss inteligente e dashboard em tempo real — para cassino e apostas esportivas.</p>
+
+      <div class="hero-actions sr sr-d4">
+        <!-- Rotating beam button -->
+        <button class="btn-beam" onclick="location.href='#plans'">
+          <div class="btn-beam-ring"></div>
+          <div class="btn-beam-bg"></div>
+          <div class="btn-beam-icon">
+            <svg viewBox="0 0 12 12"><path d="M6 1l1.2 3.6h3.8l-3 2.4 1.2 3.6L6 8.4 2.8 10.6 4 7 1 4.6h3.8z"/></svg>
+          </div>
+          <span>Assinar agora</span>
+          <div class="btn-beam-arrow">
+            <svg viewBox="0 0 14 14"><path d="M3 7h8M7 3l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+          </div>
+        </button>
+        <button class="hero-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Como funciona ↓</button>
+      </div>
+
+      <div class="hero-social sr sr-d5">
+        <div class="avatars">
+          <div class="av" style="background:#3b82f6">LM</div>
+          <div class="av" style="background:#8b5cf6">AR</div>
+          <div class="av" style="background:#10b981">FP</div>
+          <div class="av" style="background:#f59e0b">CS</div>
+        </div>
+        <span>Mais de <strong style="color:var(--txt)">3.200 apostadores</strong> já usam</span>
+      </div>
+    </div>
+
+    <!-- Right: card stack + steps -->
+    <div class="hero-right sr sr-d3">
+
+      <!-- Card stack -->
+      <div class="card-stack-wrap">
+        <!-- Card 3 — bottom -->
+        <div class="csi" id="csi-3">
+          <div class="csi-inner-2">
+            <div class="csi-header">
+              <span class="csi-title">Anti-Martingale · Esportivo</span>
+            </div>
+            <div class="csi-label">Últimas rodadas</div>
+            <div class="csi-rounds">
+              <div class="rd w">W</div><div class="rd w">W</div><div class="rd w">W</div>
+              <div class="rd l">L</div><div class="rd w">W</div><div class="rd w">W</div>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 — middle -->
+        <div class="csi" id="csi-2">
+          <div class="csi-inner" style="padding:1rem">
+            <div class="csi-header">
+              <span class="csi-title">Fibonacci · Roleta</span>
+              <span style="font-size:.62rem;color:var(--txt2);font-family:'JetBrains Mono',monospace">20 rodadas</span>
+            </div>
+            <div class="csi-chart" id="heroMiniChart"></div>
+          </div>
+        </div>
+        <!-- Card 1 — top (active) -->
+        <div class="csi" id="csi-1">
+          <div class="csi-inner">
+            <div class="csi-header">
+              <span class="csi-title">Sessão ativa — Fibonacci</span>
+              <span class="live-badge"><div class="live-dot"></div>AO VIVO</span>
+            </div>
+            <div class="csi-kpis">
+              <div class="ck"><div class="ck-l">BANCA ATUAL</div><div class="ck-v" style="color:var(--green)">R$ 634</div></div>
+              <div class="ck"><div class="ck-l">LUCRO</div><div class="ck-v" style="color:var(--green)">+R$ 134</div></div>
+              <div class="ck"><div class="ck-l">ROI</div><div class="ck-v" style="color:var(--green)">+26,8%</div></div>
+              <div class="ck"><div class="ck-l">WIN RATE</div><div class="ck-v" style="color:var(--gold)">63%</div></div>
+            </div>
+            <div class="csi-prog">
+              <div class="cp-row">
+                <div class="cp-head"><span style="color:var(--txt2);font-size:.62rem">Stop Win R$750</span><span style="color:var(--green);font-size:.62rem;font-family:'JetBrains Mono',monospace">75%</span></div>
+                <div class="cp-track"><div class="cp-fill" style="width:75%;background:linear-gradient(90deg,rgba(31,217,122,.4),var(--green))"></div></div>
+              </div>
+              <div class="cp-row">
+                <div class="cp-head"><span style="color:var(--txt2);font-size:.62rem">Stop Loss R$400</span><span style="color:var(--red);font-size:.62rem;font-family:'JetBrains Mono',monospace">20%</span></div>
+                <div class="cp-track"><div class="cp-fill" style="width:20%;background:linear-gradient(90deg,rgba(245,68,95,.4),var(--red))"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive steps -->
+      <div class="hero-steps">
+        <div class="step-item active" id="step-1" onclick="activateStep(1)">
+          <div class="step-badge" id="badge-1">01</div>
+          <span class="step-label" id="label-1">Configura sessão</span>
+        </div>
+        <div class="step-item" id="step-2" onclick="activateStep(2)">
+          <div class="step-badge" id="badge-2">02</div>
+          <span class="step-label" id="label-2">Estratégia automática</span>
+        </div>
+        <div class="step-item" id="step-3" onclick="activateStep(3)">
+          <div class="step-badge" id="badge-3">03</div>
+          <span class="step-label" id="label-3">Stop Loss protege</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── PROOF ─── -->
+<div id="proof">
+  <div class="proof-inner">
+    <div class="proof-item"><span class="proof-num" data-target="3200" data-suffix="+">3.200+</span><div class="proof-lbl">Apostadores ativos</div></div>
+    <div class="proof-item"><span class="proof-num" data-target="8" data-suffix="">8</span><div class="proof-lbl">Estratégias testadas</div></div>
+    <div class="proof-item"><span class="proof-num" data-target="2.4" data-prefix="R$" data-suffix="M" data-decimal="1">R$2,4M</span><div class="proof-lbl">Em bancas gerenciadas</div></div>
+    <div class="proof-item"><span class="proof-num" data-target="94" data-suffix="%">94%</span><div class="proof-lbl">Taxa de satisfação</div></div>
+  </div>
+</div>
+
+<!-- ─── EDITORIAL ─── -->
+<section id="editorial">
+  <div class="editorial-tag sr">Sobre o GestorBet</div>
+  <div class="editorial-body">
+    <div class="editorial-glow" aria-hidden="true"></div>
+    <p class="editorial-text sr sr-d1">
+      <strong>Somos um gestor de apostas profissional</strong>
+      que automatiza estratégias, protege bancas e entrega
+      <em>dados reais</em>
+      para que apostadores tomem decisões com
+      <strong>disciplina e consistência</strong>
+      — em cassino e apostas esportivas, com qualquer casa de apostas do mundo.
+    </p>
+  </div>
+  <div class="editorial-stats">
+    <div class="estat sr sr-d1"><div class="estat-num">8</div><div class="estat-lbl">Estratégias disponíveis</div></div>
+    <div class="estat sr sr-d2"><div class="estat-num">94%</div><div class="estat-lbl">Taxa de satisfação</div></div>
+    <div class="estat sr sr-d3"><div class="estat-num">R$2,4M</div><div class="estat-lbl">Em bancas gerenciadas</div></div>
+    <div class="estat sr sr-d4"><div class="estat-num">3.200+</div><div class="estat-lbl">Apostadores ativos</div></div>
+  </div>
+</section>
+
+<!-- ─── ABOUT ─── -->
+<section id="about">
+  <div class="about-layout">
+    <div>
+      <div class="section-tag sr">Como funciona</div>
+      <h2 class="headline sr sr-d1">Disciplina e estratégia para apostadores <em>sérios</em></h2>
+      <p class="section-sub sr sr-d2">GestorBet automatiza suas estratégias, protege sua banca e te dá dados reais para tomar decisões melhores.</p>
+      <div class="about-points">
+        <div class="apoint sr sr-d2">
+          <div class="apoint-icon">🎯</div>
+          <div class="apoint-body">
+            <h4>Chega de perder por emoção</h4>
+            <p>O sistema aplica sua estratégia automaticamente, sem deixar o tilt ou a euforia influenciar suas apostas.</p>
+          </div>
+        </div>
+        <div class="apoint sr sr-d3">
+          <div class="apoint-icon">📊</div>
+          <div class="apoint-body">
+            <h4>Ganhos mais consistentes</h4>
+            <p>Com Stop Loss e Stop Win configurados, você protege seus lucros e limita suas perdas em qualquer sessão.</p>
+          </div>
+        </div>
+        <div class="apoint sr sr-d4">
+          <div class="apoint-icon">🔄</div>
+          <div class="apoint-body">
+            <h4>Funciona em qualquer modalidade</h4>
+            <p>Roleta, futebol, tênis, basquete, slots — o GestorBet se adapta ao seu mercado favorito.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="about-cards sr sr-d2">
+      <div class="about-card"><div class="icon">🎰</div><h4>Cassino</h4><p>Roleta, Blackjack, Crash, Slots e mais</p></div>
+      <div class="about-card"><div class="icon">⚽</div><h4>Esportivo</h4><p>Futebol, tênis, basquete, MMA e mais</p></div>
+      <div class="about-card"><div class="icon">📱</div><h4>Qualquer casa</h4><p>Bet365, Betano, Blaze e qualquer outra</p></div>
+      <div class="about-card"><div class="icon">🔒</div><h4>Banca protegida</h4><p>Stop Loss automático em toda sessão</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section id="features" style="background:var(--s1)">
+  <div class="center-head sr">
+    <div class="section-tag">Funcionalidades</div>
+    <h2 class="headline sr sr-d1">Tudo que você precisa para <em>jogar com disciplina</em></h2>
+    <p class="section-sub c sr sr-d2">Configurações profissionais que grandes apostadores usam — agora ao alcance de qualquer pessoa.</p>
+  </div>
+  <div class="bento sr sr-d2">
+    <div class="bc bc-wide bc-glow-gold">
+      <div class="bc-icon y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="bc-tag-sm">Proteção automática</div>
+      <h3>Stop Loss &amp; Stop Win</h3>
+      <p class="bc-desc">Define automaticamente o ponto de parada — protege seus ganhos e limita perdas sem precisar monitorar a sessão.</p>
+      <div class="sl-bars">
+        <div class="sl-row">
+          <div class="sl-meta"><span class="sl-lbl">Stop Win</span><span class="sl-val" style="color:var(--green)">R$750 <span style="opacity:.4;font-weight:400">meta</span></span></div>
+          <div class="sl-track"><div class="sl-fill" style="width:75%;background:linear-gradient(90deg,rgba(31,217,122,.4),var(--green))"></div></div>
+        </div>
+        <div class="sl-row">
+          <div class="sl-meta"><span class="sl-lbl">Stop Loss</span><span class="sl-val" style="color:var(--red)">R$400 <span style="opacity:.4;font-weight:400">limite</span></span></div>
+          <div class="sl-track"><div class="sl-fill" style="width:22%;background:linear-gradient(90deg,rgba(245,68,95,.4),var(--red))"></div></div>
+        </div>
+      </div>
+      <span class="bc-badge g">✓ Ativado automaticamente</span>
+    </div>
+    <div class="bc bc-tall bc-glow-green">
+      <div class="bc-icon g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="bc-tag-sm">Ao vivo</div>
+      <h3>Dashboard em Tempo Real</h3>
+      <p class="bc-desc">ROI, lucro e evolução da banca visíveis durante toda a sessão.</p>
+      <div class="dash-chart" id="featureChart"></div>
+      <div class="dash-kpis">
+        <div class="dk"><div class="dk-l">ROI</div><div class="dk-v" style="color:var(--green)">+26,8%</div></div>
+        <div class="dk"><div class="dk-l">LUCRO</div><div class="dk-v" style="color:var(--green)">+R$134</div></div>
+        <div class="dk"><div class="dk-l">RODADAS</div><div class="dk-v" style="color:var(--gold)">18</div></div>
+        <div class="dk"><div class="dk-l">WIN RATE</div><div class="dk-v" style="color:var(--gold)">63%</div></div>
+      </div>
+      <span class="bc-badge g" style="margin-top:1rem">● Ao vivo</span>
+    </div>
+    <div class="bc">
+      <div class="bc-icon y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="17" y2="18"/></svg></div>
+      <div class="bc-tag-sm">3 modos</div>
+      <h3>Modos de Jogo</h3>
+      <p class="bc-desc">Defina o objetivo de cada sessão antes de começar.</p>
+      <div class="modos-list">
+        <div class="ml-item on"><div class="ml-dot"></div>Stake Fixa</div>
+        <div class="ml-item"><div class="ml-dot"></div>Meta de Ganho</div>
+        <div class="ml-item"><div class="ml-dot"></div>Nº de Rodadas</div>
+      </div>
+    </div>
+    <div class="bc">
+      <div class="bc-icon y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+      <div class="bc-tag-sm">Perfis de risco</div>
+      <h3>Gestão de Banca</h3>
+      <p class="bc-desc">Adapta automaticamente os critérios ao seu perfil.</p>
+      <div class="banca-list">
+        <div class="bl-item"><span class="bl-name"><div class="bl-dot" style="background:var(--green)"></div>Conservador</span><span class="bl-badge" style="background:rgba(31,217,122,.1);color:var(--green)">BAIXO</span></div>
+        <div class="bl-item"><span class="bl-name"><div class="bl-dot" style="background:var(--gold)"></div>Moderado</span><span class="bl-badge" style="background:rgba(240,192,64,.1);color:var(--gold)">MÉDIO</span></div>
+        <div class="bl-item"><span class="bl-name"><div class="bl-dot" style="background:var(--red)"></div>Agressivo</span><span class="bl-badge" style="background:rgba(245,68,95,.1);color:var(--red)">ALTO</span></div>
+      </div>
+    </div>
+    <div class="bc bc-wide2 bc-glow-gold">
+      <div class="bc-icon y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="bc-tag-sm">Sessões salvas</div>
+      <h3>Histórico Completo</h3>
+      <p class="bc-desc">Análise de desempenho por estratégia, mercado e período.</p>
+      <div class="hist-rows">
+        <div class="hist-row"><div><div class="hn">Roleta · Fibonacci</div><div class="hm">Ontem, 21:32 · 24 rodadas</div></div><span class="hroi" style="color:var(--green)">+30,5%</span><span class="hbadge" style="background:rgba(31,217,122,.1);color:var(--green)">+R$61</span></div>
+        <div class="hist-row"><div><div class="hn">Futebol · Flat Bet</div><div class="hm">Hoje, 14:15 · 10 apostas</div></div><span class="hroi" style="color:var(--green)">+12,0%</span><span class="hbadge" style="background:rgba(31,217,122,.1);color:var(--green)">+R$36</span></div>
+        <div class="hist-row"><div><div class="hn">Slots · Anti-Martingale</div><div class="hm">Hoje, 09:44 · 18 rodadas</div></div><span class="hroi" style="color:var(--red)">-8,0%</span><span class="hbadge" style="background:rgba(245,68,95,.1);color:var(--red)">-R$24</span></div>
+      </div>
+      <span class="bc-badge y">↗ Ver histórico completo</span>
+    </div>
+    <div class="bc">
+      <div class="bc-icon y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+      <div class="bc-tag-sm">Cálculo automático</div>
+      <h3>Configuração de Stake</h3>
+      <p class="bc-desc">Stake calculada automaticamente com base na sua banca atual.</p>
+      <div class="stake-table">
+        <div class="sk-row"><span class="sk-k">Banca atual</span><span class="sk-v">R$ 500,00</span></div>
+        <div class="sk-row"><span class="sk-k">% por aposta</span><span class="sk-v" style="color:var(--gold)">5,0%</span></div>
+        <div class="sk-row result"><span class="sk-k">Próxima stake</span><span class="sk-v">R$ 25,00</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STRATEGIES ─── -->
+<section id="strategies">
+  <div class="center-head sr">
+    <div class="section-tag">Estratégias</div>
+    <h2 class="headline sr sr-d1">8 estratégias testadas e <em>comprovadas</em></h2>
+    <p class="section-sub c sr sr-d2">Cada estratégia tem um perfil de risco e um cenário ideal. Funcionam para cassino e apostas esportivas. O GestorBet calcula cada aposta automaticamente.</p>
+  </div>
+  <div class="strat-grid">
+    <div class="sc sr"><div class="sc-emoji">🔺</div><div class="sc-top"><span class="sc-name">Martingale</span><span class="rb rh">Risco Alto</span></div><p class="sc-desc">Dobra a stake a cada derrota. Alta recompensa potencial, requer banca sólida e Stop Loss rígido.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr sr-d1"><div class="sc-emoji">🔻</div><div class="sc-top"><span class="sc-name">Anti-Martingale</span><span class="rb rm">Risco Médio</span></div><p class="sc-desc">Dobra na vitória, reset na derrota. Aproveita sequências positivas protegendo o capital base.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr sr-d2"><div class="sc-emoji">🌀</div><div class="sc-top"><span class="sc-name">Fibonacci</span><span class="rb rm">Risco Médio</span></div><p class="sc-desc">Progressão baseada na sequência de Fibonacci. Crescimento mais suave que Martingale.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr sr-d3"><div class="sc-emoji">📋</div><div class="sc-top"><span class="sc-name">Labouchère</span><span class="rb rh">Risco Alto</span></div><p class="sc-desc">Sistema de sequência cancelada. Flexível e poderoso para apostadores experientes.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr"><div class="sc-emoji">🎯</div><div class="sc-top"><span class="sc-name">Paroli</span><span class="rb rl">Risco Baixo</span></div><p class="sc-desc">Aumenta a stake após vitórias consecutivas. Ideal para quem busca consistência com risco controlado.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr sr-d1"><div class="sc-emoji">➡️</div><div class="sc-top"><span class="sc-name">Flat Betting</span><span class="rb rl">Risco Mínimo</span></div><p class="sc-desc">Stake fixa em todas as apostas. A base mais segura para iniciantes e apostadores conservadores.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr sr-d2"><div class="sc-emoji">🔢</div><div class="sc-top"><span class="sc-name">1-3-2-6</span><span class="rb rl">Risco Baixo</span></div><p class="sc-desc">Sequência de 4 apostas que maximiza ganhos em sequências de vitória com risco limitado.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+    <div class="sc sr sr-d3"><div class="sc-emoji">📈</div><div class="sc-top"><span class="sc-name">Oscar's Grind</span><span class="rb rl">Risco Baixo</span></div><p class="sc-desc">Aumenta apenas após vitórias e para quando atinge lucro de 1 unidade. Muito consistente.</p><span class="sc-tag">Cassino · Esportivo</span></div>
+  </div>
+</section>
+
+<!-- ─── PLANS ─── -->
+<section id="plans" style="background:var(--s1)">
+  <div class="center-head sr">
+    <div class="section-tag">Planos</div>
+    <h2 class="headline sr sr-d1">Escolha o plano <em>ideal para você</em></h2>
+    <p class="section-sub c sr sr-d2">Cancele quando quiser, sem multa. Suporte em português.</p>
+  </div>
+  <div class="plans-wrap">
+    <div class="plan-card sr sr-d1">
+      <div class="plan-tier">Starter</div>
+      <div class="plan-price"><span class="plan-cur">R$</span><span class="plan-val">247</span></div>
+      <div class="plan-period">por mês</div>
+      <div class="plan-divider"></div>
+      <div class="plan-feats">
+        <div class="pf"><div class="pf-mark y">✓</div><span>4 estratégias disponíveis</span></div>
+        <div class="pf"><div class="pf-mark y">✓</div><span>Stop Loss &amp; Stop Win</span></div>
+        <div class="pf"><div class="pf-mark y">✓</div><span>Dashboard em tempo real</span></div>
+        <div class="pf"><div class="pf-mark y">✓</div><span>Sessões ilimitadas</span></div>
+        <div class="pf"><div class="pf-mark y">✓</div><span>Histórico dos últimos 30 dias</span></div>
+        <div class="pf off"><div class="pf-mark off">✗</div><span>Modo Simulação</span></div>
+        <div class="pf off"><div class="pf-mark off">✗</div><span>Suporte prioritário</span></div>
+      </div>
+      <button class="plan-btn secondary" onclick="location.href='login.html'">Assinar agora</button>
+    </div>
+    <div class="plan-card featured sr sr-d2">
+      <div class="plan-pop">MAIS POPULAR</div>
+      <div class="plan-tier">Pro</div>
+      <div class="plan-price"><span class="plan-cur">R$</span><span class="plan-val">347</span></div>
+      <div class="plan-period">por mês</div>
+      <div class="plan-divider"></div>
+      <div class="plan-feats">
+        <div class="pf"><div class="pf-mark g">✓</div><span>Todas as 8 estratégias</span></div>
+        <div class="pf"><div class="pf-mark g">✓</div><span>Stop Loss &amp; Stop Win</span></div>
+        <div class="pf"><div class="pf-mark g">✓</div><span>Dashboard em tempo real</span></div>
+        <div class="pf"><div class="pf-mark g">✓</div><span>Sessões ilimitadas</span></div>
+        <div class="pf"><div class="pf-mark g">✓</div><span>Modo Simulação completo</span></div>
+        <div class="pf"><div class="pf-mark g">✓</div><span>Histórico completo</span></div>
+        <div class="pf"><div class="pf-mark g">✓</div><span>Suporte prioritário</span></div>
+      </div>
+      <button class="plan-btn primary" onclick="location.href='login.html'">Assinar agora</button>
+    </div>
+  </div>
+  <p class="plans-footnote">🔒 Pagamento seguro · Cancele quando quiser · Suporte em português</p>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section id="faq">
+  <div class="center-head sr">
+    <div class="section-tag">Perguntas frequentes</div>
+    <h2 class="headline sr sr-d1">Tudo que você precisa <em>saber antes de assinar</em></h2>
+  </div>
+  <div class="faq-list sr sr-d2">
+    <div class="faq-item">
+      <button class="faq-trigger" onclick="toggleFaq(this)" aria-expanded="false">O GestorBet garante que vou ganhar nas apostas?<span class="faq-icon-wrap"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><line x1="6" y1="2" x2="6" y2="10"/><line x1="2" y1="6" x2="10" y2="6"/></svg></span></button>
+      <div class="faq-body"><div class="faq-body-inner">Não existe software que garanta ganhos em apostas. O que o GestorBet garante é <strong>disciplina e proteção da sua banca</strong>. Com Stop Loss, Stop Win e estratégias automáticas, você para de perder por emoção, tilt ou apostas impulsivas — a principal causa de prejuízo para a maioria dos apostadores.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-trigger" onclick="toggleFaq(this)" aria-expanded="false">Para quem é o GestorBet?<span class="faq-icon-wrap"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><line x1="6" y1="2" x2="6" y2="10"/><line x1="2" y1="6" x2="10" y2="6"/></svg></span></button>
+      <div class="faq-body"><div class="faq-body-inner">Para qualquer pessoa que aposta e quer resultados mais consistentes. Seja um <strong>iniciante</strong> que quer aprender a gerenciar a banca, ou um apostador experiente que quer automatizar sua estratégia e ter dados reais de desempenho.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-trigger" onclick="toggleFaq(this)" aria-expanded="false">Funciona com qual casa de apostas?<span class="faq-icon-wrap"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><line x1="6" y1="2" x2="6" y2="10"/><line x1="2" y1="6" x2="10" y2="6"/></svg></span></button>
+      <div class="faq-body"><div class="faq-body-inner">Com <strong>qualquer casa de apostas</strong>. O GestorBet é um gestor externo — funciona com Bet365, Betano, Sportingbet, Blaze, Pixbet, Betfair, ou qualquer outra. Você usa o GestorBet ao lado da casa que já usa hoje.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-trigger" onclick="toggleFaq(this)" aria-expanded="false">Qual a diferença entre os planos Starter e Pro?<span class="faq-icon-wrap"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><line x1="6" y1="2" x2="6" y2="10"/><line x1="2" y1="6" x2="10" y2="6"/></svg></span></button>
+      <div class="faq-body"><div class="faq-body-inner">O <strong>Starter (R$247/mês)</strong> dá acesso a 4 estratégias e sessões ilimitadas. O <strong>Pro (R$347/mês)</strong> libera todas as 8 estratégias, Modo Simulação completo, histórico total e suporte prioritário.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-trigger" onclick="toggleFaq(this)" aria-expanded="false">Posso cancelar quando quiser?<span class="faq-icon-wrap"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><line x1="6" y1="2" x2="6" y2="10"/><line x1="2" y1="6" x2="10" y2="6"/></svg></span></button>
+      <div class="faq-body"><div class="faq-body-inner"><strong>Cancele quando quiser, sem multa, sem burocracia.</strong> Não exigimos fidelidade mínima. Você pode cancelar a qualquer momento e manterá acesso até o fim do período já pago.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-trigger" onclick="toggleFaq(this)" aria-expanded="false">Qual a banca mínima recomendada?<span class="faq-icon-wrap"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><line x1="6" y1="2" x2="6" y2="10"/><line x1="2" y1="6" x2="10" y2="6"/></svg></span></button>
+      <div class="faq-body"><div class="faq-body-inner">Recomendamos uma banca mínima de <strong>R$500</strong>. Com menos que isso, estratégias progressivas podem não ter margem suficiente para se recuperar de sequências negativas.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA FINAL ─── -->
+<section id="cta">
+  <div class="cta-eyebrow sr">✦ Junte-se a 3.200+ apostadores</div>
+  <h2 class="sr sr-d1">Comece hoje.<br><em>Assine e acesse agora.</em></h2>
+  <p class="sr sr-d2">Gerencie sua banca como um profissional. Estratégia, disciplina e dados reais.</p>
+  <div class="cta-btn-wrap sr sr-d3">
+    <button class="btn-beam" onclick="location.href='login.html'" style="font-size:1rem;padding:1rem 2.2rem">
+      <div class="btn-beam-ring"></div>
+      <div class="btn-beam-bg"></div>
+      <div class="btn-beam-icon">
+        <svg viewBox="0 0 12 12"><path d="M6 1l1.2 3.6h3.8l-3 2.4 1.2 3.6L6 8.4 2.8 10.6 4 7 1 4.6h3.8z"/></svg>
+      </div>
+      <span>Assinar agora</span>
+      <div class="btn-beam-arrow">
+        <svg viewBox="0 0 14 14"><path d="M3 7h8M7 3l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </div>
+    </button>
+  </div>
+  <p class="cta-trust sr sr-d4">🔒 Acesso seguro · TLS 1.3 · Cancele quando quiser · Suporte em português</p>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <p>© 2025 GestorBet. Todos os direitos reservados.</p>
+  <nav class="footer-links">
+    <a href="#">Termos</a>
+    <a href="#">Privacidade</a>
+    <a href="#">Suporte</a>
+  </nav>
+</footer>
+
+<!-- ─── BACK TO TOP ─── -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5,9 7,4 11.5,9"/></svg>
+</button>
+
+<script>
+/* ─── SCROLL REVEAL ─── */
+const srObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('in'); srObs.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+document.querySelectorAll('.sr').forEach(el => srObs.observe(el));
+
+/* ─── NAV SCROLL ─── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+  document.getElementById('back-top').classList.toggle('show', window.scrollY > 600);
+});
+
+/* ─── FAQ ─── */
+function toggleFaq(btn) {
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  document.querySelectorAll('.faq-trigger').forEach(b => {
+    b.setAttribute('aria-expanded','false');
+    b.nextElementSibling.style.maxHeight = '0';
+  });
+  if(!expanded) {
+    btn.setAttribute('aria-expanded','true');
+    const body = btn.nextElementSibling;
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+/* ─── CARD STACK STEPS ─── */
+const cardStates = [
+  { csi1: 'translateY(0) scale(1)',   op1: '1',   z1: '30',
+    csi2: 'translateY(9px) scale(.95)', op2: '.6',  z2: '20',
+    csi3: 'translateY(18px) scale(.9)',op3: '.35', z3: '10' },
+  { csi1: 'translateY(-12px) scale(.95)', op1: '.5',  z1: '10',
+    csi2: 'translateY(0) scale(1)',        op2: '1',   z2: '30',
+    csi3: 'translateY(9px) scale(.95)',   op3: '.6',  z3: '20' },
+  { csi1: 'translateY(9px) scale(.95)', op1: '.6',  z1: '20',
+    csi2: 'translateY(-12px) scale(.95)',op2: '.5',  z2: '10',
+    csi3: 'translateY(0) scale(1)',       op3: '1',   z3: '30' },
+];
+function activateStep(n) {
+  [1,2,3].forEach(i => {
+    const s = document.getElementById('step-'+i);
+    s.classList.toggle('active', i === n);
+  });
+  const st = cardStates[n-1];
+  const c1 = document.getElementById('csi-1');
+  const c2 = document.getElementById('csi-2');
+  const c3 = document.getElementById('csi-3');
+  c1.style.cssText += `;transform:${st.csi1};opacity:${st.op1};z-index:${st.z1}`;
+  c2.style.cssText += `;transform:${st.csi2};opacity:${st.op2};z-index:${st.z2}`;
+  c3.style.cssText += `;transform:${st.csi3};opacity:${st.op3};z-index:${st.z3}`;
+}
+
+/* ─── AUTO ROTATE STEPS ─── */
+let currentStep = 1;
+setInterval(() => {
+  currentStep = currentStep % 3 + 1;
+  activateStep(currentStep);
+}, 3000);
+
+/* ─── CHARTS ─── */
+function makeChart(id, data, colors) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = '';
+  const max = Math.max(...data.map(Math.abs));
+  data.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'dbar';
+    bar.style.cssText = `height:${Math.max(6, Math.abs(v)/max*100)}%;background:${colors[i%colors.length]};opacity:${v>0?.85:.5}`;
+    el.appendChild(bar);
+  });
+}
+const chartData = [40,55,48,62,58,70,65,72,68,75,62,80,74,82,78,85,80,90];
+const chartColors = ['rgba(31,217,122,.6)','rgba(31,217,122,.7)','rgba(31,217,122,.5)','rgba(31,217,122,.8)','rgba(245,68,95,.5)','rgba(31,217,122,.75)'];
+makeChart('featureChart', chartData, chartColors);
+
+/* Mini chart for hero card 2 */
+function makeMiniChart() {
+  const el = document.getElementById('heroMiniChart');
+  if(!el) return;
+  const data = [30,45,38,55,50,62,58,70,65,75,60,80];
+  const max = Math.max(...data);
+  el.innerHTML = '';
+  data.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'cbar';
+    bar.style.cssText = `height:${v/max*100}%;background:${i===data.length-1?'var(--gold)':v>55?'rgba(31,217,122,.7)':'rgba(255,255,255,.12)'};border-radius:2px 2px 0 0;flex:1;min-height:3px`;
+    el.appendChild(bar);
+  });
+}
+makeMiniChart();
+
+/* ─── COUNTER ANIMATION ─── */
+document.querySelectorAll('.proof-num').forEach(el => {
+  const io = new IntersectionObserver(([e]) => {
+    if(!e.isIntersecting) return;
+    io.unobserve(el);
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const decimal = parseInt(el.dataset.decimal || '0');
+    const start = performance.now();
+    const dur = 1800;
+    function tick(now) {
+      const p = Math.min((now - start)/dur, 1);
+      const ease = 1 - Math.pow(1-p, 3);
+      const val = target * ease;
+      el.textContent = prefix + (decimal ? val.toFixed(decimal) : Math.floor(val).toLocaleString('pt-BR')) + suffix;
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }, { threshold: 0.5 });
+  io.observe(el);
+});
+</script>
+</body>
+</html>
