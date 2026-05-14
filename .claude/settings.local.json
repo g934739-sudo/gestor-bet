@@ -53,7 +53,13 @@
       "Bash(open \"http://localhost:8080/e-mails/email-captacao.html\")",
       "Bash(open \"http://localhost:8080/termos.html\")",
       "Bash(open \"http://localhost:8080/privacidade.html\")",
-      "Bash(curl -s http://localhost:52495)"
+      "Bash(curl -s http://localhost:52495)",
+      "Bash(git -C /Users/lucaendrigo/Documents/Projetos/gestor-bet diff --stat)",
+      "Bash(sort -k6,7)",
+      "Bash(cp \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/index.html\" \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/index-old.html\" && cp \"/Users/lucaendrigo/Downloads/Grivo.bet - Standalone.html\" \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/index.html\" && echo \"Feito\")"
+    ],
+    "additionalDirectories": [
+      "/Users/lucaendrigo/Downloads"
     ]
   }
 }
