@@ -181,15 +181,23 @@ document.addEventListener('DOMContentLoaded', async function() {
   </script>
 
 <script>
-(function patchLegalLinks() {
-  var map = {
+(function patchLinks() {
+  var textMap = {
     'Termos de Uso': '/termos.html',
-    'Pol\u00edtica de Privacidade': '/privacidade.html'
+    'Pol\u00edtica de Privacidade': '/privacidade.html',
+    'Entrar': '/login.html'
   };
   function apply() {
+    // Patch by text content
     document.querySelectorAll('a[href="#"]').forEach(function(a) {
-      var dest = map[a.textContent.trim()];
+      var dest = textMap[a.textContent.trim()];
       if (dest) a.href = dest;
+    });
+    // Patch nav-login and mobile-login by class (Entrar button)
+    document.querySelectorAll('.nav-login, .mobile-login').forEach(function(a) {
+      if (a.getAttribute('href') === '#' || !a.getAttribute('href')) {
+        a.href = '/login.html';
+      }
     });
   }
   var observer = new MutationObserver(apply);
