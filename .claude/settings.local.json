@@ -57,7 +57,8 @@
       "Bash(git -C /Users/lucaendrigo/Documents/Projetos/gestor-bet diff --stat)",
       "Bash(sort -k6,7)",
       "Bash(cp \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/index.html\" \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/index-old.html\" && cp \"/Users/lucaendrigo/Downloads/Grivo.bet - Standalone.html\" \"/Users/lucaendrigo/Documents/Projetos/gestor-bet/index.html\" && echo \"Feito\")",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -)"
     ],
     "additionalDirectories": [
       "/Users/lucaendrigo/Downloads"
