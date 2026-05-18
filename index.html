@@ -195,7 +195,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
     // Patch nav-login and mobile-login by class (Entrar button)
     document.querySelectorAll('.nav-login, .mobile-login').forEach(function(a) {
-      if (a.getAttribute('href') === '#' || !a.getAttribute('href')) {
+      var h = a.getAttribute('href') || '';
+      if (!h || h.startsWith('#')) {
         a.href = '/login.html';
       }
     });
