@@ -37,8 +37,8 @@ module.exports = async function handler(req, res) {
 
     if (!pixRes.ok) {
       const err = await pixRes.text();
-      console.error('[criar-pix] PushinPay error:', err);
-      return res.status(502).json({ error: 'Falha ao criar PIX na PushinPay' });
+      console.error('[criar-pix] PushinPay error:', pixRes.status, err);
+      return res.status(502).json({ error: 'Falha ao criar PIX na PushinPay', detail: err, httpStatus: pixRes.status });
     }
 
     pixData = await pixRes.json();
