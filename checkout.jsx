@@ -4,9 +4,8 @@ const { useState, useEffect, useMemo, useRef } = React;
 
 // ─── PLAN DATA ────────────────────────────────────────────────────────────────
 const PLANS = [
-  { id:"mensal",    name:"Mensal",    monthly:9.9, months:1,  total:9.9,  sub:"Cobrado mensalmente",        discount:0,   badge:null },
-  { id:"semestral", name:"Semestral", monthly:147, months:6,  total:882,  sub:"R$ 882 a cada 6 meses",      discount:300, badge:"Mais escolhido" },
-  { id:"anual",     name:"Anual",     monthly:117, months:12, total:1404, sub:"R$ 1.404 a cada 12 meses",   discount:960, badge:"Melhor custo" },
+  { id:"semanal", name:"Semanal", total:87,  period:"semana", periodShort:"/sem", sub:"Cobrado semanalmente",  badge:null },
+  { id:"mensal",  name:"Mensal",  total:147, period:"mês",    periodShort:"/mês", sub:"Cobrado mensalmente · melhor custo", badge:"Mais escolhido" },
 ];
 
 const FEATURES = [
@@ -28,20 +27,6 @@ const maskPhone = (v) => v.replace(/\D/g, "").slice(0, 11)
   .replace(/(\d{2})(\d)/, "($1) $2")
   .replace(/(\d{5})(\d)/, "$1-$2");
 
-const maskCard = (v) => v.replace(/\D/g, "").slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 ");
-const maskExpiry = (v) => v.replace(/\D/g, "").slice(0, 4).replace(/(\d{2})(\d)/, "$1/$2");
-
-const detectBrand = (num) => {
-  const n = num.replace(/\D/g, "");
-  if (/^4/.test(n)) return "Visa";
-  if (/^(5[1-5]|2[2-7])/.test(n)) return "Mastercard";
-  if (/^3[47]/.test(n)) return "Amex";
-  if (/^(36|38|30[0-5])/.test(n)) return "Diners";
-  if (/^(6011|65|64[4-9])/.test(n)) return "Elo";
-  if (/^(606282|3841)/.test(n)) return "Hipercard";
-  return null;
-};
-
 const validCPFLength = (cpf) => cpf.replace(/\D/g, "").length === 11;
 const validEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const fmt = (n) => n.toLocaleString("pt-BR");
@@ -54,8 +39,6 @@ const Ic = {
   checkSm:(p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" {...p}><polyline points="20 6 9 17 4 12"/></svg>,
   arrowL: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
   pix:    (p) => <svg width="22" height="22" viewBox="0 0 32 32" fill="currentColor" {...p}><path d="M9.4 22.6 5.7 18.9a4 4 0 0 1 0-5.7L9.4 9.5l-2-2a6 6 0 0 0 0 8.5l4.7 4.7c.4.4 1 .4 1.4 0l.3-.3a1 1 0 0 0 0-1.4l-4.4-4.4 4.4-4.4a1 1 0 0 0 0-1.4l-.3-.3a1 1 0 0 0-1.4 0L7.4 13.2a3 3 0 0 0 0 4.2l3.7 3.7-1.7 1.5z M22.5 9.5l3.7 3.7a4 4 0 0 1 0 5.7l-3.7 3.7 2 2a6 6 0 0 0 0-8.5l-4.7-4.7a1 1 0 0 0-1.4 0l-.3.3a1 1 0 0 0 0 1.4l4.4 4.4-4.4 4.4a1 1 0 0 0 0 1.4l.3.3a1 1 0 0 0 1.4 0l4.7-4.7a3 3 0 0 0 0-4.2L20.8 11l1.7-1.5z"/><circle cx="16" cy="16" r="3.5"/></svg>,
-  card:   (p) => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><rect x="2" y="6" width="20" height="14" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg>,
-  boleto: (p) => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><rect x="3" y="5" width="18" height="14" rx="1.5"/><line x1="7" y1="9" x2="7" y2="15"/><line x1="10" y1="9" x2="10" y2="15"/><line x1="13" y1="9" x2="13" y2="15"/><line x1="16" y1="9" x2="16" y2="15"/><line x1="18" y1="9" x2="18" y2="15"/></svg>,
   bolt:   (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>,
   star:   (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" {...p}><polygon points="12 2 15 9 22 9.3 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.3 9 9"/></svg>,
 };
@@ -65,7 +48,6 @@ function PixQR({ src }) {
   if (src) {
     return <img src={src} alt="QR Code PIX" style={{ width:"100%", height:"100%", borderRadius:4 }} />;
   }
-  // Skeleton enquanto carrega
   return (
     <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center",
       background:"#f0f0f0", borderRadius:4, flexDirection:"column", gap:8 }}>
@@ -125,23 +107,18 @@ function Progress({ step }) {
 }
 
 // ─── ORDER SUMMARY ────────────────────────────────────────────────────────────
-function OrderSummary({ planId, setPlanId, paymentMethod, installments }) {
+function OrderSummary({ planId, setPlanId }) {
   const plan = PLANS.find((p) => p.id === planId) || PLANS[1];
-  const subtotal = plan.monthly * plan.months;
-  const showInstall = paymentMethod === "card" && installments > 1;
-  const installValue = plan.total / installments;
 
   return (
     <aside className="summary summary-mobile-first">
-      <div className={`summary-card ${plan.id !== "mensal" ? "featured" : ""} scale-in`}>
+      <div className={`summary-card ${plan.id === "mensal" ? "featured" : ""} scale-in`}>
         {plan.badge && <span className="corner-tag">⭐ {plan.badge}</span>}
         <div className="summary-h"><span className="pip"></span>SEU PEDIDO</div>
 
         <div className="plan-display">
           <h3>Plano {plan.name}</h3>
-          {plan.discount > 0 && (
-            <span className="savings"><Ic.bolt /> Você economiza R$ {fmt(plan.discount)}</span>
-          )}
+          <span className="savings"><Ic.bolt /> Acesso completo · cancele quando quiser</span>
         </div>
 
         <div className="plan-picker-label">Trocar plano</div>
@@ -150,26 +127,24 @@ function OrderSummary({ planId, setPlanId, paymentMethod, installments }) {
             <button key={p.id} type="button" className={`plan-opt ${p.id === plan.id ? "active" : ""}`} onClick={() => setPlanId(p.id)}>
               <div className="plan-opt-left">
                 <span className="plan-opt-name">{p.name}</span>
-                <span className="plan-opt-sub">{p.months}× R$ {fmt(p.monthly)}/mês</span>
+                <span className="plan-opt-sub">por {p.period}</span>
               </div>
               <div className="plan-opt-right">
                 <span className="plan-opt-price">R$ {fmt(p.total)}</span>
-                {p.discount > 0 && <span className="plan-opt-tag">−R$ {fmt(p.discount)}</span>}
+                {p.badge && <span className="plan-opt-tag">{p.badge}</span>}
               </div>
             </button>
           ))}
         </div>
 
         <div>
-          <div className="summary-line"><span>Subtotal</span><strong>R$ {fmt(subtotal)}</strong></div>
-          {plan.discount > 0 && <div className="summary-line discount"><span>Desconto fidelidade</span><strong style={{ color:"var(--green)" }}>−R$ {fmt(plan.discount)}</strong></div>}
-          {showInstall && <div className="summary-line"><span>Parcelamento</span><strong>{installments}× sem juros</strong></div>}
+          <div className="summary-line"><span>Plano {plan.name}</span><strong>R$ {fmt(plan.total)}{plan.periodShort}</strong></div>
         </div>
 
         <div className="summary-total">
           <div>
-            <div className="summary-total-label">Total {showInstall ? "à vista" : "agora"}</div>
-            {showInstall && <div className="summary-total-sub">{installments}× R$ {installValue.toLocaleString("pt-BR", { minimumFractionDigits:2, maximumFractionDigits:2 })}</div>}
+            <div className="summary-total-label">Total agora</div>
+            <div className="summary-total-sub">renova por {plan.period} · cancele quando quiser</div>
           </div>
           <span className="summary-total-val"><span className="cur">R$</span>{fmt(plan.total)}</span>
         </div>
@@ -181,7 +156,7 @@ function OrderSummary({ planId, setPlanId, paymentMethod, installments }) {
 
       <div className="testimonial scale-in" style={{ animationDelay:".1s" }}>
         <div className="testi-stars">{Array.from({ length:5 }).map((_, i) => <Ic.star key={i} />)}</div>
-        <div className="testi-quote">"Em 3 semanas eu saí do feeling pro método. Hoje opero com stop loss travado e o sistema executa enquanto durmo. Vale cada centavo."</div>
+        <div className="testi-quote">"Em 3 semanas eu saí do achismo pro método. Hoje opero com stop loss travado e o sistema executa enquanto durmo. Vale cada centavo."</div>
         <div className="testi-author">
           <div className="testi-avatar">RC</div>
           <div className="testi-info">
@@ -203,11 +178,11 @@ function OrderSummary({ planId, setPlanId, paymentMethod, installments }) {
 // ─── MAIN FORM ────────────────────────────────────────────────────────────────
 function CheckoutForm() {
   const params = new URLSearchParams(window.location.search);
-  const initialPlan = PLANS.find((p) => p.id === params.get("plan")) ? params.get("plan") : "semestral";
+  const initialPlan = PLANS.find((p) => p.id === params.get("plan")) ? params.get("plan") : "mensal";
 
   const [planId, setPlanId] = useState(initialPlan);
   const [data, setData] = useState({ name:"", email:"", cpf:"", phone:"" });
-  const [pay, setPay] = useState({ method:"pix", card:"", expiry:"", cvv:"", holder:"", installments:1 });
+  const [pay] = useState({ method:"pix" });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -221,18 +196,17 @@ function CheckoutForm() {
   const [pixError, setPixError] = useState(null);
 
   const plan = PLANS.find((p) => p.id === planId);
-  const cardBrand = detectBrand(pay.card);
 
   // Pix timer
   useEffect(() => {
-    if (!submitted || pay.method !== "pix" || paid) return;
+    if (!submitted || paid) return;
     const id = setInterval(() => setTimer((t) => Math.max(0, t - 1)), 1000);
     return () => clearInterval(id);
-  }, [submitted, pay.method, paid]);
+  }, [submitted, paid]);
 
   // Polling real do status PIX a cada 60s (limite PushinPay: 1 req/min)
   useEffect(() => {
-    if (!submitted || pay.method !== "pix" || paid || !pixId) return;
+    if (!submitted || paid || !pixId) return;
     const poll = async () => {
       try {
         const r = await fetch(`/api/consultar-pix?id=${pixId}`);
@@ -240,12 +214,11 @@ function CheckoutForm() {
         if (d.status === "paid") setPaid(true);
       } catch (_) {}
     };
-    poll(); // consulta imediata ao montar
+    poll();
     const id = setInterval(poll, 60000);
     return () => clearInterval(id);
-  }, [submitted, pay.method, paid, pixId]);
+  }, [submitted, paid, pixId]);
 
-  // Field validation in real time
   const fieldValid = {
     name:  data.name.trim().split(/\s+/).length >= 2,
     email: validEmail(data.email),
@@ -265,12 +238,6 @@ function CheckoutForm() {
     if (!fieldValid.email) e.email = "E-mail inválido";
     if (!fieldValid.cpf) e.cpf = "CPF inválido";
     if (!fieldValid.phone) e.phone = "Telefone inválido";
-    if (pay.method === "card") {
-      if (pay.card.replace(/\s/g, "").length < 13) e.card = "Número de cartão inválido";
-      if (pay.expiry.length < 5) e.expiry = "Validade inválida";
-      if (pay.cvv.length < 3) e.cvv = "CVV inválido";
-      if (!pay.holder.trim()) e.holder = "Informe o titular do cartão";
-    }
     return e;
   };
 
@@ -285,33 +252,32 @@ function CheckoutForm() {
       return;
     }
     setLoading(true);
+    setPixError(null);
 
-    if (pay.method === "pix") {
-      try {
-        const r = await fetch("/api/criar-pix", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            value:    plan.total * 100,  // centavos
-            email:    data.email,
-            name:     data.name,
-            plan_id:  planId,
-          }),
-        });
-        const pix = await r.json();
-        if (!r.ok || !pix.id) {
-          setPixError(pix.error || "Erro ao gerar PIX. Tente novamente.");
-          setLoading(false);
-          return;
-        }
-        setPixId(pix.id);
-        setPixQrBase64(pix.qr_code_base64 || null);
-        setPixCodeReal(pix.qr_code || null);
-      } catch (err) {
-        setPixError("Erro de conexão. Verifique sua internet e tente novamente.");
+    try {
+      const r = await fetch("/api/criar-pix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          value:   plan.total * 100,  // centavos
+          email:   data.email,
+          name:    data.name,
+          plan_id: planId,
+        }),
+      });
+      const pix = await r.json();
+      if (!r.ok || !pix.id) {
+        setPixError(pix.error || "Erro ao gerar PIX. Tente novamente.");
         setLoading(false);
         return;
       }
+      setPixId(pix.id);
+      setPixQrBase64(pix.qr_code_base64 || null);
+      setPixCodeReal(pix.qr_code || "");
+    } catch (err) {
+      setPixError("Erro de conexão. Verifique sua internet e tente novamente.");
+      setLoading(false);
+      return;
     }
 
     setLoading(false);
@@ -322,7 +288,6 @@ function CheckoutForm() {
   const fmtTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   const pixCode = pixCodeReal || "";
 
-  // Determine progress step
   const identDone = fieldValid.name && fieldValid.email && fieldValid.cpf && fieldValid.phone;
   const step = submitted ? 2 : (identDone ? 1 : 0);
 
@@ -341,11 +306,11 @@ function CheckoutForm() {
           <div className="success-receipt">
             <div className="success-receipt-row"><span>Pedido</span><strong>#{orderId}</strong></div>
             <div className="success-receipt-row"><span>Plano</span><strong>{plan.name}</strong></div>
-            <div className="success-receipt-row"><span>Método</span><strong>{pay.method === "pix" ? "Pix" : pay.method === "card" ? "Cartão de crédito" : "Boleto"}</strong></div>
+            <div className="success-receipt-row"><span>Método</span><strong>Pix</strong></div>
             <div className="success-receipt-row"><span>Total pago</span><strong>R$ {fmt(plan.total)}</strong></div>
           </div>
           <div className="success-next">
-            <a href="#" className="success-btn">Acessar o painel <span>→</span></a>
+            <a href="login.html" className="success-btn">Acessar o painel <span>→</span></a>
             <a href="index.html" className="success-btn ghost">Voltar à home</a>
           </div>
           <p style={{ marginTop:36, fontSize:12, color:"var(--muted-2)" }}>
@@ -360,7 +325,6 @@ function CheckoutForm() {
     <>
       <TopBar />
       <div className="wrap">
-        {/* Page head */}
         <div className="page-head fade-in">
           <div>
             <span className="page-eyebrow">
@@ -436,29 +400,9 @@ function CheckoutForm() {
                 <h2><span className="card-num">02</span>Forma de pagamento</h2>
                 <span className="card-step-pill">PushinPay</span>
               </div>
-              <p className="card-sub">Pix tem aprovação imediata e é nossa forma preferida. Cartão libera o acesso na mesma hora também.</p>
+              <p className="card-sub">Pagamento via Pix — aprovação imediata e acesso liberado automaticamente em segundos.</p>
 
-              <div className="pay-tabs">
-                {[
-                  ["pix",    "Pix",    "Aprovação imediata", Ic.pix],
-                  ["card",   "Cartão", "Até 12× sem juros",  Ic.card],
-                  ["boleto", "Boleto", "1-3 dias úteis",     Ic.boleto],
-                ].map(([id, name, tag, Icon]) => (
-                  <button key={id} type="button"
-                          className={`pay-tab ${pay.method === id ? "active" : ""}`}
-                          onClick={() => setPay((p) => ({ ...p, method: id }))}>
-                    <div className="pay-tab-head">
-                      <span className="pay-tab-icon"><Icon /></span>
-                      <span className="pay-tab-radio"></span>
-                    </div>
-                    <span className="pay-tab-name">{name}</span>
-                    <span className="pay-tab-tag">{tag}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Method-specific pre-submit content */}
-              {pay.method === "pix" && !submitted && (
+              {!submitted && (
                 <div className="method-info fade-in">
                   <div className="method-info-icon"><Ic.bolt /></div>
                   <div className="method-info-body">
@@ -476,70 +420,7 @@ function CheckoutForm() {
                 </div>
               )}
 
-              {pay.method === "card" && (
-                <div className="fade-in field-grid">
-                  <div className={`field full ${errors.card ? "error" : ""}`}>
-                    <label>Número do cartão <span className="check">✓</span></label>
-                    <div className="field-wrap">
-                      <input type="text" placeholder="0000 0000 0000 0000" inputMode="numeric"
-                             value={pay.card}
-                             onChange={(e) => { setPay((p) => ({ ...p, card: maskCard(e.target.value) })); setErrors((er) => ({ ...er, card: undefined })); }} />
-                      <span className={`card-brand ${cardBrand ? "show" : ""}`}>{cardBrand || ""}</span>
-                    </div>
-                    {errors.card && <span className="field-error">⚠ {errors.card}</span>}
-                  </div>
-                  <div className={`field ${errors.expiry ? "error" : ""}`}>
-                    <label>Validade</label>
-                    <input type="text" placeholder="MM/AA" inputMode="numeric"
-                           value={pay.expiry}
-                           onChange={(e) => { setPay((p) => ({ ...p, expiry: maskExpiry(e.target.value) })); setErrors((er) => ({ ...er, expiry: undefined })); }} />
-                    {errors.expiry && <span className="field-error">⚠ {errors.expiry}</span>}
-                  </div>
-                  <div className={`field ${errors.cvv ? "error" : ""}`}>
-                    <label>CVV</label>
-                    <input type="text" placeholder="000" inputMode="numeric" maxLength="4"
-                           value={pay.cvv}
-                           onChange={(e) => { setPay((p) => ({ ...p, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) })); setErrors((er) => ({ ...er, cvv: undefined })); }} />
-                    {errors.cvv && <span className="field-error">⚠ {errors.cvv}</span>}
-                  </div>
-                  <div className={`field full ${errors.holder ? "error" : ""}`}>
-                    <label>Nome impresso no cartão</label>
-                    <input type="text" placeholder="JOSE M SILVA"
-                           value={pay.holder}
-                           onChange={(e) => { setPay((p) => ({ ...p, holder: e.target.value.toUpperCase() })); setErrors((er) => ({ ...er, holder: undefined })); }} />
-                    {errors.holder && <span className="field-error">⚠ {errors.holder}</span>}
-                  </div>
-                  <div className="field full">
-                    <label>Parcelas <span style={{ fontSize:10, opacity:0.7 }}>SEM JUROS</span></label>
-                    <div className="installments">
-                      {[1, 3, 6, 12].map((n) => {
-                        const v = plan.total / n;
-                        return (
-                          <button key={n} type="button"
-                                  className={`install-opt ${pay.installments === n ? "active" : ""}`}
-                                  onClick={() => setPay((p) => ({ ...p, installments: n }))}>
-                            <span className="n">{n}× sem juros</span>
-                            <span className="v">R$ {v.toLocaleString("pt-BR", { minimumFractionDigits:2, maximumFractionDigits:2 })}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {pay.method === "boleto" && !submitted && (
-                <div className="method-info blue fade-in">
-                  <div className="method-info-icon"><Ic.boleto /></div>
-                  <div className="method-info-body">
-                    <strong>Boleto bancário</strong>
-                    <span>Compensação em 1 a 3 dias úteis. Seu acesso é liberado automaticamente assim que o pagamento for confirmado pelo banco. Pague em qualquer banco, lotérica ou app.</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Post-submit Pix QR */}
-              {pay.method === "pix" && submitted && (
+              {submitted && (
                 <div className="fade-in" style={{ marginTop:8 }}>
                   <div className="pix-block">
                     <div className="pix-qr-wrap">
@@ -584,7 +465,7 @@ function CheckoutForm() {
                     {loading ? "Processando..." : <><Ic.lock /> Pagar R$ {fmt(plan.total)} <span className="arr">→</span></>}
                   </button>
                   <div className="submit-meta">
-                    <span>Ao continuar, você concorda com <a href="#" style={{ color:"var(--muted)", textDecoration:"underline" }}>Termos</a> e <a href="#" style={{ color:"var(--muted)", textDecoration:"underline" }}>Privacidade</a>.</span>
+                    <span>Ao continuar, você concorda com <a href="termos.html" style={{ color:"var(--muted)", textDecoration:"underline" }}>Termos</a> e <a href="privacidade.html" style={{ color:"var(--muted)", textDecoration:"underline" }}>Privacidade</a>.</span>
                     <span className="dot"></span>
                     <span>Apostar envolve risco · 18+</span>
                   </div>
@@ -593,7 +474,7 @@ function CheckoutForm() {
             </div>
           </form>
 
-          <OrderSummary planId={planId} setPlanId={setPlanId} paymentMethod={pay.method} installments={pay.installments} />
+          <OrderSummary planId={planId} setPlanId={setPlanId} />
         </div>
       </div>
     </>
