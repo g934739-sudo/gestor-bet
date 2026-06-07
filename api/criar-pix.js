@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' });
 
-  const { value, email, name, plan_id, webhook_url } = req.body;
+  const { value, email, name, plan_id } = req.body;
 
   if (!value || !email || !name || !plan_id) {
     return res.status(400).json({ error: 'Campos obrigatórios: value, email, name, plan_id' });
@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         value,
-        webhook_url: webhook_url || null,
+        webhook_url: 'https://www.grivo.bet/api/webhook-pushinpay',
       }),
     });
 

@@ -1,7 +1,8 @@
 // api/consultar-pix.js — Vercel Serverless Function
-// Consulta o status de um PIX via PushinPay
+// Consulta o status de um PIX pelo Supabase (atualizado pelo webhook da PushinPay)
 
-const PUSHINPAY_TOKEN = process.env.PUSHINPAY_TOKEN;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,29 +16,27 @@ module.exports = async function handler(req, res) {
   if (!id) return res.status(400).json({ error: 'Parâmetro id obrigatório' });
 
   try {
-    const pixRes = await fetch(`https://api.pushinpay.com.br/api/pix/cashIn/${id}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${PUSHINPAY_TOKEN}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/pagamentos?payment_id=eq.${id}&select=status&limit=1`,
+      {
+        headers: {
+          'apikey':        SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Accept':        'application/json',
+        },
+      }
+    );
 
-    if (pixRes.status === 404) {
-      return res.status(404).json({ status: 'not_found' });
-    }
+    const rows = await r.json();
+    const pagamento = Array.isArray(rows) ? rows[0] : null;
 
-    if (!pixRes.ok) {
-      const err = await pixRes.text();
-      console.error('[consultar-pix] PushinPay error:', err);
-      return res.status(502).json({ error: 'Falha ao consultar PIX' });
-    }
+    if (!pagamento) return res.status(404).json({ status: 'not_found' });
 
-    const data = await pixRes.json();
-    return res.status(200).json({ status: data.status });
+    // Mapeia status do Supabase para o padrão esperado pelo frontend
+    const status = pagamento.status === 'pago' ? 'paid' : pagamento.status;
+    return res.status(200).json({ status });
   } catch (err) {
-    console.error('[consultar-pix] Fetch error:', err);
-    return res.status(502).json({ error: 'Erro de conexão com PushinPay' });
+    console.error('[consultar-pix] Supabase error:', err);
+    return res.status(502).json({ error: 'Erro ao consultar status' });
   }
-}
+};

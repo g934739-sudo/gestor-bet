@@ -4,6 +4,7 @@ const { useState, useEffect, useMemo, useRef } = React;
 
 // ─── PLAN DATA ────────────────────────────────────────────────────────────────
 const PLANS = [
+  { id:"teste",   name:"Teste",   total:1.9, period:"teste",  periodShort:"/tst", sub:"Plano de teste — remover antes do lançamento", badge:"TESTE" },
   { id:"semanal", name:"Semanal", total:87,  period:"semana", periodShort:"/sem", sub:"Cobrado semanalmente",  badge:null },
   { id:"mensal",  name:"Mensal",  total:147, period:"mês",    periodShort:"/mês", sub:"Cobrado mensalmente · melhor custo", badge:"Mais escolhido" },
 ];
@@ -181,7 +182,7 @@ function CheckoutForm() {
   const initialPlan = PLANS.find((p) => p.id === params.get("plan")) ? params.get("plan") : "mensal";
 
   const [planId, setPlanId] = useState(initialPlan);
-  const [data, setData] = useState({ name:"", email:"", cpf:"", phone:"" });
+  const [data, setData] = useState({ name:"", email:"", emailConfirm:"", phone:"" });
   const [pay] = useState({ method:"pix" });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -204,7 +205,7 @@ function CheckoutForm() {
     return () => clearInterval(id);
   }, [submitted, paid]);
 
-  // Polling real do status PIX a cada 60s (limite PushinPay: 1 req/min)
+  // Polling a cada 5s — consulta Supabase (atualizado pelo webhook da PushinPay)
   useEffect(() => {
     if (!submitted || paid || !pixId) return;
     const poll = async () => {
@@ -215,15 +216,15 @@ function CheckoutForm() {
       } catch (_) {}
     };
     poll();
-    const id = setInterval(poll, 60000);
+    const id = setInterval(poll, 5000);
     return () => clearInterval(id);
   }, [submitted, paid, pixId]);
 
   const fieldValid = {
-    name:  data.name.trim().split(/\s+/).length >= 2,
-    email: validEmail(data.email),
-    cpf:   validCPFLength(data.cpf),
-    phone: data.phone.replace(/\D/g, "").length >= 10,
+    name:         data.name.trim().split(/\s+/).length >= 2,
+    email:        validEmail(data.email),
+    emailConfirm: validEmail(data.emailConfirm) && data.emailConfirm === data.email,
+    phone:        data.phone.replace(/\D/g, "").length >= 10,
   };
 
   const handleField = (k, v, mask) => {
@@ -236,7 +237,7 @@ function CheckoutForm() {
     const e = {};
     if (!fieldValid.name) e.name = "Informe seu nome completo";
     if (!fieldValid.email) e.email = "E-mail inválido";
-    if (!fieldValid.cpf) e.cpf = "CPF inválido";
+    if (!fieldValid.emailConfirm) e.emailConfirm = data.emailConfirm && data.emailConfirm !== data.email ? "Os e-mails não coincidem" : "Confirme seu e-mail";
     if (!fieldValid.phone) e.phone = "Telefone inválido";
     return e;
   };
@@ -245,7 +246,7 @@ function CheckoutForm() {
     ev.preventDefault();
     const e = validate();
     setErrors(e);
-    setTouched({ name:true, email:true, cpf:true, phone:true });
+    setTouched({ name:true, email:true, emailConfirm:true, phone:true });
     if (Object.keys(e).length > 0) {
       const firstErr = document.querySelector(".field.error");
       if (firstErr) firstErr.scrollIntoView({ block:"center", behavior:"smooth" });
@@ -288,28 +289,49 @@ function CheckoutForm() {
   const fmtTime = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   const pixCode = pixCodeReal || "";
 
-  const identDone = fieldValid.name && fieldValid.email && fieldValid.cpf && fieldValid.phone;
+  const identDone = fieldValid.name && fieldValid.email && fieldValid.emailConfirm && fieldValid.phone;
   const step = submitted ? 2 : (identDone ? 1 : 0);
 
   // ─── SUCCESS STATE ──────────────────────────────────────────────────────────
   if (submitted && paid) {
-    const orderId = `GVB-${Math.floor(Math.random() * 90000 + 10000)}`;
+    const primeiroNome = data.name.split(" ")[0];
     return (
       <>
         <TopBar />
         <div className="success-wrap">
           <div className="success-burst"></div>
           <div className="success-icon"><Ic.check /></div>
-          <span className="success-eyebrow"><span style={{ width:6, height:6, borderRadius:"99px", background:"var(--green)" }}></span>Acesso liberado</span>
-          <h2>Bem-vindo ao <span className="accent">Grivo Bet.</span></h2>
-          <p>Seu pagamento foi confirmado. Enviamos um e-mail pra <strong>{data.email}</strong> com os dados de acesso, link do painel e o passo-a-passo pra configurar sua primeira sessão no Modo Simulação.</p>
-          <div className="success-receipt">
-            <div className="success-receipt-row"><span>Pedido</span><strong>#{orderId}</strong></div>
-            <div className="success-receipt-row"><span>Plano</span><strong>{plan.name}</strong></div>
-            <div className="success-receipt-row"><span>Método</span><strong>Pix</strong></div>
-            <div className="success-receipt-row"><span>Total pago</span><strong>R$ {fmt(plan.total)}</strong></div>
+          <span className="success-eyebrow"><span style={{ width:6, height:6, borderRadius:"99px", background:"var(--green)" }}></span>Pagamento confirmado</span>
+          <h2>Bem-vindo, <span className="accent">{primeiroNome}.</span></h2>
+          <p>Seu pagamento foi confirmado com sucesso. Acabamos de enviar dois e-mails para <strong>{data.email}</strong> — um de boas-vindas e outro com sua <strong>senha de primeiro acesso</strong>.</p>
+
+          {/* Próximos passos */}
+          <div style={{ margin:"28px auto 0", maxWidth:480, display:"flex", flexDirection:"column", gap:12, textAlign:"left" }}>
+            {[
+              { n:"01", title:"Verifique seu e-mail", desc:`Abra ${data.email} — enviamos sua senha de acesso. Confira a caixa de spam se não aparecer.` },
+              { n:"02", title:"Acesse o painel", desc:"Use seu e-mail e a senha recebida para entrar. Você pode alterar a senha após o primeiro login." },
+              { n:"03", title:"Configure sua primeira sessão", desc:"Escolha uma estratégia, defina sua banca e ative o Stop Loss — leva menos de 2 minutos." },
+            ].map(({ n, title, desc }) => (
+              <div key={n} style={{ display:"flex", gap:14, padding:"16px 18px", borderRadius:12,
+                background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)" }}>
+                <span style={{ fontFamily:"JetBrains Mono,monospace", fontSize:11, color:"var(--accent)",
+                  fontWeight:700, letterSpacing:"0.1em", minWidth:24, paddingTop:2 }}>{n}</span>
+                <div>
+                  <strong style={{ display:"block", fontSize:14, color:"var(--text)", marginBottom:3 }}>{title}</strong>
+                  <span style={{ fontSize:13, color:"var(--muted)", lineHeight:1.5 }}>{desc}</span>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="success-next">
+
+          <div style={{ margin:"28px auto 0", maxWidth:480, padding:"16px 18px", borderRadius:12,
+            background:"rgba(0,230,118,0.06)", border:"1px solid rgba(0,230,118,0.2)", textAlign:"left" }}>
+            <p style={{ margin:0, fontSize:13, color:"var(--muted)", lineHeight:1.6 }}>
+              <strong style={{ color:"var(--green)" }}>Plano {plan.name} ativo</strong> · R$ {fmt(plan.total)}/{plan.period} · Cancele quando quiser
+            </p>
+          </div>
+
+          <div className="success-next" style={{ marginTop:28 }}>
             <a href="login.html" className="success-btn">Acessar o painel <span>→</span></a>
             <a href="index.html" className="success-btn ghost">Voltar à home</a>
           </div>
@@ -368,7 +390,7 @@ function CheckoutForm() {
                   {errors.name && <span className="field-error">⚠ {errors.name}</span>}
                 </div>
 
-                <div className={`field full ${errors.email ? "error" : ""} ${touched.email && fieldValid.email ? "valid" : ""}`}>
+                <div className={`field ${errors.email ? "error" : ""} ${touched.email && fieldValid.email ? "valid" : ""}`}>
                   <label>E-mail <span className="check">✓</span></label>
                   <input type="email" placeholder="seu@email.com"
                          value={data.email}
@@ -376,12 +398,13 @@ function CheckoutForm() {
                   {errors.email && <span className="field-error">⚠ {errors.email}</span>}
                 </div>
 
-                <div className={`field ${errors.cpf ? "error" : ""} ${touched.cpf && fieldValid.cpf ? "valid" : ""}`}>
-                  <label>CPF <span className="check">✓</span></label>
-                  <input type="text" placeholder="000.000.000-00" inputMode="numeric"
-                         value={data.cpf}
-                         onChange={(e) => handleField("cpf", e.target.value, maskCPF)} />
-                  {errors.cpf && <span className="field-error">⚠ {errors.cpf}</span>}
+                <div className={`field ${errors.emailConfirm ? "error" : ""} ${touched.emailConfirm && fieldValid.emailConfirm ? "valid" : ""}`}>
+                  <label>Confirme o e-mail <span className="check">✓</span></label>
+                  <input type="email" placeholder="repita seu e-mail"
+                         value={data.emailConfirm}
+                         onPaste={(e) => e.preventDefault()}
+                         onChange={(e) => handleField("emailConfirm", e.target.value)} />
+                  {errors.emailConfirm && <span className="field-error">⚠ {errors.emailConfirm}</span>}
                 </div>
 
                 <div className={`field ${errors.phone ? "error" : ""} ${touched.phone && fieldValid.phone ? "valid" : ""}`}>
