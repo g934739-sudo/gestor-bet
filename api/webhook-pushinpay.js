@@ -75,7 +75,8 @@ function emailPrimeiroAcesso({ nome, email, senha, plano }) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { id, status } = req.body || {};
+  const { id: rawId, status } = req.body || {};
+  const id = rawId ? rawId.toLowerCase() : null;
 
   // Só processa pagamentos confirmados
   if (status !== 'paid') return res.status(200).json({ received: true });
