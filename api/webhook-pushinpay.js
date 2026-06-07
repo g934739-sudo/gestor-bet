@@ -29,46 +29,21 @@ function gerarSenha() {
   return crypto.randomBytes(10).toString('base64url').slice(0, 12);
 }
 
-// ─── Template: e-mail de primeiro acesso ─────────────────────────────────────
-function emailPrimeiroAcesso({ nome, email, senha, plano }) {
-  return `<!DOCTYPE html>
-<html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Seus dados de acesso · Grivo Bet</title></head>
-<body style="margin:0;padding:0;background:#09090f;font-family:'Outfit',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#09090f;padding:40px 20px;">
-  <tr><td align="center">
-    <table width="560" cellpadding="0" cellspacing="0" style="background:#0f0f18;border-radius:16px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;max-width:560px;width:100%;">
-      <tr><td style="padding:32px 36px 0;">
-        <p style="margin:0;font-size:22px;font-weight:800;color:#f5f5f7;letter-spacing:-0.5px;">Grivo<span style="color:#f0c040;">.</span>bet</p>
-      </td></tr>
-      <tr><td style="padding:28px 36px 0;">
-        <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#f5f5f7;letter-spacing:-0.5px;">Seus dados de acesso</h1>
-        <p style="margin:0;font-size:15px;color:#8b8b95;line-height:1.6;">Olá, <strong style="color:#f5f5f7;">${nome}</strong>! Sua assinatura do plano <strong style="color:#f0c040;">${plano}</strong> está ativa. Use os dados abaixo para acessar o painel.</p>
-      </td></tr>
-      <tr><td style="padding:24px 36px;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1a22;border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-          <tr><td style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06);">
-            <p style="margin:0 0 4px;font-size:11px;color:#5a5a63;text-transform:uppercase;letter-spacing:0.1em;font-family:monospace;">E-mail</p>
-            <p style="margin:0;font-size:15px;color:#f5f5f7;font-weight:600;font-family:monospace;">${email}</p>
-          </td></tr>
-          <tr><td style="padding:20px 24px;">
-            <p style="margin:0 0 4px;font-size:11px;color:#5a5a63;text-transform:uppercase;letter-spacing:0.1em;font-family:monospace;">Senha de acesso</p>
-            <p style="margin:0;font-size:22px;color:#f0c040;font-weight:800;font-family:monospace;letter-spacing:0.05em;">${senha}</p>
-            <p style="margin:6px 0 0;font-size:12px;color:#5a5a63;">Recomendamos alterar sua senha após o primeiro acesso.</p>
-          </td></tr>
-        </table>
-      </td></tr>
-      <tr><td style="padding:0 36px 28px;" align="center">
-        <a href="https://grivo.bet/login" style="display:inline-block;padding:16px 36px;background:#f0c040;color:#0a0a0c;font-size:15px;font-weight:700;border-radius:10px;text-decoration:none;letter-spacing:-0.2px;">Acessar o painel →</a>
-      </td></tr>
-      <tr><td style="padding:20px 36px;border-top:1px solid rgba(255,255,255,0.06);">
-        <p style="margin:0;font-size:12px;color:#5a5a63;text-align:center;">Em caso de dúvidas, responda este e-mail · <a href="https://grivo.bet" style="color:#8b8b95;">grivo.bet</a></p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
+// ─── Template: e-mail de dados de acesso ─────────────────────────────────────
+function emailDadosAcesso({ email, senha, plano }) {
+  let html = '';
+  try {
+    html = fs.readFileSync(
+      path.join(process.cwd(), 'emails', 'email-dados-acesso.html'), 'utf8'
+    );
+  } catch (e) {
+    console.warn('[webhook] email-dados-acesso.html não encontrado');
+    return null;
+  }
+  return html
+    .replace('{{EMAIL}}', email)
+    .replace('{{SENHA}}', senha)
+    .replace('{{PLANO}}', plano);
 }
 
 // ─── Handler principal ────────────────────────────────────────────────────────
@@ -160,7 +135,7 @@ module.exports = async function handler(req, res) {
     sendEmail({
       to:      email,
       subject: 'Seus dados de acesso · Grivo Bet',
-      html:    emailPrimeiroAcesso({ nome: primeiroNome, email, senha, plano: planoNome }),
+      html:    emailDadosAcesso({ email, senha, plano: planoNome }),
     }),
   ]);
 
