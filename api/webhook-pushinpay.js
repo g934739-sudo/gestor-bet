@@ -80,33 +80,39 @@ module.exports = async function handler(req, res) {
 
   // 2. Gera senha e cria usuário no Supabase Auth
   const senha = gerarSenha();
-  const { ok: criouUser, data: userData } = await supabase('POST',
+  console.log('[webhook] Criando usuário Auth para:', email);
+  const authResult = await supabase('POST',
     '/auth/v1/admin/users',
     { email, password: senha, email_confirm: true }
   );
+  console.log('[webhook] Auth result ok:', authResult.ok, 'status:', authResult.status, 'data:', JSON.stringify(authResult.data)?.slice(0, 200));
 
-  let userId = userData?.id;
+  let userId = authResult.data?.id;
 
   // Se usuário já existe, busca o id existente
-  if (!criouUser && userData?.code === 'email_exists') {
-    const { data: existente } = await supabase('GET',
+  if (!authResult.ok && authResult.data?.code === 'email_exists') {
+    const existenteResult = await supabase('GET',
       `/auth/v1/admin/users?email=${encodeURIComponent(email)}`
     );
-    userId = existente?.users?.[0]?.id;
-    console.log('[webhook] Usuário já existe, usando id existente:', userId);
-  } else if (!criouUser) {
-    console.error('[webhook] Erro ao criar usuário:', userData);
+    userId = existenteResult.data?.users?.[0]?.id;
+    console.log('[webhook] Usuário já existe, id:', userId);
+  } else if (!authResult.ok) {
+    console.error('[webhook] Erro ao criar usuário Auth:', JSON.stringify(authResult.data));
   }
 
-  // 3. Insere/atualiza na tabela usuarios
+  // 3. Insere na tabela usuarios
   if (userId) {
-    await supabase('POST', '/rest/v1/usuarios', {
-      id:      userId,
+    console.log('[webhook] Inserindo em usuarios, id:', userId);
+    const insertResult = await supabase('POST', '/rest/v1/usuarios', {
+      id:        userId,
       email,
-      nome:    name.split(' ')[0],
+      nome:      name.split(' ')[0],
       sobrenome: name.split(' ').slice(1).join(' ') || '',
-      plano:   plan_id,
+      plano:     plan_id,
     });
+    console.log('[webhook] Insert usuarios ok:', insertResult.ok, 'status:', insertResult.status, 'data:', JSON.stringify(insertResult.data)?.slice(0, 200));
+  } else {
+    console.error('[webhook] userId indefinido — usuário NÃO inserido em usuarios');
   }
 
   // 4. Atualiza status do pagamento
