@@ -42,10 +42,9 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
   background: radial-gradient(ellipse, rgba(240,192,64,.07) 0%, transparent 65%);
   pointer-events: none;
 }
-.left-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.left-mark { width: 36px; height: 36px; background: var(--gold); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: #000; font-family: var(--m); }
-.left-name { font-size: 20px; font-weight: 800; color: var(--text); }
-.left-name em { color: var(--gold); font-style: normal; }
+.left-logo { display: flex; align-items: center; gap: 0; text-decoration: none; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
+.left-logo .logo-dot { color: var(--gold); }
+.left-logo .logo-ext { font-weight: 400; color: var(--text2); margin-left: 1px; }
 .left-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 48px 0; }
 .left-h { font-size: clamp(28px,3vw,40px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
 .left-h em { color: var(--gold); font-style: normal; }
@@ -130,8 +129,7 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 
   <div class="left">
     <a href="index.html" class="left-logo">
-      <div class="left-mark">G</div>
-      <span class="left-name">Grivo<em>.bet</em></span>
+      <span>Grivo</span><span class="logo-dot">.</span><span class="logo-ext">bet</span>
     </a>
     <div class="left-main">
       <h1 class="left-h">Aposte com estratégia.<br><em>Vença com disciplina.</em></h1>
