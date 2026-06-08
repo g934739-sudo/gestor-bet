@@ -121,29 +121,42 @@ module.exports = async function handler(req, res) {
     { status: 'pago' }
   );
 
-  // 5. Lê HTML do e-mail de boas-vindas
+  // 5. Lê HTML dos e-mails
+  console.log('[webhook] cwd:', process.cwd());
+  console.log('[webhook] RESEND_API_KEY presente:', !!process.env.RESEND_API_KEY);
+
   let boasVindasHtml = '';
   try {
     boasVindasHtml = fs.readFileSync(
       path.join(process.cwd(), 'emails', 'email-boas-vindas.html'), 'utf8'
     );
+    console.log('[webhook] email-boas-vindas.html carregado, tamanho:', boasVindasHtml.length);
   } catch (e) {
-    console.warn('[webhook] email-boas-vindas.html não encontrado');
+    console.warn('[webhook] email-boas-vindas.html não encontrado:', e.message);
   }
 
+  const dadosAcessoHtml = emailDadosAcesso({ email, senha, plano: planoNome });
+  console.log('[webhook] email-dados-acesso.html carregado:', !!dadosAcessoHtml);
+
   // 6. Dispara e-mails em paralelo
-  await Promise.allSettled([
-    boasVindasHtml && sendEmail({
+  const emailResults = await Promise.allSettled([
+    boasVindasHtml ? sendEmail({
       to:      email,
       subject: `Bem-vindo ao Grivo Bet, ${primeiroNome}!`,
       html:    boasVindasHtml,
-    }),
-    sendEmail({
+    }) : Promise.resolve('skipped-boas-vindas'),
+    dadosAcessoHtml ? sendEmail({
       to:      email,
       subject: 'Seus dados de acesso · Grivo Bet',
-      html:    emailDadosAcesso({ email, senha, plano: planoNome }),
-    }),
+      html:    dadosAcessoHtml,
+    }) : Promise.resolve('skipped-dados-acesso'),
   ]);
+
+  emailResults.forEach((r, i) => {
+    const label = i === 0 ? 'boas-vindas' : 'dados-acesso';
+    if (r.status === 'fulfilled') console.log(`[webhook] email ${label}: OK`, JSON.stringify(r.value)?.slice(0, 100));
+    else console.error(`[webhook] email ${label}: ERRO`, r.reason?.message || r.reason);
+  });
 
   console.log('[webhook] Processamento completo para:', email);
   return res.status(200).json({ received: true });
