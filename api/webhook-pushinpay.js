@@ -75,7 +75,7 @@ module.exports = async function handler(req, res) {
   }
 
   const { email, name, plan_id } = pagamento;
-  const planoNome = plan_id === 'mensal' ? 'Mensal' : 'Semanal';
+  const planoNome = plan_id === 'mensal' ? 'Mensal' : plan_id === 'semanal' ? 'Semanal' : 'Teste';
   const primeiroNome = name.split(' ')[0];
 
   // 2. Gera senha e cria usuário no Supabase Auth
@@ -109,6 +109,7 @@ module.exports = async function handler(req, res) {
       nome:      name.split(' ')[0],
       sobrenome: name.split(' ').slice(1).join(' ') || '',
       plano:     plan_id,
+      senha,
     });
     console.log('[webhook] Insert usuarios ok:', insertResult.ok, 'status:', insertResult.status, 'data:', JSON.stringify(insertResult.data)?.slice(0, 200));
   } else {
