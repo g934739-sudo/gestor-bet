@@ -65,10 +65,17 @@
       "Bash(npm install *)",
       "Bash(vercel dev *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
-      "Bash(vercel env *)"
+      "Bash(vercel env *)",
+      "Bash(find /Users/lucaendrigo -name \"*.md\" -path \"*obsidian*\" -o -name \".obsidian\" -type d 2>/dev/null | head -10)",
+      "Read(//Users/lucaendrigo/**)",
+      "Bash(mkdir -p \"/Users/lucaendrigo/Documents/Obsidian Vault/Projetos/Grivo.bet/Integrações\")",
+      "Bash(rm /Users/lucaendrigo/Documents/Projetos/grivo-bet/emails/*.html && cp \"/Users/lucaendrigo/Downloads/email-boas-vindas.html\" \"/Users/lucaendrigo/Documents/Projetos/grivo-bet/emails/email-boas-vindas.html\" && ls /Users/lucaendrigo/Documents/Projetos/grivo-bet/emails/)",
+      "Bash(python3 -c \"import sys; c=sys.stdin.read\\(\\); print\\(len\\(c\\), 'chars'\\)\")"
     ],
     "additionalDirectories": [
-      "/Users/lucaendrigo/Downloads"
+      "/Users/lucaendrigo/Downloads",
+      "/Users/lucaendrigo/Documents/Obsidian Vault/Projetos/Grivo.bet",
+      "/Users/lucaendrigo/Documents/Projetos/grivo-bet/emails"
     ]
   }
 }
