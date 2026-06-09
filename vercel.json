@@ -1,6 +1,11 @@
 {
   "trailingSlash": false,
   "cleanUrls": true,
+  "functions": {
+    "api/webhook-pushinpay.js": {
+      "includeFiles": "api/emails/**"
+    }
+  },
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
     { "source": "/app", "destination": "/app.html" },
