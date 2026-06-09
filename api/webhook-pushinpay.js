@@ -9,7 +9,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
 // ─── Supabase helper ──────────────────────────────────────────────────────────
-async function supabase(method, endpoint, body) {
+async function supabase(method, endpoint, body, extraHeaders = {}) {
   const res = await fetch(`${SUPABASE_URL}${endpoint}`, {
     method,
     headers: {
@@ -17,6 +17,7 @@ async function supabase(method, endpoint, body) {
       'Authorization': `Bearer ${SUPABASE_KEY}`,
       'Content-Type':  'application/json',
       'Prefer':        'return=representation',
+      ...extraHeaders,
     },
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -27,6 +28,12 @@ async function supabase(method, endpoint, body) {
 // ─── Gerador de senha segura ──────────────────────────────────────────────────
 function gerarSenha() {
   return crypto.randomBytes(10).toString('base64url').slice(0, 12);
+}
+
+// ─── Calcula data de expiração do plano ───────────────────────────────────────
+function calcularExpiracao(plan_id, baseDate = new Date()) {
+  const dias = plan_id === 'mensal' ? 30 : plan_id === 'semanal' ? 7 : 1;
+  return new Date(baseDate.getTime() + dias * 24 * 60 * 60 * 1000).toISOString();
 }
 
 // ─── Template: e-mail de dados de acesso ─────────────────────────────────────
@@ -53,7 +60,6 @@ module.exports = async function handler(req, res) {
   const { id: rawId, status } = req.body || {};
   const id = rawId ? rawId.toLowerCase() : null;
 
-  // Só processa pagamentos confirmados
   if (status !== 'paid') return res.status(200).json({ received: true });
 
   console.log('[webhook] Pagamento confirmado:', id);
@@ -69,17 +75,16 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ received: true, warning: 'pagamento não encontrado' });
   }
 
-  // Idempotência — ignora se já processado
   if (pagamento.status === 'pago') {
     return res.status(200).json({ received: true, skipped: 'já processado' });
   }
 
   const { email, name, plan_id } = pagamento;
-  const planoNome = plan_id === 'mensal' ? 'Mensal' : plan_id === 'semanal' ? 'Semanal' : 'Teste';
+  const planoNome    = plan_id === 'mensal' ? 'Mensal' : plan_id === 'semanal' ? 'Semanal' : 'Teste';
   const primeiroNome = name.split(' ')[0];
+  const senha        = gerarSenha();
 
-  // 2. Gera senha e cria usuário no Supabase Auth
-  const senha = gerarSenha();
+  // 2. Cria ou atualiza usuário no Supabase Auth
   console.log('[webhook] Criando usuário Auth para:', email);
   const authResult = await supabase('POST',
     '/auth/v1/admin/users',
@@ -87,31 +92,55 @@ module.exports = async function handler(req, res) {
   );
   console.log('[webhook] Auth result ok:', authResult.ok, 'status:', authResult.status, 'data:', JSON.stringify(authResult.data)?.slice(0, 200));
 
-  let userId = authResult.data?.id;
+  let userId        = authResult.data?.id;
+  let planoExpiraEm = calcularExpiracao(plan_id);
 
-  // Se usuário já existe, busca o id existente
-  if (!authResult.ok && authResult.data?.code === 'email_exists') {
+  if (!authResult.ok && authResult.data?.error_code === 'email_exists') {
+    // Busca userId existente
     const existenteResult = await supabase('GET',
       `/auth/v1/admin/users?email=${encodeURIComponent(email)}`
     );
     userId = existenteResult.data?.users?.[0]?.id;
     console.log('[webhook] Usuário já existe, id:', userId);
+
+    if (userId) {
+      // Atualiza senha no auth.users para que o e-mail enviado seja válido
+      await supabase('PUT', `/auth/v1/admin/users/${userId}`, { password: senha });
+      console.log('[webhook] Senha atualizada no auth.users');
+
+      // Busca expiração atual para acumular dias restantes
+      const { data: usuarioAtual } = await supabase('GET',
+        `/rest/v1/usuarios?id=eq.${userId}&select=plano_expira_em&limit=1`
+      );
+      const expiracaoAtual = usuarioAtual?.[0]?.plano_expira_em;
+      const base = expiracaoAtual && new Date(expiracaoAtual) > new Date()
+        ? new Date(expiracaoAtual)   // ainda ativo: soma a partir do fim atual
+        : new Date();                // expirado ou sem plano: soma a partir de agora
+      planoExpiraEm = calcularExpiracao(plan_id, base);
+      console.log('[webhook] Nova expiração:', planoExpiraEm);
+    }
   } else if (!authResult.ok) {
     console.error('[webhook] Erro ao criar usuário Auth:', JSON.stringify(authResult.data));
   }
 
-  // 3. Insere na tabela usuarios
+  // 3. Upsert na tabela usuarios
   if (userId) {
-    console.log('[webhook] Inserindo em usuarios, id:', userId);
-    const insertResult = await supabase('POST', '/rest/v1/usuarios', {
-      id:        userId,
-      email,
-      nome:      name.split(' ')[0],
-      sobrenome: name.split(' ').slice(1).join(' ') || '',
-      plano:     plan_id,
-      senha,
-    });
-    console.log('[webhook] Insert usuarios ok:', insertResult.ok, 'status:', insertResult.status, 'data:', JSON.stringify(insertResult.data)?.slice(0, 200));
+    console.log('[webhook] Upserting em usuarios, id:', userId);
+    const upsertResult = await supabase(
+      'POST',
+      '/rest/v1/usuarios',
+      {
+        id:             userId,
+        email,
+        nome:           name.split(' ')[0],
+        sobrenome:      name.split(' ').slice(1).join(' ') || '',
+        plano:          plan_id,
+        senha,
+        plano_expira_em: planoExpiraEm,
+      },
+      { 'Prefer': 'resolution=merge-duplicates,return=representation' }
+    );
+    console.log('[webhook] Upsert usuarios ok:', upsertResult.ok, 'status:', upsertResult.status);
   } else {
     console.error('[webhook] userId indefinido — usuário NÃO inserido em usuarios');
   }
@@ -123,7 +152,6 @@ module.exports = async function handler(req, res) {
   );
 
   // 5. Lê HTML dos e-mails
-  console.log('[webhook] cwd:', process.cwd());
   console.log('[webhook] RESEND_API_KEY presente:', !!process.env.RESEND_API_KEY);
 
   let boasVindasHtml = '';

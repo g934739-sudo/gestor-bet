@@ -1,6 +1,11 @@
 {
   "trailingSlash": false,
   "cleanUrls": true,
+  "functions": {
+    "api/*.js": {
+      "includeFiles": "emails/**"
+    }
+  },
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
     { "source": "/app", "destination": "/app.html" },

@@ -49,6 +49,22 @@ window._supa = supabase.createClient(
 
   if (!session) { redirectToLogin(); return; }
 
+  // Verifica expiração do plano
+  try {
+    const { data: usuario } = await window._supa
+      .from('usuarios')
+      .select('plano_expira_em')
+      .eq('id', session.user.id)
+      .maybeSingle();
+    if (!usuario || !usuario.plano_expira_em || new Date(usuario.plano_expira_em) < new Date()) {
+      await window._supa.auth.signOut();
+      window.location.replace('checkout.html?expired=1');
+      return;
+    }
+  } catch (err) {
+    console.warn('[gb] Falha ao verificar expiração (ignorando):', err);
+  }
+
   // Sessão única (opcional): valida que o token salvo localmente bate com
   // o registrado no banco. Se a verificação falhar por qualquer motivo
   // (RLS, schema, rede), liberamos o acesso para não trancar o usuário.
