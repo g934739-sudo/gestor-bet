@@ -74,7 +74,7 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 .eye { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 16px; opacity: .4; transition: opacity .2s; user-select: none; color: var(--text); background: none; border: none; }
 .eye:hover { opacity: .8; }
 
-.forgot { display: block; text-align: right; font-size: 12px; color: var(--muted); text-decoration: none; margin: -8px 0 24px; transition: color .2s; }
+.forgot { display: block; text-align: right; font-size: 12px; color: var(--muted); text-decoration: none; margin: -8px 0 24px; transition: color .2s; cursor: pointer; }
 .forgot:hover { color: var(--gold); }
 
 /* Buttons */
@@ -82,6 +82,9 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 .btn-submit:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .btn-submit:active { transform: translateY(0); }
 .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; filter: none; }
+
+.btn-ghost { width: 100%; padding: 12px; background: transparent; color: var(--text2); font-family: var(--r); font-size: 14px; font-weight: 600; border: 1px solid var(--border2); border-radius: 10px; cursor: pointer; transition: border-color .2s, color .2s; margin-top: 12px; }
+.btn-ghost:hover { border-color: var(--gold-line); color: var(--text); }
 
 /* Divider */
 .divider { display: flex; align-items: center; gap: 14px; margin: 28px 0; }
@@ -111,6 +114,16 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
 .msg { display: none; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 16px; line-height: 1.5; }
 .msg.error   { display: block; background: rgba(245,68,95,.12); border: 1px solid rgba(245,68,95,.3); color: #f5445f; }
 .msg.success { display: block; background: rgba(31,217,122,.10); border: 1px solid rgba(31,217,122,.25); color: #1fd97a; }
+
+/* Password strength bar */
+.strength-wrap { margin-top: 8px; }
+.strength-bar { height: 4px; border-radius: 99px; background: var(--border); overflow: hidden; }
+.strength-fill { height: 100%; border-radius: 99px; width: 0; transition: width .3s, background .3s; }
+.strength-label { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+/* Views */
+#view-login, #view-forgot, #view-recovery { display: none; }
+#view-login.active, #view-forgot.active, #view-recovery.active { display: block; }
 
 @media (max-width: 768px) {
   .wrap { grid-template-columns: 1fr; }
@@ -152,41 +165,87 @@ html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-
   <div class="right">
     <a href="index.html" class="right-back">← Voltar ao site</a>
 
-    <div class="right-heading">
-      <h2>Bem-vindo de volta</h2>
-      <p>Entre com sua conta para acessar a plataforma.</p>
-    </div>
-
-    <!-- LOGIN -->
-    <form id="form-login" onsubmit="onLogin(event)">
-      <div id="msg-login" class="msg"></div>
-      <div class="field">
-        <label class="label">E-mail</label>
-        <input class="input" type="email" id="login-email" placeholder="seu@email.com" required>
+    <!-- ── VIEW: LOGIN ── -->
+    <div id="view-login">
+      <div class="right-heading">
+        <h2>Bem-vindo de volta</h2>
+        <p>Entre com sua conta para acessar a plataforma.</p>
       </div>
-      <div class="field">
-        <label class="label">Senha</label>
-        <div class="input-wrap">
-          <input class="input" type="password" id="lp" placeholder="••••••••" required>
-          <button type="button" class="eye" onclick="togglePass('lp')">👁</button>
+      <form id="form-login" onsubmit="onLogin(event)">
+        <div id="msg-login" class="msg"></div>
+        <div class="field">
+          <label class="label">E-mail</label>
+          <input class="input" type="email" id="login-email" placeholder="seu@email.com" required>
         </div>
+        <div class="field">
+          <label class="label">Senha</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="lp" placeholder="••••••••" required>
+            <button type="button" class="eye" onclick="togglePass('lp')">👁</button>
+          </div>
+        </div>
+        <a class="forgot" onclick="showView('forgot')">Esqueci a senha</a>
+        <button type="submit" class="btn-submit">Acessar plataforma</button>
+      </form>
+      <div class="divider">
+        <div class="div-line"></div>
+        <span class="div-txt">Ainda não é assinante?</span>
+        <div class="div-line"></div>
       </div>
-      <a href="#" class="forgot" onclick="onForgot(event)">Esqueci a senha</a>
-      <button type="submit" class="btn-submit">Acessar plataforma</button>
-    </form>
-
-    <div class="divider">
-      <div class="div-line"></div>
-      <span class="div-txt">Ainda não é assinante?</span>
-      <div class="div-line"></div>
+      <div class="assinar-box">
+        <div class="assinar-box-text">
+          <strong>Assine o Grivo.bet</strong>
+          <span>Acesso completo a todas as estratégias e ferramentas.</span>
+        </div>
+        <a href="checkout.html" class="btn-assinar">Assinar agora →</a>
+      </div>
     </div>
 
-    <div class="assinar-box">
-      <div class="assinar-box-text">
-        <strong>Assine o Grivo.bet</strong>
-        <span>Acesso completo a todas as estratégias e ferramentas.</span>
+    <!-- ── VIEW: ESQUECI A SENHA ── -->
+    <div id="view-forgot">
+      <div class="right-heading">
+        <h2>Recuperar senha</h2>
+        <p>Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
       </div>
-      <a href="checkout.html" class="btn-assinar">Assinar agora →</a>
+      <form id="form-forgot" onsubmit="onForgot(event)">
+        <div id="msg-forgot" class="msg"></div>
+        <div class="field">
+          <label class="label">E-mail</label>
+          <input class="input" type="email" id="forgot-email" placeholder="seu@email.com" required>
+        </div>
+        <button type="submit" class="btn-submit">Enviar link de recuperação</button>
+        <button type="button" class="btn-ghost" onclick="showView('login')">← Voltar ao login</button>
+      </form>
+    </div>
+
+    <!-- ── VIEW: NOVA SENHA (recovery token) ── -->
+    <div id="view-recovery">
+      <div class="right-heading">
+        <h2>Criar nova senha</h2>
+        <p>Escolha uma senha forte para proteger sua conta.</p>
+      </div>
+      <form id="form-recovery" onsubmit="onRecovery(event)">
+        <div id="msg-recovery" class="msg"></div>
+        <div class="field">
+          <label class="label">Nova senha</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="new-pass" placeholder="mínimo 8 caracteres" required minlength="8" oninput="checkStrength(this.value)">
+            <button type="button" class="eye" onclick="togglePass('new-pass')">👁</button>
+          </div>
+          <div class="strength-wrap">
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div class="strength-label" id="strength-label"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Confirmar nova senha</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="confirm-pass" placeholder="repita a senha" required minlength="8">
+            <button type="button" class="eye" onclick="togglePass('confirm-pass')">👁</button>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit">Salvar nova senha</button>
+      </form>
     </div>
 
   </div>
@@ -205,24 +264,80 @@ const supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
   }
 });
 
+// ── Inicialização: detecta recovery token na URL ──────────────────────────────
+(async function init() {
+  // O Supabase coloca os parâmetros no hash (#) após o redirect
+  const hash = new URLSearchParams(window.location.hash.replace('#', '?').slice(1));
+  const type = hash.get('type');
+
+  if (type === 'recovery') {
+    // O SDK já processa o token via detectSessionInUrl — basta mostrar a view
+    showView('recovery');
+    // Limpa o hash da URL para não reprocessar ao recarregar
+    history.replaceState(null, '', window.location.pathname);
+    return;
+  }
+
+  // Verifica se já está logado
+  const { data: { session } } = await supa.auth.getSession();
+  if (session) {
+    window.location.href = 'app.html';
+    return;
+  }
+
+  showView('login');
+})();
+
+// ── Utilitários ───────────────────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('#view-login, #view-forgot, #view-recovery')
+    .forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+}
+
 function togglePass(id) {
   const input = document.getElementById(id);
   input.type = input.type === 'password' ? 'text' : 'password';
 }
 
-function showMsg(text, type) {
-  const el = document.getElementById('msg-login');
+function showMsg(viewId, text, type) {
+  const el = document.getElementById('msg-' + viewId);
   el.textContent = text;
   el.className = 'msg ' + type;
 }
-function clearMsg() {
-  const el = document.getElementById('msg-login');
+function clearMsg(viewId) {
+  const el = document.getElementById('msg-' + viewId);
   el.className = 'msg'; el.textContent = '';
 }
 
+function checkStrength(val) {
+  const fill  = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  let score = 0;
+  if (val.length >= 8)  score++;
+  if (val.length >= 12) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [
+    { w: '0%',   bg: '',                  txt: '' },
+    { w: '25%',  bg: 'var(--red)',        txt: 'Muito fraca' },
+    { w: '50%',  bg: '#f0a040',           txt: 'Fraca' },
+    { w: '75%',  bg: 'var(--gold)',       txt: 'Boa' },
+    { w: '90%',  bg: '#80d060',          txt: 'Forte' },
+    { w: '100%', bg: 'var(--green)',      txt: 'Muito forte' },
+  ];
+  const lvl = levels[Math.min(score, 5)];
+  fill.style.width      = lvl.w;
+  fill.style.background = lvl.bg;
+  label.textContent     = lvl.txt;
+  label.style.color     = lvl.bg || 'var(--muted)';
+}
+
+// ── Login ─────────────────────────────────────────────────────────────────────
 async function onLogin(e) {
   e.preventDefault();
-  clearMsg();
+  clearMsg('login');
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('lp').value;
   const btn   = e.target.querySelector('.btn-submit');
@@ -233,14 +348,11 @@ async function onLogin(e) {
     const msg = error.message.includes('Invalid login') || error.message.includes('invalid')
       ? 'E-mail ou senha incorretos.'
       : error.message;
-    showMsg(msg, 'error');
+    showMsg('login', msg, 'error');
     btn.textContent = 'Acessar plataforma'; btn.disabled = false;
     return;
   }
 
-  // Sessão única: grava token no banco e no localStorage.
-  // Importante: envolvido em try/catch para não bloquear o redirect caso haja
-  // policy RLS faltando ou erro de schema — sessão de auth já está válida.
   const sessionToken = crypto.randomUUID();
   localStorage.setItem('gb_st', sessionToken);
   try {
@@ -252,23 +364,64 @@ async function onLogin(e) {
     console.warn('[gb] Falha ao gravar session_token (ignorando):', err);
   }
 
-  // Salva tokens diretamente para que app.html possa restaurar a sessão
-  // via setSession() — mais confiável que depender do storageKey do SDK.
-  localStorage.setItem('gb_access', data.session.access_token);
+  localStorage.setItem('gb_access',  data.session.access_token);
   localStorage.setItem('gb_refresh', data.session.refresh_token);
-
   window.location.href = 'app.html';
 }
 
+// ── Esqueci a senha ───────────────────────────────────────────────────────────
 async function onForgot(e) {
   e.preventDefault();
-  const email = document.getElementById('login-email').value.trim();
-  if (!email) { showMsg('Digite seu e-mail acima para recuperar a senha.', 'error'); return; }
+  clearMsg('forgot');
+  const email = document.getElementById('forgot-email').value.trim();
+  const btn   = e.target.querySelector('.btn-submit');
+  btn.textContent = 'Enviando...'; btn.disabled = true;
+
   const { error } = await supa.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/login.html'
+    redirectTo: window.location.origin + '/login'
   });
-  if (error) { showMsg(error.message, 'error'); }
-  else { showMsg('E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'success'); }
+
+  btn.textContent = 'Enviar link de recuperação'; btn.disabled = false;
+
+  if (error) {
+    showMsg('forgot', error.message, 'error');
+    return;
+  }
+  showMsg('forgot',
+    'Link enviado! Verifique sua caixa de entrada (e o spam). O link expira em 1 hora.',
+    'success'
+  );
+}
+
+// ── Nova senha (após clicar no link do e-mail) ────────────────────────────────
+async function onRecovery(e) {
+  e.preventDefault();
+  clearMsg('recovery');
+  const newPass     = document.getElementById('new-pass').value;
+  const confirmPass = document.getElementById('confirm-pass').value;
+  const btn         = e.target.querySelector('.btn-submit');
+
+  if (newPass !== confirmPass) {
+    showMsg('recovery', 'As senhas não coincidem.', 'error');
+    return;
+  }
+  if (newPass.length < 8) {
+    showMsg('recovery', 'A senha precisa ter no mínimo 8 caracteres.', 'error');
+    return;
+  }
+
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+
+  const { error } = await supa.auth.updateUser({ password: newPass });
+
+  if (error) {
+    showMsg('recovery', error.message, 'error');
+    btn.textContent = 'Salvar nova senha'; btn.disabled = false;
+    return;
+  }
+
+  showMsg('recovery', 'Senha atualizada com sucesso! Redirecionando...', 'success');
+  setTimeout(() => window.location.href = 'app.html', 1800);
 }
 </script>
 </body>
