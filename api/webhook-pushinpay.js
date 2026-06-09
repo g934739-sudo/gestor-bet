@@ -41,7 +41,7 @@ function emailDadosAcesso({ email, senha, plano }) {
   let html = '';
   try {
     html = fs.readFileSync(
-      path.join(process.cwd(), 'emails', 'email-dados-acesso.html'), 'utf8'
+      path.join(__dirname, 'emails', 'email-dados-acesso.html'), 'utf8'
     );
   } catch (e) {
     console.warn('[webhook] email-dados-acesso.html não encontrado');
@@ -157,7 +157,7 @@ module.exports = async function handler(req, res) {
   let boasVindasHtml = '';
   try {
     boasVindasHtml = fs.readFileSync(
-      path.join(process.cwd(), 'emails', 'email-boas-vindas.html'), 'utf8'
+      path.join(__dirname, 'emails', 'email-boas-vindas.html'), 'utf8'
     );
     console.log('[webhook] email-boas-vindas.html carregado, tamanho:', boasVindasHtml.length);
   } catch (e) {
