@@ -85,13 +85,12 @@ const EMAIL_BOAS_VINDAS_HTML = `<!doctype html>
     .h1{font-size:33px!important;line-height:1.04!important;}
     .stack{display:block!important;width:100%!important;}
     .step-cell{padding:16px!important;}
-    .btn-a{display:block!important;}
     .heropad{padding:30px 26px 0!important;}
   }
 </style>
 </head>
 <body style="margin:0;padding:0;background:#0a0a0c;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#0a0a0c;">Sua conta está ativa. Comece pelo Modo Simulação — teste qualquer estratégia sem arriscar 1 real.&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#0a0a0c;">Sua conta está ativa. Em instantes você recebe um e-mail com seus dados de acesso.&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.12), transparent 62%);">
 <tr><td align="center" style="padding:28px 12px 40px;">
@@ -155,13 +154,15 @@ const EMAIL_BOAS_VINDAS_HTML = `<!doctype html>
         </table>
       </td></tr>
 
-      <!-- CTA -->
+      <!-- Próximo passo: aviso do e-mail de acesso -->
       <tr><td style="padding:28px 44px 42px;">
-        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-          <td align="center" class="shine" style="border-radius:12px;box-shadow:0 12px 32px rgba(255,203,31,0.28);">
-            <a class="btn-a px" href="https://grivo.bet/painel" style="display:inline-block;padding:18px 36px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Acessar Grivo Bet  &rarr;</a>
-          </td>
-        </tr></table>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,203,31,0.07);border:1px solid rgba(255,203,31,0.28);border-radius:14px;">
+          <tr><td style="padding:20px 24px;">
+            <p class="px" style="margin:0;font-size:15px;line-height:1.62;color:#d8d8dc;">
+              &#128233; <strong style="color:#FFCB1F;">Próximo passo:</strong> você vai receber um segundo e-mail com seu <strong style="color:#f5f5f7;">login e senha provisória</strong> para acessar o painel. Verifique também a caixa de spam.
+            </p>
+          </td></tr>
+        </table>
       </td></tr>
     </table>
   </td></tr>
@@ -403,7 +404,7 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
       <tr><td style="padding:28px 44px 16px;" align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
           <td align="center" class="shine" style="border-radius:12px;box-shadow:0 12px 32px rgba(255,203,31,0.28);">
-            <a class="btn-a px" href="https://painel.grivo.bet/login" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Entrar no painel  &rarr;</a>
+            <a class="btn-a px" href="https://www.grivo.bet/login" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Entrar no painel  &rarr;</a>
           </td>
         </tr></table>
       </td></tr>
