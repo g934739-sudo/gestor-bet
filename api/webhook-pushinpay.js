@@ -48,6 +48,23 @@ async function supabase(method, endpoint, body, extraHeaders = {}) {
   return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null };
 }
 
+// ─── Busca usuário no Auth pelo e-mail ────────────────────────────────────────
+// ATENÇÃO: GET /admin/users?email= NÃO filtra de verdade — devolve a lista
+// inteira (paginada). É preciso paginar e comparar o e-mail manualmente,
+// senão pegamos o usuário errado (users[0]) e mexemos na conta de outra pessoa.
+async function buscarUsuarioPorEmail(email) {
+  const alvo = email.trim().toLowerCase();
+  const perPage = 200;
+  for (let page = 1; page <= 50; page++) {
+    const r = await supabase('GET', `/auth/v1/admin/users?page=${page}&per_page=${perPage}`);
+    const users = r.data?.users || [];
+    const achado = users.find((u) => (u.email || '').toLowerCase() === alvo);
+    if (achado) return achado;
+    if (users.length < perPage) break; // última página
+  }
+  return null;
+}
+
 // ─── Gerador de senha segura ──────────────────────────────────────────────────
 function gerarSenha() {
   return crypto.randomBytes(10).toString('base64url').slice(0, 12);
@@ -597,10 +614,8 @@ module.exports = async function handler(req, res) {
   let planoExpiraEm = calcularExpiracao(plan_id);
 
   if (!authResult.ok && authResult.data?.error_code === 'email_exists') {
-    const existenteResult = await supabase('GET',
-      `/auth/v1/admin/users?email=${encodeURIComponent(email)}`
-    );
-    userId = existenteResult.data?.users?.[0]?.id;
+    const existente = await buscarUsuarioPorEmail(email);
+    userId = existente?.id;
     console.log('[webhook] Usuário já existe, id:', userId);
 
     if (userId) {
