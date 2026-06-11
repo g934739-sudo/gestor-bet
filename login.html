@@ -264,18 +264,32 @@ const supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
   }
 });
 
-// ── Inicialização: detecta recovery token na URL ──────────────────────────────
+// ── Inicialização: detecta token de reset na URL ─────────────────────────────
 (async function init() {
-  // O Supabase coloca os parâmetros no hash (#) após o redirect
-  const hash = new URLSearchParams(window.location.hash.replace('#', '?').slice(1));
-  const type = hash.get('type');
+  const params     = new URLSearchParams(window.location.search);
+  const resetToken = params.get('token');
 
-  if (type === 'recovery') {
-    // O SDK já processa o token via detectSessionInUrl — basta mostrar a view
-    showView('recovery');
-    // Limpa o hash da URL para não reprocessar ao recarregar
-    history.replaceState(null, '', window.location.pathname);
-    return;
+  if (resetToken) {
+    // Valida o token no backend antes de mostrar o formulário
+    try {
+      const r = await fetch(`/api/redefinir-senha?token=${encodeURIComponent(resetToken)}`);
+      const d = await r.json();
+      if (r.ok) {
+        window._resetToken = resetToken;
+        history.replaceState(null, '', window.location.pathname);
+        showView('recovery');
+        return;
+      }
+      // Token inválido/expirado — mostra login com mensagem de erro
+      history.replaceState(null, '', window.location.pathname);
+      showView('login');
+      showMsg('login', d.error || 'Link inválido ou expirado. Solicite um novo.', 'error');
+      return;
+    } catch {
+      history.replaceState(null, '', window.location.pathname);
+      showView('login');
+      return;
+    }
   }
 
   // Verifica se já está logado
@@ -377,18 +391,17 @@ async function onForgot(e) {
   const btn   = e.target.querySelector('.btn-submit');
   btn.textContent = 'Enviando...'; btn.disabled = true;
 
-  const { error } = await supa.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://grivo.bet/login'
-  });
+  try {
+    await fetch('/api/reset-senha', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email }),
+    });
+  } catch { /* falha silenciosa — não revelar informação */ }
 
   btn.textContent = 'Enviar link de recuperação'; btn.disabled = false;
-
-  if (error) {
-    showMsg('forgot', error.message, 'error');
-    return;
-  }
   showMsg('forgot',
-    'Link enviado! Verifique sua caixa de entrada (e o spam). O link expira em 1 hora.',
+    'Se esse e-mail estiver cadastrado, você vai receber o link em instantes. Verifique também o spam. O link expira em 30 minutos.',
     'success'
   );
 }
@@ -412,29 +425,50 @@ async function onRecovery(e) {
 
   btn.textContent = 'Salvando...'; btn.disabled = true;
 
-  const { data: updateData, error } = await supa.auth.updateUser({ password: newPass });
-
-  if (error) {
-    showMsg('recovery', error.message, 'error');
+  // Envia token + nova senha para o backend
+  let resetEmail;
+  try {
+    const r = await fetch('/api/redefinir-senha', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ token: window._resetToken, nova_senha: newPass }),
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      showMsg('recovery', d.error || 'Erro ao redefinir senha.', 'error');
+      btn.textContent = 'Salvar nova senha'; btn.disabled = false;
+      return;
+    }
+    resetEmail = d.email;
+  } catch {
+    showMsg('recovery', 'Erro de conexão. Tente novamente.', 'error');
     btn.textContent = 'Salvar nova senha'; btn.disabled = false;
     return;
   }
 
-  // Persiste a sessão e gera session_token — igual ao onLogin()
-  const { data: { session } } = await supa.auth.getSession();
-  if (session) {
-    const sessionToken = crypto.randomUUID();
-    localStorage.setItem('gb_access',  session.access_token);
-    localStorage.setItem('gb_refresh', session.refresh_token);
-    localStorage.setItem('gb_st', sessionToken);
-    try {
-      await supa.from('usuarios').upsert(
-        { id: session.user.id, session_token: sessionToken },
-        { onConflict: 'id' }
-      );
-    } catch (err) {
-      console.warn('[gb] Falha ao gravar session_token no recovery (ignorando):', err);
-    }
+  // Faz login com a nova senha para estabelecer a sessão
+  const { data, error: signInError } = await supa.auth.signInWithPassword({
+    email:    resetEmail,
+    password: newPass,
+  });
+  if (signInError) {
+    showMsg('recovery', 'Senha atualizada! Faça login para continuar.', 'success');
+    setTimeout(() => showView('login'), 2000);
+    return;
+  }
+
+  // Persiste tokens e session_token — igual ao onLogin()
+  const sessionToken = crypto.randomUUID();
+  localStorage.setItem('gb_access',  data.session.access_token);
+  localStorage.setItem('gb_refresh', data.session.refresh_token);
+  localStorage.setItem('gb_st', sessionToken);
+  try {
+    await supa.from('usuarios').upsert(
+      { id: data.user.id, session_token: sessionToken },
+      { onConflict: 'id' }
+    );
+  } catch (err) {
+    console.warn('[gb] Falha ao gravar session_token no recovery:', err);
   }
 
   showMsg('recovery', 'Senha atualizada com sucesso! Redirecionando...', 'success');
