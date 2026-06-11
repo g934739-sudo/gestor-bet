@@ -49,16 +49,21 @@ window._supa = supabase.createClient(
 
   if (!session) { redirectToLogin(); return; }
 
-  // Verifica expiração do plano
+  // Verifica expiração do plano e senha_trocada
   try {
     const { data: usuario } = await window._supa
       .from('usuarios')
-      .select('plano_expira_em')
+      .select('plano_expira_em, senha_trocada')
       .eq('id', session.user.id)
       .maybeSingle();
     if (!usuario || !usuario.plano_expira_em || new Date(usuario.plano_expira_em) < new Date()) {
       await window._supa.auth.signOut();
       window.location.replace('checkout.html?expired=1');
+      return;
+    }
+    if (!usuario.senha_trocada) {
+      document.documentElement.style.visibility = 'visible';
+      abrirModalTrocaSenha(session.user.id);
       return;
     }
   } catch (err) {
@@ -3963,12 +3968,154 @@ document.addEventListener('keydown', e => {
   </div><!-- /stratsModal -->
 </div><!-- /stratsOverlay -->
 
+<!-- ── MODAL: Troca de senha no primeiro acesso ── -->
+<div id="primeiroAcessoOverlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;">
+  <div style="position:relative;width:min(440px,100%);background:var(--s1);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px #000c;">
+
+    <!-- barra dourada topo -->
+    <div style="height:3px;background:linear-gradient(90deg,var(--gold),#e09920);"></div>
+
+    <div style="padding:36px 36px 32px;">
+
+      <!-- ícone + título -->
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:99px;background:var(--gold-d);border:1px solid var(--gold-b);margin-bottom:16px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="11" width="14" height="10" rx="2"/>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+            <circle cx="12" cy="16" r="1.3" fill="var(--gold)" stroke="none"/>
+          </svg>
+        </div>
+        <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;color:var(--text);margin-bottom:8px;">Crie sua senha definitiva</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.55;">Você está usando a senha provisória enviada por e-mail.<br/>Crie uma senha pessoal para continuar.</div>
+      </div>
+
+      <div id="msgPrimeiroAcesso" style="display:none;padding:10px 14px;border-radius:10px;font-size:13.5px;margin-bottom:16px;"></div>
+
+      <!-- nova senha -->
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Nova senha</label>
+        <div style="position:relative;">
+          <input id="paNovaSenha" type="password" placeholder="mínimo 8 caracteres" minlength="8"
+            style="width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 44px 12px 14px;font-size:15px;color:var(--text);outline:none;font-family:var(--body);transition:border-color .2s;"
+            oninput="paCheckStrength(this.value)"
+            onfocus="this.style.borderColor='var(--gold-b)'" onblur="this.style.borderColor='var(--border)'">
+          <button type="button" onclick="paToggle('paNovaSenha',this)" tabindex="-1"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:4px;">👁</button>
+        </div>
+        <!-- barra de força -->
+        <div style="margin-top:8px;height:4px;background:var(--s3);border-radius:99px;overflow:hidden;">
+          <div id="paStrengthFill" style="height:100%;width:0%;border-radius:99px;transition:width .3s,background .3s;"></div>
+        </div>
+        <div id="paStrengthLabel" style="font-size:11px;color:var(--muted);margin-top:4px;height:14px;"></div>
+      </div>
+
+      <!-- confirmar senha -->
+      <div style="margin-bottom:24px;">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Confirmar senha</label>
+        <div style="position:relative;">
+          <input id="paConfirmarSenha" type="password" placeholder="repita a senha" minlength="8"
+            style="width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 44px 12px 14px;font-size:15px;color:var(--text);outline:none;font-family:var(--body);transition:border-color .2s;"
+            onfocus="this.style.borderColor='var(--gold-b)'" onblur="this.style.borderColor='var(--border)'">
+          <button type="button" onclick="paToggle('paConfirmarSenha',this)" tabindex="-1"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:4px;">👁</button>
+        </div>
+      </div>
+
+      <!-- botão -->
+      <button id="paBtnSalvar" onclick="paSalvarSenha()"
+        style="width:100%;padding:14px;background:var(--gold);color:#09090f;font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:var(--body);letter-spacing:-.2px;transition:opacity .2s;">
+        Salvar senha e continuar
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Reutiliza o cliente criado pelo auth guard no <head> (window._supa).
 async function onLogout() {
   try { localStorage.removeItem('gb_st'); } catch (_) {}
   try { await window._supa.auth.signOut(); } catch (_) {}
   window.location.replace('login.html');
+}
+
+// ── Modal primeiro acesso ─────────────────────────────────────────────────────
+let _paUserId = null;
+
+function abrirModalTrocaSenha(userId) {
+  _paUserId = userId;
+  const el = document.getElementById('primeiroAcessoOverlay');
+  el.style.display = 'flex';
+}
+
+function paToggle(id, btn) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+function paCheckStrength(val) {
+  let score = 0;
+  if (val.length >= 8)  score++;
+  if (val.length >= 12) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [
+    { w: '0%',   bg: '',                txt: '' },
+    { w: '20%',  bg: 'var(--red)',      txt: 'Muito fraca' },
+    { w: '40%',  bg: '#f0a040',         txt: 'Fraca' },
+    { w: '65%',  bg: 'var(--gold)',     txt: 'Boa' },
+    { w: '85%',  bg: '#80d060',         txt: 'Forte' },
+    { w: '100%', bg: 'var(--green)',    txt: 'Muito forte' },
+  ];
+  const lvl = levels[Math.min(score, 5)];
+  document.getElementById('paStrengthFill').style.width      = lvl.w;
+  document.getElementById('paStrengthFill').style.background = lvl.bg;
+  document.getElementById('paStrengthLabel').textContent     = lvl.txt;
+  document.getElementById('paStrengthLabel').style.color     = lvl.bg || 'var(--muted)';
+}
+
+function paMostrarMsg(texto, tipo) {
+  const el = document.getElementById('msgPrimeiroAcesso');
+  el.textContent = texto;
+  el.style.display = 'block';
+  el.style.background = tipo === 'error' ? 'var(--red-d)' : 'var(--green-d)';
+  el.style.color      = tipo === 'error' ? 'var(--red)'   : 'var(--green)';
+  el.style.border     = `1px solid ${tipo === 'error' ? 'var(--red-b)' : 'var(--green-b)'}`;
+}
+
+async function paSalvarSenha() {
+  const nova     = document.getElementById('paNovaSenha').value;
+  const confirma = document.getElementById('paConfirmarSenha').value;
+  const btn      = document.getElementById('paBtnSalvar');
+
+  if (nova.length < 8) {
+    paMostrarMsg('A senha precisa ter no mínimo 8 caracteres.', 'error'); return;
+  }
+  if (nova !== confirma) {
+    paMostrarMsg('As senhas não coincidem.', 'error'); return;
+  }
+
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+
+  const { error } = await window._supa.auth.updateUser({ password: nova });
+  if (error) {
+    paMostrarMsg(error.message || 'Erro ao salvar senha.', 'error');
+    btn.textContent = 'Salvar senha e continuar'; btn.disabled = false;
+    return;
+  }
+
+  // Marca senha como trocada no banco
+  await window._supa.from('usuarios')
+    .update({ senha_trocada: true })
+    .eq('id', _paUserId);
+
+  paMostrarMsg('Senha salva! Entrando...', 'success');
+  setTimeout(() => {
+    document.getElementById('primeiroAcessoOverlay').style.display = 'none';
+    document.documentElement.style.visibility = 'visible';
+  }, 1200);
 }
 </script>
 
