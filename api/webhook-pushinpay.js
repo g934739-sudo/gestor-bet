@@ -428,7 +428,7 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
       <tr><td style="padding:28px 44px 16px;" align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
           <td align="center" class="shine" style="border-radius:12px;box-shadow:0 12px 32px rgba(255,203,31,0.28);">
-            <a class="btn-a px" href="https://painel.grivo.bet/login" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Entrar no painel  &rarr;</a>
+            <a class="btn-a px" href="https://grivo.bet/login" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Entrar no painel  &rarr;</a>
           </td>
         </tr></table>
       </td></tr>
