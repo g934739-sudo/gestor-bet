@@ -412,12 +412,29 @@ async function onRecovery(e) {
 
   btn.textContent = 'Salvando...'; btn.disabled = true;
 
-  const { error } = await supa.auth.updateUser({ password: newPass });
+  const { data: updateData, error } = await supa.auth.updateUser({ password: newPass });
 
   if (error) {
     showMsg('recovery', error.message, 'error');
     btn.textContent = 'Salvar nova senha'; btn.disabled = false;
     return;
+  }
+
+  // Persiste a sessão e gera session_token — igual ao onLogin()
+  const { data: { session } } = await supa.auth.getSession();
+  if (session) {
+    const sessionToken = crypto.randomUUID();
+    localStorage.setItem('gb_access',  session.access_token);
+    localStorage.setItem('gb_refresh', session.refresh_token);
+    localStorage.setItem('gb_st', sessionToken);
+    try {
+      await supa.from('usuarios').upsert(
+        { id: session.user.id, session_token: sessionToken },
+        { onConflict: 'id' }
+      );
+    } catch (err) {
+      console.warn('[gb] Falha ao gravar session_token no recovery (ignorando):', err);
+    }
   }
 
   showMsg('recovery', 'Senha atualizada com sucesso! Redirecionando...', 'success');
