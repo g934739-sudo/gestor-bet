@@ -659,7 +659,6 @@ module.exports = async function handler(req, res) {
       nome:           nomeCompleto.split(/\s+/)[0] || '',
       sobrenome:      nomeCompleto.split(/\s+/).slice(1).join(' ') || '',
       plano:          plan_id,
-      senha,
       plano_expira_em: planoExpiraEm,
     },
     { 'Prefer': 'resolution=merge-duplicates,return=representation' }
