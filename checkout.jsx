@@ -205,9 +205,10 @@ function CheckoutForm() {
     return () => clearInterval(id);
   }, [submitted, paid]);
 
-  // Polling a cada 5s — consulta Supabase (atualizado pelo webhook da PushinPay)
+  // Polling a cada 5s — consulta Supabase (atualizado pelo webhook da PushinPay).
+  // Para quando o pagamento é confirmado OU quando o QR Code expira (timer == 0).
   useEffect(() => {
-    if (!submitted || paid || !pixId) return;
+    if (!submitted || paid || !pixId || timer === 0) return;
     const poll = async () => {
       try {
         const r = await fetch(`/api/consultar-pix?id=${pixId}`);
@@ -218,7 +219,7 @@ function CheckoutForm() {
     poll();
     const id = setInterval(poll, 5000);
     return () => clearInterval(id);
-  }, [submitted, paid, pixId]);
+  }, [submitted, paid, pixId, timer]);
 
   const fieldValid = {
     name:         data.name.trim().split(/\s+/).length >= 2,
@@ -260,10 +261,9 @@ function CheckoutForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          value:   plan.total * 100,  // centavos
           email:   data.email,
           name:    data.name,
-          plan_id: planId,
+          plan_id: planId,  // o preço é definido no servidor a partir do plano
         }),
       });
       const pix = await r.json();
@@ -453,7 +453,7 @@ function CheckoutForm() {
                     <div className="pix-info">
                       <span className={`pix-status ${paid ? "confirmed" : ""}`}>
                         <span className="dot"></span>
-                        {paid ? "Pagamento confirmado" : "Aguardando pagamento"}
+                        {paid ? "Pagamento confirmado" : (timer === 0 ? "QR Code expirado" : "Aguardando pagamento")}
                       </span>
                       <div className="pix-instruct">
                         Escaneie o <strong>QR Code</strong> no app do seu banco ou use o código <strong>copia e cola</strong> abaixo. Liberação automática em segundos.
@@ -465,10 +465,18 @@ function CheckoutForm() {
                           {pixCopied ? "Copiado!" : "Copiar código"}
                         </button>
                       </div>
-                      <div className="pix-timer-row">
-                        <span className="label"><Ic.bolt /> QR Code expira em</span>
-                        <span className="time">{fmtTime(timer)}</span>
-                      </div>
+                      {timer > 0 ? (
+                        <div className="pix-timer-row">
+                          <span className="label"><Ic.bolt /> QR Code expira em</span>
+                          <span className="time">{fmtTime(timer)}</span>
+                        </div>
+                      ) : (
+                        <button type="button" className="pix-copy-btn"
+                                style={{ marginTop:12, width:"100%" }}
+                                onClick={() => { setSubmitted(false); setPaid(false); setPixId(null); setPixQrBase64(null); setPixCodeReal(null); setTimer(15 * 60); }}>
+                          Gerar novo QR Code
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

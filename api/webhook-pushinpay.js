@@ -2,9 +2,33 @@
 
 const crypto = require('crypto');
 const { sendEmail } = require('./_resend');
+const { getPlan } = require('./_plans');
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_URL    = process.env.SUPABASE_URL;
+const SUPABASE_KEY     = process.env.SUPABASE_SERVICE_KEY;
+const PUSHINPAY_TOKEN = process.env.PUSHINPAY_TOKEN;
+
+// ─── Verifica o pagamento DIRETO na PushinPay ─────────────────────────────────
+// O corpo do webhook é controlável pelo cliente; nunca confiar nele.
+// Só liberamos acesso se a própria PushinPay confirmar status "paid".
+async function verificarPagamentoPushinPay(id) {
+  try {
+    const r = await fetch(`https://api.pushinpay.com.br/api/pix/cashIn/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${PUSHINPAY_TOKEN}`,
+        'Accept': 'application/json',
+      },
+    });
+    if (!r.ok) {
+      console.error('[webhook] PushinPay consulta falhou:', r.status);
+      return null;
+    }
+    return await r.json();
+  } catch (err) {
+    console.error('[webhook] Erro ao consultar PushinPay:', err);
+    return null;
+  }
+}
 
 // ─── Supabase helper ──────────────────────────────────────────────────────────
 async function supabase(method, endpoint, body, extraHeaders = {}) {
@@ -536,8 +560,23 @@ module.exports = async function handler(req, res) {
   }
 
   const { email, name, plan_id } = pagamento;
-  const planoNome    = plan_id === 'mensal' ? 'Mensal' : plan_id === 'semanal' ? 'Semanal' : 'Teste';
-  const primeiroNome = name.split(' ')[0];
+
+  // Confirma o pagamento DIRETO na PushinPay — não confia no corpo do webhook.
+  const plano = getPlan(plan_id);
+  const confirmacao = await verificarPagamentoPushinPay(id);
+  if (!confirmacao || confirmacao.status !== 'paid') {
+    console.error('[webhook] Pagamento NÃO confirmado pela PushinPay:', id, confirmacao?.status);
+    return res.status(200).json({ received: true, warning: 'pagamento não confirmado na PushinPay' });
+  }
+  // Confere também o valor pago contra o preço oficial do plano.
+  if (plano && Number(confirmacao.value) !== plano.valueCents) {
+    console.error('[webhook] Valor divergente:', id, 'pago:', confirmacao.value, 'esperado:', plano.valueCents);
+    return res.status(200).json({ received: true, warning: 'valor divergente' });
+  }
+
+  const planoNome    = plano ? plano.nome : 'Teste';
+  const nomeCompleto = (name || '').trim();
+  const primeiroNome = nomeCompleto.split(/\s+/)[0] || 'Cliente';
   const senha        = gerarSenha();
 
   // 2. Cria ou atualiza usuário no Supabase Auth
@@ -576,26 +615,36 @@ module.exports = async function handler(req, res) {
     console.error('[webhook] Erro ao criar usuário Auth:', JSON.stringify(authResult.data));
   }
 
+  // Se não conseguimos um userId, ABORTA com 500: não marca o pagamento como
+  // pago (para a PushinPay re-tentar o webhook) e não envia e-mail com senha
+  // que não funciona. O pagamento fica 'pendente' e pode ser reprocessado.
+  if (!userId) {
+    console.error('[webhook] userId indefinido — abortando sem marcar pago. id:', id);
+    return res.status(500).json({ error: 'Falha ao provisionar usuário' });
+  }
+
   // 3. Upsert na tabela usuarios
-  if (userId) {
-    console.log('[webhook] Upserting em usuarios, id:', userId);
-    const upsertResult = await supabase(
-      'POST',
-      '/rest/v1/usuarios',
-      {
-        id:             userId,
-        email,
-        nome:           name.split(' ')[0],
-        sobrenome:      name.split(' ').slice(1).join(' ') || '',
-        plano:          plan_id,
-        senha,
-        plano_expira_em: planoExpiraEm,
-      },
-      { 'Prefer': 'resolution=merge-duplicates,return=representation' }
-    );
-    console.log('[webhook] Upsert usuarios ok:', upsertResult.ok, 'status:', upsertResult.status);
-  } else {
-    console.error('[webhook] userId indefinido — usuário NÃO inserido em usuarios');
+  console.log('[webhook] Upserting em usuarios, id:', userId);
+  const upsertResult = await supabase(
+    'POST',
+    '/rest/v1/usuarios',
+    {
+      id:             userId,
+      email,
+      nome:           nomeCompleto.split(/\s+/)[0] || '',
+      sobrenome:      nomeCompleto.split(/\s+/).slice(1).join(' ') || '',
+      plano:          plan_id,
+      senha,
+      plano_expira_em: planoExpiraEm,
+    },
+    { 'Prefer': 'resolution=merge-duplicates,return=representation' }
+  );
+  console.log('[webhook] Upsert usuarios ok:', upsertResult.ok, 'status:', upsertResult.status);
+
+  // Se o upsert falhar, também aborta sem marcar pago — mesma lógica.
+  if (!upsertResult.ok) {
+    console.error('[webhook] Upsert usuarios falhou — abortando sem marcar pago. status:', upsertResult.status);
+    return res.status(500).json({ error: 'Falha ao gravar usuário' });
   }
 
   // 4. Atualiza status do pagamento

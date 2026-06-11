@@ -15,9 +15,14 @@ module.exports = async function handler(req, res) {
   const { id } = req.query;
   if (!id) return res.status(400).json({ error: 'Parâmetro id obrigatório' });
 
+  // Aceita apenas UUID — evita injeção de parâmetros PostgREST via querystring.
+  if (!/^[0-9a-fA-F-]{36}$/.test(id)) {
+    return res.status(400).json({ error: 'id inválido' });
+  }
+
   try {
     const r = await fetch(
-      `${SUPABASE_URL}/rest/v1/pagamentos?payment_id=eq.${id}&select=status&limit=1`,
+      `${SUPABASE_URL}/rest/v1/pagamentos?payment_id=eq.${encodeURIComponent(id)}&select=status&limit=1`,
       {
         headers: {
           'apikey':        SUPABASE_KEY,
