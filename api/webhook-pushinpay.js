@@ -11,9 +11,10 @@ const PUSHINPAY_TOKEN = process.env.PUSHINPAY_TOKEN;
 // ─── Verifica o pagamento DIRETO na PushinPay ─────────────────────────────────
 // O corpo do webhook é controlável pelo cliente; nunca confiar nele.
 // Só liberamos acesso se a própria PushinPay confirmar status "paid".
+// Rota de consulta: GET /api/transactions/{id} (aceita id em minúsculas).
 async function verificarPagamentoPushinPay(id) {
   try {
-    const r = await fetch(`https://api.pushinpay.com.br/api/pix/cashIn/${id}`, {
+    const r = await fetch(`https://api.pushinpay.com.br/api/transactions/${id}`, {
       headers: {
         'Authorization': `Bearer ${PUSHINPAY_TOKEN}`,
         'Accept': 'application/json',
@@ -564,8 +565,13 @@ module.exports = async function handler(req, res) {
   // Confirma o pagamento DIRETO na PushinPay — não confia no corpo do webhook.
   const plano = getPlan(plan_id);
   const confirmacao = await verificarPagamentoPushinPay(id);
-  if (!confirmacao || confirmacao.status !== 'paid') {
-    console.error('[webhook] Pagamento NÃO confirmado pela PushinPay:', id, confirmacao?.status);
+  if (!confirmacao) {
+    // Falha de rede/API ao consultar — 500 para a PushinPay re-tentar o webhook.
+    console.error('[webhook] Não foi possível consultar a PushinPay:', id);
+    return res.status(500).json({ error: 'falha ao verificar pagamento' });
+  }
+  if (confirmacao.status !== 'paid') {
+    console.error('[webhook] Pagamento NÃO confirmado pela PushinPay:', id, confirmacao.status);
     return res.status(200).json({ received: true, warning: 'pagamento não confirmado na PushinPay' });
   }
   // Confere também o valor pago contra o preço oficial do plano.
