@@ -378,7 +378,7 @@ async function onForgot(e) {
   btn.textContent = 'Enviando...'; btn.disabled = true;
 
   const { error } = await supa.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/login'
+    redirectTo: 'https://grivo.bet/login'
   });
 
   btn.textContent = 'Enviar link de recuperação'; btn.disabled = false;
