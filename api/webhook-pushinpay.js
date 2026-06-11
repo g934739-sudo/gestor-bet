@@ -660,6 +660,7 @@ module.exports = async function handler(req, res) {
       sobrenome:      nomeCompleto.split(/\s+/).slice(1).join(' ') || '',
       plano:          plan_id,
       plano_expira_em: planoExpiraEm,
+      senha_trocada:  false,
     },
     { 'Prefer': 'resolution=merge-duplicates,return=representation' }
   );

@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         value,
-        webhook_url: 'https://www.grivo.bet/api/webhook-pushinpay',
+        webhook_url: 'https://grivo.bet/api/webhook-pushinpay',
       }),
     });
 
