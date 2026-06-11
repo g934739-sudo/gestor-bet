@@ -131,10 +131,10 @@ const EMAIL_BOAS_VINDAS_HTML = `<!doctype html>
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background:#0a0a0c;">
+<body bgcolor="#0a0a0c" style="margin:0;padding:0;background:#0a0a0c;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#0a0a0c;">Sua conta está ativa. Em instantes você recebe um e-mail com seus dados de acesso.&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.12), transparent 62%);">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0a0a0c" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.12), transparent 62%);">
 <tr><td align="center" style="padding:28px 12px 40px;">
 
 <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;">
@@ -346,10 +346,10 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background:#0a0a0c;">
+<body bgcolor="#0a0a0c" style="margin:0;padding:0;background:#0a0a0c;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#0a0a0c;">Seus dados de acesso ao Grivo Bet estão prontos. Guarde este e-mail com segurança.&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.12), transparent 62%);">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0a0a0c" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.12), transparent 62%);">
 <tr><td align="center" style="padding:28px 12px 40px;">
 
 <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;">
