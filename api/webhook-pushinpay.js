@@ -560,12 +560,23 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const { id: rawId, status } = req.body || {};
-  const id = rawId ? rawId.toLowerCase() : null;
 
-  if (status !== 'paid') return res.status(200).json({ received: true });
+  // Respond to PushinPay immediately — their webhook timeout is 2 s and our
+  // processing (several Supabase + email calls) takes longer than that.
+  // Vercel keeps the function alive until all async work below completes.
+  res.status(200).json({ received: true });
 
-  console.log('[webhook] Pagamento confirmado:', id);
+  if (status !== 'paid' || !rawId) return;
 
+  const id = rawId.toLowerCase();
+  console.log('[webhook] Pagamento confirmado, processando async:', id);
+
+  processPayment(id).catch(err =>
+    console.error('[webhook] processPayment erro não tratado:', err)
+  );
+};
+
+async function processPayment(id) {
   // 1. Busca registro na tabela pagamentos
   const { data: pagamentos } = await supabase('GET',
     `/rest/v1/pagamentos?payment_id=eq.${id}&limit=1`
@@ -574,11 +585,12 @@ module.exports = async function handler(req, res) {
   const pagamento = Array.isArray(pagamentos) ? pagamentos[0] : null;
   if (!pagamento) {
     console.error('[webhook] Pagamento não encontrado:', id);
-    return res.status(200).json({ received: true, warning: 'pagamento não encontrado' });
+    return;
   }
 
   if (pagamento.status === 'pago') {
-    return res.status(200).json({ received: true, skipped: 'já processado' });
+    console.log('[webhook] Já processado, ignorando:', id);
+    return;
   }
 
   const { email, name, plan_id } = pagamento;
@@ -587,18 +599,17 @@ module.exports = async function handler(req, res) {
   const plano = getPlan(plan_id);
   const confirmacao = await verificarPagamentoPushinPay(id);
   if (!confirmacao) {
-    // Falha de rede/API ao consultar — 500 para a PushinPay re-tentar o webhook.
     console.error('[webhook] Não foi possível consultar a PushinPay:', id);
-    return res.status(500).json({ error: 'falha ao verificar pagamento' });
+    return;
   }
   if (confirmacao.status !== 'paid') {
     console.error('[webhook] Pagamento NÃO confirmado pela PushinPay:', id, confirmacao.status);
-    return res.status(200).json({ received: true, warning: 'pagamento não confirmado na PushinPay' });
+    return;
   }
   // Confere também o valor pago contra o preço oficial do plano.
   if (plano && Number(confirmacao.value) !== plano.valueCents) {
     console.error('[webhook] Valor divergente:', id, 'pago:', confirmacao.value, 'esperado:', plano.valueCents);
-    return res.status(200).json({ received: true, warning: 'valor divergente' });
+    return;
   }
 
   const planoNome    = plano ? plano.nome : 'Teste';
@@ -640,12 +651,9 @@ module.exports = async function handler(req, res) {
     console.error('[webhook] Erro ao criar usuário Auth:', JSON.stringify(authResult.data));
   }
 
-  // Se não conseguimos um userId, ABORTA com 500: não marca o pagamento como
-  // pago (para a PushinPay re-tentar o webhook) e não envia e-mail com senha
-  // que não funciona. O pagamento fica 'pendente' e pode ser reprocessado.
   if (!userId) {
     console.error('[webhook] userId indefinido — abortando sem marcar pago. id:', id);
-    return res.status(500).json({ error: 'Falha ao provisionar usuário' });
+    return;
   }
 
   // 3. Upsert na tabela usuarios
@@ -666,10 +674,9 @@ module.exports = async function handler(req, res) {
   );
   console.log('[webhook] Upsert usuarios ok:', upsertResult.ok, 'status:', upsertResult.status);
 
-  // Se o upsert falhar, também aborta sem marcar pago — mesma lógica.
   if (!upsertResult.ok) {
-    console.error('[webhook] Upsert usuarios falhou — abortando sem marcar pago. status:', upsertResult.status);
-    return res.status(500).json({ error: 'Falha ao gravar usuário' });
+    console.error('[webhook] Upsert usuarios falhou. status:', upsertResult.status);
+    return;
   }
 
   // 4. Atualiza status do pagamento
@@ -681,13 +688,13 @@ module.exports = async function handler(req, res) {
   // 5. Dispara e-mails em paralelo
   console.log('[webhook] RESEND_API_KEY presente:', !!process.env.RESEND_API_KEY);
 
-  const boasVindasHtml = emailBoasVindas({ nome: nomeCompleto || primeiroNome, userId, plano: planoNome });
+  const boasVindasHtml  = emailBoasVindas({ nome: nomeCompleto || primeiroNome, userId, plano: planoNome });
   const dadosAcessoHtml = emailDadosAcesso({ email, senha });
 
   const emailResults = await Promise.allSettled([
     sendEmail({
       to:      email,
-      subject: `Você está dentro — Grivo Bet`,
+      subject: 'Você está dentro — Grivo Bet',
       html:    boasVindasHtml,
     }),
     sendEmail({
@@ -704,5 +711,4 @@ module.exports = async function handler(req, res) {
   });
 
   console.log('[webhook] Processamento completo para:', email);
-  return res.status(200).json({ received: true });
-};
+}
