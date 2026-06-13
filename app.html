@@ -264,7 +264,17 @@ body {
   color: var(--muted); cursor: pointer; transition: all .15s;
 }
 .btn-ghost:hover { border-color: var(--border2); color: var(--text2); }
-.btn-ghost.red:hover { border-color: var(--red); color: var(--red); }
+/* "Nova sessão": destaque permanente em vermelho para o usuário achar fácil */
+.btn-ghost.red {
+  background: rgba(245,68,95,.13);
+  border-color: rgba(245,68,95,.45);
+  color: var(--red); font-weight: 700;
+}
+.btn-ghost.red:hover {
+  background: rgba(245,68,95,.22);
+  border-color: var(--red); color: var(--red);
+  box-shadow: 0 2px 12px rgba(245,68,95,.25);
+}
 
 .btn-tutorial {
   font-family: var(--body); font-size: 12px; font-weight: 800;
@@ -1144,12 +1154,18 @@ body {
     padding:18px 16px 24px; gap:14px;
   }
 
-  /* Topbar quebra em linhas em vez de estourar (em fluxo, reserva espaço) */
-  .topbar { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:8px; }
-  .topbar-right { margin-left:0; width:100%; flex-wrap:wrap; gap:6px; }
-  .game-selectors { flex-wrap:wrap; }
-  .game-sel-btn { min-width:0; }
-  .topbar-right button { font-size:11px; padding:7px 10px; }
+  /* Topbar compacta: quebra em linhas, mas com elementos menores p/ ocupar
+     menos altura no celular (em fluxo, reserva espaço). */
+  .topbar { height:auto; min-height:0; flex-wrap:wrap; padding:6px 10px; gap:6px; }
+  .logo { font-size:15px; }
+  .logo-sep { display:none; }
+  .game-selectors { flex-wrap:wrap; gap:6px; }
+  .game-sel-btn { min-width:0; padding:5px 9px; gap:6px; }
+  .gs-icon { font-size:14px; }
+  .gs-label { font-size:7px; }
+  .gs-name { font-size:10px; }
+  .topbar-right { margin-left:0; width:100%; flex-wrap:wrap; gap:5px; }
+  .topbar-right button { font-size:10.5px; padding:6px 9px; }
 
   /* Dropdowns de jogo sempre dentro da tela */
   .game-dropdown { width:min(340px, calc(100vw - 24px)); }
