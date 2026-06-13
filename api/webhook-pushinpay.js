@@ -132,6 +132,9 @@ const EMAIL_BOAS_VINDAS_TEMPLATE = `<!doctype html>
     .cardpad{padding:26px 24px!important;}
     .btn-a{display:block!important;}
     .tl-copy{padding-left:16px!important;}
+    /* Força fundo escuro no mobile independente do tema do sistema —
+       sem isso, celulares em modo claro mostram fundo branco. */
+    body,.email-wrap,.container{background-color:#0a0a0c!important;}
   }
   @media (prefers-color-scheme:dark){
     body,table,td,.email-wrap{background-color:#0a0a0c!important;}
@@ -355,6 +358,9 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
     .cred-cell:last-child{border-bottom:0!important;}
     .btn-a{display:block!important;}
     .heropad{padding:32px 26px 0!important;}
+    /* Força fundo escuro no mobile independente do tema do sistema —
+       sem isso, celulares em modo claro mostram fundo branco. */
+    body,.email-wrap,.container{background-color:#0a0a0c!important;}
   }
   @media (prefers-color-scheme:dark){
     body,table,td,.email-wrap{background-color:#0a0a0c!important;}
@@ -695,23 +701,30 @@ async function processPayment(id) {
   const boasVindasHtml  = emailBoasVindas({ nome: nomeCompleto || primeiroNome, userId, plano: planoNome });
   const dadosAcessoHtml = emailDadosAcesso({ email, senha });
 
-  const emailResults = await Promise.allSettled([
-    sendEmail({
-      to:      email,
-      subject: 'Você está dentro — Grivo Bet',
-      html:    boasVindasHtml,
-    }),
-    sendEmail({
-      to:      email,
-      subject: 'Seus dados de acesso · Grivo Bet',
-      html:    dadosAcessoHtml,
-    }),
-  ]);
+  // Envia SEQUENCIALMENTE para garantir a ordem de chegada: boas-vindas
+  // primeiro, dados de acesso depois. Em paralelo a ordem era aleatória.
+  const enviarComLog = async (label, opts) => {
+    try {
+      const r = await sendEmail(opts);
+      console.log(`[webhook] email ${label}: OK`, JSON.stringify(r)?.slice(0, 100));
+    } catch (err) {
+      console.error(`[webhook] email ${label}: ERRO`, err?.message || err);
+    }
+  };
 
-  emailResults.forEach((r, i) => {
-    const label = i === 0 ? 'boas-vindas' : 'dados-acesso';
-    if (r.status === 'fulfilled') console.log(`[webhook] email ${label}: OK`, JSON.stringify(r.value)?.slice(0, 100));
-    else console.error(`[webhook] email ${label}: ERRO`, r.reason?.message || r.reason);
+  await enviarComLog('boas-vindas', {
+    to:      email,
+    subject: 'Você está dentro — Grivo Bet',
+    html:    boasVindasHtml,
+  });
+
+  // Pequena pausa para o provedor processar na ordem certa antes do 2º e-mail.
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
+  await enviarComLog('dados-acesso', {
+    to:      email,
+    subject: 'Seus dados de acesso · Grivo Bet',
+    html:    dadosAcessoHtml,
   });
 
   console.log('[webhook] Processamento completo para:', email);
