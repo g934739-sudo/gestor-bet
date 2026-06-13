@@ -1120,13 +1120,9 @@ body {
   /* Um painel por vez: flex (em vez de grid) garante que o painel visível
      fique limitado entre a topbar e a barra de abas, com scroll interno
      próprio — sem transbordar sob as barras. */
-  /* O conteúdo é deslocado por padding (medido em JS → --topbar-h/--tabbar-h)
-     para nunca ficar sob as barras fixas. box-sizing:border-box é global. */
-  .body-grid {
-    display:flex; flex-direction:column;
-    padding-top: var(--topbar-h, 96px);
-    padding-bottom: var(--tabbar-h, 60px);
-  }
+  /* Um painel por vez; flex (não grid) limita a altura corretamente entre
+     a topbar e a barra de abas, ambas em fluxo normal (flex-shrink:0). */
+  .body-grid { display:flex; flex-direction:column; }
   .body-grid > .left,
   .body-grid > .center,
   .body-grid > .right { display:none; flex:1 1 auto; min-height:0; }
@@ -1138,9 +1134,16 @@ body {
   /* respiro para o conteúdo não colar nas bordas internas */
   .left-scroll, .feed, .history-scroll { padding-bottom:16px; }
 
-  /* Topbar FIXA no topo */
-  .topbar { position:fixed; top:0; left:0; right:0; z-index:60;
-            height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:8px; }
+  /* Pré-sessão (checklist): no celular alinha ao topo e ROLA, em vez de
+     centralizar e cortar o título (topo) e o botão Iniciar (rodapé). */
+  .strat-preview {
+    justify-content:flex-start;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+    padding:18px 16px 24px; gap:14px;
+  }
+
+  /* Topbar quebra em linhas em vez de estourar (em fluxo, reserva espaço) */
+  .topbar { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:8px; }
   .topbar-right { margin-left:0; width:100%; flex-wrap:wrap; gap:6px; }
   .game-selectors { flex-wrap:wrap; }
   .game-sel-btn { min-width:0; }
@@ -1150,10 +1153,9 @@ body {
   .game-dropdown { width:min(340px, calc(100vw - 24px)); }
   .game-selector.sport .game-dropdown { left:auto; right:0; }
 
-  /* Barra de abas FIXA no rodapé */
+  /* Barra de abas no rodapé (em fluxo, reserva espaço) */
   .mtabbar {
-    position:fixed; left:0; right:0; bottom:0; z-index:60;
-    display:flex;
+    display:flex; flex-shrink:0;
     border-top:1px solid var(--border); background:var(--s1);
     padding-bottom:env(safe-area-inset-bottom);
   }
@@ -1699,27 +1701,6 @@ function setMobilePanel(p){
     b.classList.toggle('active', b.dataset.panel === p);
   });
 }
-
-// Mede a altura real das barras fixas (topbar/abas) e ajusta o padding do
-// conteúdo, para o conteúdo nunca ficar escondido sob elas — independente
-// de quantas linhas a topbar ocupe no celular.
-function ajustarBarrasMobile(){
-  var b = document.body;
-  if (window.innerWidth > 820){
-    b.style.removeProperty('--topbar-h');
-    b.style.removeProperty('--tabbar-h');
-    return;
-  }
-  var tb = document.querySelector('.topbar');
-  var mb = document.getElementById('mtabbar');
-  if (tb) b.style.setProperty('--topbar-h', tb.offsetHeight + 'px');
-  if (mb) b.style.setProperty('--tabbar-h', mb.offsetHeight + 'px');
-}
-window.addEventListener('resize', ajustarBarrasMobile);
-window.addEventListener('orientationchange', function(){ setTimeout(ajustarBarrasMobile, 200); });
-window.addEventListener('load', ajustarBarrasMobile);
-// roda também logo após o carregamento do script (a topbar já existe no DOM)
-setTimeout(ajustarBarrasMobile, 0);
 
 // ════════════ DUAL FIELD SYNC ════════════
 function getBank(){ return Math.max(1, +document.getElementById('cfgBank').value || 500); }
