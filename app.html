@@ -1108,24 +1108,59 @@ body {
 
 
 /* Responsive */
+.mtabbar { display:none; }
+
 @media(max-width:1000px){
   .body-grid { grid-template-columns:240px 1fr 280px; }
 }
+
+/* ── Mobile: um painel por vez + abas no rodapé ── */
 @media(max-width:820px){
-  .body-grid { grid-template-columns:1fr 280px; }
-  .left { display:none; }
-}
-@media(max-width:580px){
   .body-grid { grid-template-columns:1fr; }
-  .right { display:none; }
+  .body-grid > .left,
+  .body-grid > .center,
+  .body-grid > .right { display:none; }
+  body[data-mtab="left"]   .body-grid > .left   { display:flex; }
+  body[data-mtab="center"] .body-grid > .center { display:flex; }
+  body[data-mtab="right"]  .body-grid > .right  { display:flex; }
+  .left  { border-right:none; }
+  .right { border-left:none; }
+
+  /* Topbar quebra em linhas em vez de estourar */
+  .topbar { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:8px; }
+  .topbar-right { margin-left:0; width:100%; flex-wrap:wrap; gap:6px; }
+  .game-selectors { flex-wrap:wrap; }
+  .game-sel-btn { min-width:0; }
+  .topbar-right button { font-size:11px; padding:7px 10px; }
+
+  /* Dropdowns de jogo sempre dentro da tela */
+  .game-dropdown { width:min(340px, calc(100vw - 24px)); }
+  .game-selector.sport .game-dropdown { left:auto; right:0; }
+
+  /* Barra de abas inferior */
+  .mtabbar {
+    display:flex; flex-shrink:0;
+    border-top:1px solid var(--border); background:var(--s1);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .mtab {
+    flex:1; background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; padding:9px 4px 8px; color:var(--muted);
+    font-family:var(--body); font-size:10px; font-weight:700; letter-spacing:.3px;
+    transition:color .15s; -webkit-tap-highlight-color:transparent;
+  }
+  .mtab-ico { font-size:18px; line-height:1; }
+  .mtab.active { color:var(--gold); }
+  .mtab.active .mtab-ico { filter:drop-shadow(0 0 6px rgba(240,192,64,.5)); }
 }
 </style>
 </head>
-<body>
+<body data-mtab="center">
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">Gestor<span>Bet</span></div>
+  <div class="logo">Grivo<span>.</span>bet</div>
   <div class="logo-sep"></div>
   <div class="game-selectors">
     <!-- CASSINO -->
@@ -1403,7 +1438,7 @@ body {
         <div class="sp-welcome">
           <div class="sp-welcome-icon">🎰</div>
           <div>
-            <div class="sp-welcome-title">GestorBet</div>
+            <div class="sp-welcome-title">Grivo.bet</div>
             <div class="sp-welcome-sub">Configure sua sessão e clique em Iniciar</div>
           </div>
         </div>
@@ -1629,7 +1664,28 @@ body {
   </div>
 </div>
 
+<!-- BARRA DE ABAS (mobile) -->
+<nav class="mtabbar" id="mtabbar">
+  <button class="mtab" data-panel="left" onclick="setMobilePanel('left')">
+    <span class="mtab-ico">⚙️</span><span class="mtab-lbl">Configurar</span>
+  </button>
+  <button class="mtab active" data-panel="center" onclick="setMobilePanel('center')">
+    <span class="mtab-ico">🎲</span><span class="mtab-lbl">Painel</span>
+  </button>
+  <button class="mtab" data-panel="right" onclick="setMobilePanel('right')">
+    <span class="mtab-ico">📈</span><span class="mtab-lbl">Sessão</span>
+  </button>
+</nav>
+
 <script>
+// ════════════ MOBILE TABS ════════════
+function setMobilePanel(p){
+  document.body.setAttribute('data-mtab', p);
+  document.querySelectorAll('.mtab').forEach(function(b){
+    b.classList.toggle('active', b.dataset.panel === p);
+  });
+}
+
 // ════════════ DUAL FIELD SYNC ════════════
 function getBank(){ return Math.max(1, +document.getElementById('cfgBank').value || 500); }
 
@@ -1741,15 +1797,15 @@ function updateOddPreview(){
 
 const QUOTES = [
   { text: "Disciplina é a ponte entre objetivos e conquistas.", author: "Jim Rohn" },
-  { text: "O jogador inteligente não joga para ganhar tudo — joga para não perder o controle.", author: "GestorBet" },
-  { text: "Gerencie o risco antes de buscar o retorno. Quem sobrevive, vence.", author: "GestorBet" },
-  { text: "A banca é sagrada. Protegê-la é a estratégia número um.", author: "GestorBet" },
+  { text: "O jogador inteligente não joga para ganhar tudo — joga para não perder o controle.", author: "Grivo.bet" },
+  { text: "Gerencie o risco antes de buscar o retorno. Quem sobrevive, vence.", author: "Grivo.bet" },
+  { text: "A banca é sagrada. Protegê-la é a estratégia número um.", author: "Grivo.bet" },
   { text: "Não é o mais forte que sobrevive, mas o mais adaptável ao risco.", author: "Adaptado de Darwin" },
-  { text: "Uma sequência de derrotas é inevitável. O que define você é o quanto preparou sua banca para ela.", author: "GestorBet" },
-  { text: "Lucro consistente vem de decisões consistentes, não de sorte momentânea.", author: "GestorBet" },
-  { text: "Stop loss não é derrota — é respeito pela sua banca.", author: "GestorBet" },
-  { text: "O maior erro não é perder uma aposta. É não ter definido o limite antes de fazê-la.", author: "GestorBet" },
-  { text: "Quem controla as emoções, controla o jogo.", author: "GestorBet" },
+  { text: "Uma sequência de derrotas é inevitável. O que define você é o quanto preparou sua banca para ela.", author: "Grivo.bet" },
+  { text: "Lucro consistente vem de decisões consistentes, não de sorte momentânea.", author: "Grivo.bet" },
+  { text: "Stop loss não é derrota — é respeito pela sua banca.", author: "Grivo.bet" },
+  { text: "O maior erro não é perder uma aposta. É não ter definido o limite antes de fazê-la.", author: "Grivo.bet" },
+  { text: "Quem controla as emoções, controla o jogo.", author: "Grivo.bet" },
 ];
 
 function renderStratPreview(){
@@ -2385,6 +2441,8 @@ function startSession(){
   const gameName = getGameName();
   document.getElementById('btnWin').disabled=false;
   document.getElementById('btnLoss').disabled=false;
+  // No celular, pula pro Painel pra acompanhar a sessão em andamento
+  if(window.innerWidth<=820) setMobilePanel('center');
   document.getElementById('btnEnd').disabled=false;
   document.getElementById('btnWin').classList.add('pulse');
   document.getElementById('btnLoss').classList.add('pulse');
@@ -3264,12 +3322,12 @@ document.getElementById('roundOdd').addEventListener('input', updateOddPreview);
         <div class="tut-slide">
           <div class="ts-visual" style="background:radial-gradient(ellipse at 60% 40%,#2a1f00,#0f0f0a 70%);">
             <div style="font-size:72px;animation:tut-float 3s ease-in-out infinite;">🎰</div>
-            <div style="margin-top:18px;font-size:28px;font-weight:900;color:#f5c842;letter-spacing:-0.5px;">GestorBet</div>
+            <div style="margin-top:18px;font-size:28px;font-weight:900;color:#f5c842;letter-spacing:-0.5px;">Grivo.bet</div>
             <div style="font-size:13px;color:#888;margin-top:6px;font-family:monospace;letter-spacing:1px;">SEU GESTOR DE ESTRATÉGIAS</div>
           </div>
           <div class="ts-content">
             <div class="ts-tag">Introdução</div>
-            <div class="ts-title">Bem-vindo ao GestorBet</div>
+            <div class="ts-title">Bem-vindo ao Grivo.bet</div>
             <div class="ts-text">O sistema guia você rodada a rodada com as melhores estratégias de gestão de banca — de forma simples, visual e sem complicação.</div>
             <div class="ts-pills">
               <span class="ts-pill">9 estratégias</span>
@@ -3449,7 +3507,7 @@ document.getElementById('roundOdd').addEventListener('input', updateOddPreview);
           <div class="ts-content">
             <div class="ts-tag">Pronto!</div>
             <div class="ts-title">É isso — simples assim</div>
-            <div class="ts-text">Estratégia → Configuração → Registrar rodadas. O GestorBet cuida do resto. Clique em <strong>Começar agora</strong> e inicie sua primeira sessão.</div>
+            <div class="ts-text">Estratégia → Configuração → Registrar rodadas. O Grivo.bet cuida do resto. Clique em <strong>Começar agora</strong> e inicie sua primeira sessão.</div>
             <button onclick="closeTutorial()" style="margin-top:12px;width:100%;padding:13px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,#f5c842,#e09920);color:#111;font-size:14px;font-weight:900;transition:all .2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">🚀 Começar agora</button>
           </div>
         </div>
