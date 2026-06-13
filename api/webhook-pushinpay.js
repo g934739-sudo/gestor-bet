@@ -1,6 +1,7 @@
 // api/webhook-pushinpay.js — Recebe confirmação de pagamento da PushinPay
 
 const crypto = require('crypto');
+const { waitUntil } = require('@vercel/functions');
 const { sendEmail } = require('./_resend');
 const { getPlan } = require('./_plans');
 
@@ -563,7 +564,8 @@ module.exports = async function handler(req, res) {
 
   // Respond to PushinPay immediately — their webhook timeout is 2 s and our
   // processing (several Supabase + email calls) takes longer than that.
-  // Vercel keeps the function alive until all async work below completes.
+  // waitUntil() é obrigatório: sem ele a Vercel CONGELA a função assim que a
+  // resposta é enviada e o processamento nunca termina.
   res.status(200).json({ received: true });
 
   if (status !== 'paid' || !rawId) return;
@@ -571,8 +573,10 @@ module.exports = async function handler(req, res) {
   const id = rawId.toLowerCase();
   console.log('[webhook] Pagamento confirmado, processando async:', id);
 
-  processPayment(id).catch(err =>
-    console.error('[webhook] processPayment erro não tratado:', err)
+  waitUntil(
+    processPayment(id).catch(err =>
+      console.error('[webhook] processPayment erro não tratado:', err)
+    )
   );
 };
 
