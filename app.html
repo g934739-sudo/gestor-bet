@@ -729,7 +729,9 @@ body {
   background:var(--s1);
   flex-shrink:0;
   padding:12px 22px;
+  display:none; /* só aparece quando a sessão inicia (feed recebe .active) */
 }
+.feed.active ~ .action-bar { display:block; }
 .ab-label {
   text-align:center; font-size:11px; color:var(--muted);
   margin-bottom:8px; font-weight:500;
