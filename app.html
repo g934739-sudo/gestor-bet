@@ -1117,15 +1117,20 @@ body {
 
 /* ── Mobile: um painel por vez + abas no rodapé ── */
 @media(max-width:820px){
-  .body-grid { grid-template-columns:1fr; }
+  /* Um painel por vez: flex (em vez de grid) garante que o painel visível
+     fique limitado entre a topbar e a barra de abas, com scroll interno
+     próprio — sem transbordar sob as barras. */
+  .body-grid { display:flex; flex-direction:column; }
   .body-grid > .left,
   .body-grid > .center,
-  .body-grid > .right { display:none; }
+  .body-grid > .right { display:none; flex:1 1 auto; min-height:0; }
   body[data-mtab="left"]   .body-grid > .left   { display:flex; }
   body[data-mtab="center"] .body-grid > .center { display:flex; }
   body[data-mtab="right"]  .body-grid > .right  { display:flex; }
   .left  { border-right:none; }
   .right { border-left:none; }
+  /* respiro para o conteúdo não colar/ficar sob as barras */
+  .left-scroll, .feed, .history-scroll { padding-bottom:20px; }
 
   /* Topbar quebra em linhas em vez de estourar */
   .topbar { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:8px; }
