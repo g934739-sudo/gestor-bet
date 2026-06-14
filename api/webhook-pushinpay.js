@@ -151,8 +151,11 @@ const EMAIL_BOAS_VINDAS_TEMPLATE = `<!doctype html>
           Sua conta está ativa.<br/>Agora você aposta<br/>com <span style="color:#FFCB1F;">método</span> — não<br/>com sorte.
         </div>
         <p class="px" style="margin:24px 0 0;font-size:16px;line-height:1.62;color:#b8b8c0;">
-          Boa decisão. Você tem acesso completo a <strong style="color:#f5f5f7;">8+ estratégias matemáticas</strong>, gestão de banca automatizada e o Modo Simulação ilimitado — tudo num só painel.
+          Boa decisão, {{nome_cliente}}. Você tem acesso completo a <strong style="color:#f5f5f7;">8+ estratégias matemáticas</strong>, gestão de banca automatizada e o Modo Simulação ilimitado — tudo num só painel.
         </p>
+        <div class="mono" style="margin:18px 0 0;font-size:11px;letter-spacing:1px;color:#8b8b95;text-transform:uppercase;">
+          Plano <span style="color:#FFCB1F;font-weight:700;">{{plano}}</span> &middot; ativo desde {{data_assinatura}}
+        </div>
       </td></tr>
 
       <!-- Mini animated chart -->
