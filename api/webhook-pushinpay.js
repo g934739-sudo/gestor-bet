@@ -178,7 +178,7 @@ const EMAIL_BOAS_VINDAS_TEMPLATE = `<!doctype html>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,203,31,0.06);border:1px solid rgba(255,203,31,0.3);border-radius:14px;">
           <tr>
             <td valign="middle" width="62" style="padding:22px 0 22px 22px;">
-              <div style="width:42px;height:42px;background:rgba(255,203,31,0.14);border:1px solid rgba(255,203,31,0.4);border-radius:11px;text-align:center;line-height:42px;font-size:20px;">✉️</div>
+              <table role="presentation" width="42" height="42" cellpadding="0" cellspacing="0" style="background:rgba(255,203,31,0.14);border:1px solid rgba(255,203,31,0.4);border-radius:11px;"><tr><td align="center" valign="middle" style="font-size:20px;line-height:1;">✉️</td></tr></table>
             </td>
             <td valign="middle" style="padding:22px 24px 22px 16px;">
               <div class="px" style="font-size:15.5px;font-weight:700;color:#FFCB1F;margin-bottom:4px;">Seus dados de acesso chegam em um segundo e-mail</div>
@@ -347,7 +347,7 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
 
         <!-- Key icon -->
         <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin-bottom:24px;"><tr><td align="center" style="position:relative;">
-          <div style="width:72px;height:72px;border-radius:99px;background:radial-gradient(circle,rgba(255,203,31,0.22),rgba(255,203,31,0.04));border:1px solid rgba(255,203,31,0.4);text-align:center;line-height:72px;font-size:32px;">🔑</div>
+          <table role="presentation" width="72" height="72" cellpadding="0" cellspacing="0" style="border-radius:99px;background:radial-gradient(circle,rgba(255,203,31,0.22),rgba(255,203,31,0.04));border:1px solid rgba(255,203,31,0.4);"><tr><td align="center" valign="middle" style="font-size:32px;line-height:1;">🔑</td></tr></table>
         </td></tr></table>
 
         <div class="mono" style="font-size:11px;letter-spacing:2.5px;color:#FFCB1F;text-transform:uppercase;margin-bottom:16px;">Seus dados de acesso</div>
