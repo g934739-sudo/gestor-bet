@@ -661,3 +661,8 @@ async function processPayment(id) {
 
   console.log('[webhook] Processamento completo para:', email);
 }
+
+// Reaproveitados pela rede de segurança em consultar-pix.js (reconciliação).
+// O webhook continua sendo o handler default para a sua própria rota.
+module.exports.processPayment = processPayment;
+module.exports.verificarPagamentoPushinPay = verificarPagamentoPushinPay;
