@@ -408,7 +408,7 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;background:#121218;border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
       <tr>
         <td valign="middle" width="60" style="padding:20px 0 20px 22px;">
-          <div style="width:38px;height:38px;background:rgba(255,203,31,0.12);border:1px solid rgba(255,203,31,0.3);border-radius:10px;text-align:center;line-height:38px;font-size:17px;">🔒</div>
+          <table role="presentation" width="38" height="38" cellpadding="0" cellspacing="0" style="background:rgba(255,203,31,0.12);border:1px solid rgba(255,203,31,0.3);border-radius:10px;"><tr><td align="center" valign="middle" style="font-size:18px;line-height:1;">🔒</td></tr></table>
         </td>
         <td valign="middle" style="padding:20px 22px 20px 14px;">
           <div class="px" style="font-size:15px;font-weight:600;color:#f5f5f7;margin-bottom:3px;">Troque a senha provisória</div>
@@ -420,7 +420,7 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;background:#121218;border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
       <tr>
         <td valign="middle" width="60" style="padding:20px 0 20px 22px;">
-          <div style="width:38px;height:38px;background:rgba(255,203,31,0.12);border:1px solid rgba(255,203,31,0.3);border-radius:10px;text-align:center;line-height:38px;font-size:17px;">🛡️</div>
+          <table role="presentation" width="38" height="38" cellpadding="0" cellspacing="0" style="background:rgba(255,203,31,0.12);border:1px solid rgba(255,203,31,0.3);border-radius:10px;"><tr><td align="center" valign="middle" style="font-size:18px;line-height:1;">🛡️</td></tr></table>
         </td>
         <td valign="middle" style="padding:20px 22px 20px 14px;">
           <div class="px" style="font-size:15px;font-weight:600;color:#f5f5f7;margin-bottom:3px;">Nunca compartilhe seus dados</div>
@@ -432,7 +432,7 @@ const EMAIL_DADOS_ACESSO_TEMPLATE = `<!doctype html>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;background:#121218;border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
       <tr>
         <td valign="middle" width="60" style="padding:20px 0 20px 22px;">
-          <div style="width:38px;height:38px;background:rgba(255,203,31,0.12);border:1px solid rgba(255,203,31,0.3);border-radius:10px;text-align:center;line-height:38px;font-size:17px;">🎯</div>
+          <table role="presentation" width="38" height="38" cellpadding="0" cellspacing="0" style="background:rgba(255,203,31,0.12);border:1px solid rgba(255,203,31,0.3);border-radius:10px;"><tr><td align="center" valign="middle" style="font-size:18px;line-height:1;">🎯</td></tr></table>
         </td>
         <td valign="middle" style="padding:20px 22px 20px 14px;">
           <div class="px" style="font-size:15px;font-weight:600;color:#f5f5f7;margin-bottom:3px;">Comece pelo Modo Simulação</div>
@@ -535,6 +535,25 @@ async function processPayment(id) {
     return;
   }
 
+  // Claim atômico: só UMA execução processa este pagamento. O webhook e a
+  // reconciliação (consultar-pix) podem disparar ao mesmo tempo; quem mudar
+  // 'pendente' -> 'processando' primeiro vence (lock de linha do Postgres).
+  // As demais execuções saem aqui — evita usuário e e-mails duplicados.
+  const claim = await supabase('PATCH',
+    `/rest/v1/pagamentos?payment_id=eq.${id}&status=eq.pendente`,
+    { status: 'processando' },
+    { 'Prefer': 'return=representation' }
+  );
+  if (!Array.isArray(claim.data) || claim.data.length === 0) {
+    console.log('[webhook] Já em processamento por outra execução, ignorando:', id);
+    return;
+  }
+  // Se algo abaixo impedir a conclusão, devolve a 'pendente' para nova tentativa.
+  const reverterPendente = () => supabase('PATCH',
+    `/rest/v1/pagamentos?payment_id=eq.${id}&status=eq.processando`,
+    { status: 'pendente' }
+  );
+
   const { email, name, plan_id } = pagamento;
 
   // Confirma o pagamento DIRETO na PushinPay — não confia no corpo do webhook.
@@ -542,15 +561,18 @@ async function processPayment(id) {
   const confirmacao = await verificarPagamentoPushinPay(id);
   if (!confirmacao) {
     console.error('[webhook] Não foi possível consultar a PushinPay:', id);
+    await reverterPendente();
     return;
   }
   if (confirmacao.status !== 'paid') {
     console.error('[webhook] Pagamento NÃO confirmado pela PushinPay:', id, confirmacao.status);
+    await reverterPendente();
     return;
   }
   // Confere também o valor pago contra o preço oficial do plano.
   if (plano && Number(confirmacao.value) !== plano.valueCents) {
     console.error('[webhook] Valor divergente:', id, 'pago:', confirmacao.value, 'esperado:', plano.valueCents);
+    await reverterPendente();
     return;
   }
 
@@ -595,6 +617,7 @@ async function processPayment(id) {
 
   if (!userId) {
     console.error('[webhook] userId indefinido — abortando sem marcar pago. id:', id);
+    await reverterPendente();
     return;
   }
 
@@ -618,6 +641,7 @@ async function processPayment(id) {
 
   if (!upsertResult.ok) {
     console.error('[webhook] Upsert usuarios falhou. status:', upsertResult.status);
+    await reverterPendente();
     return;
   }
 

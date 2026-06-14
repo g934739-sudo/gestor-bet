@@ -63,27 +63,14 @@ module.exports = async function handler(req, res) {
     if (status === 'pendente' && ageMs > 30000) {
       const conf = await verificarPagamentoPushinPay(pid);
       if (conf && conf.status === 'paid') {
-        // Claim atômico: só um request muda 'pendente' -> 'processando'
-        // (o filtro status=eq.pendente garante exclusão mútua no Postgres),
-        // evitando processar/enviar e-mails em duplicado.
-        const claimRes = await supa(
-          'PATCH',
-          `?payment_id=eq.${pid}&status=eq.pendente`,
-          { status: 'processando' },
-          { 'Prefer': 'return=representation' }
+        // processPayment faz o claim atômico internamente: se o webhook já
+        // estiver processando, esta chamada sai sem efeito (sem duplicar).
+        console.log('[consultar-pix] Reconciliando pagamento órfão:', pid);
+        waitUntil(
+          processPayment(pid).catch((err) =>
+            console.error('[consultar-pix] Reconciliação falhou:', err)
+          )
         );
-        const claimed = await claimRes.json();
-        if (Array.isArray(claimed) && claimed.length > 0) {
-          console.log('[consultar-pix] Reconciliando pagamento órfão:', pid);
-          waitUntil(
-            processPayment(pid).catch(async (err) => {
-              console.error('[consultar-pix] Reconciliação falhou, revertendo p/ pendente:', err);
-              try {
-                await supa('PATCH', `?payment_id=eq.${pid}&status=eq.processando`, { status: 'pendente' });
-              } catch (_) {}
-            })
-          );
-        }
         status = 'processando';
       }
     }
