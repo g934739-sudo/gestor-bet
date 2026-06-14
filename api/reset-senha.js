@@ -57,23 +57,8 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
   .px{font-family:'Outfit',Arial,Helvetica,sans-serif;}
   .mono{font-family:'JetBrains Mono','Courier New',monospace;}
 
-  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
-  @keyframes shimmer{0%{background-position:-160% 0;}100%{background-position:260% 0;}}
-  @keyframes lockGlow{0%,100%{box-shadow:0 0 0 rgba(255,203,31,0);}50%{box-shadow:0 0 26px rgba(255,203,31,0.25);}}
-
-  .anim1{animation:fadeUp .7s ease both;}
-  .anim2{animation:fadeUp .7s ease .12s both;}
-  .anim3{animation:fadeUp .7s ease .26s both;}
-  .anim4{animation:fadeUp .7s ease .4s both;}
-  .anim5{animation:fadeUp .7s ease .54s both;}
-  .livedot{animation:pulse 1.4s ease-in-out infinite;}
-  .lockicon{animation:lockGlow 3s ease-in-out infinite;border-radius:99px;}
-  .shine{
-    background:linear-gradient(100deg,#FFCB1F 0%,#FFCB1F 38%,#FFF4CC 50%,#FFCB1F 62%,#FFCB1F 100%);
-    background-size:220% 100%;
-    animation:shimmer 3.2s linear infinite;
-  }
+  /* Static — no animations for universal email-client compatibility */
+  .shine{background:#FFCB1F;}
 
   @media only screen and (max-width:620px){
     .container{width:100%!important;}
@@ -82,17 +67,12 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
     .btn-a{display:block!important;}
     .heropad{padding:34px 26px 0!important;}
   }
-  @media (prefers-color-scheme:dark){
-    body,table,td,.email-wrap{background-color:#0a0a0c!important;}
-  }
-  [data-ogsc] body,[data-ogsc] .email-wrap{background-color:#0a0a0c!important;}
-  u+.body .email-wrap{background-color:#0a0a0c!important;}
 </style>
 </head>
-<body class="body" bgcolor="#0a0a0c" style="margin:0;padding:0;background:#0a0a0c;">
+<body bgcolor="#0a0a0c" style="margin:0;padding:0;background:#0a0a0c;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#0a0a0c;">Recebemos seu pedido de redefinição de senha. O link expira em 30 minutos.&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
 
-<table role="presentation" class="email-wrap" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0a0a0c" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.1), transparent 62%);">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0a0a0c" style="background:#0a0a0c;background-image:radial-gradient(65% 45% at 50% 0%, rgba(255,203,31,0.1), transparent 62%);">
 <tr><td align="center" style="padding:28px 12px 40px;">
 
 <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;">
@@ -113,13 +93,7 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
 
         <!-- Lock icon -->
         <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin-bottom:24px;"><tr><td align="center">
-          <div class="lockicon" style="width:72px;height:72px;border-radius:99px;background:radial-gradient(circle,rgba(255,203,31,0.22),rgba(255,203,31,0.04));border:1px solid rgba(255,203,31,0.4);text-align:center;line-height:72px;">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFCB1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;">
-              <rect x="5" y="11" width="14" height="10" rx="2"/>
-              <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-              <circle cx="12" cy="16" r="1.4" fill="#FFCB1F" stroke="none"/>
-            </svg>
-          </div>
+          <div style="width:72px;height:72px;border-radius:99px;background:radial-gradient(circle,rgba(255,203,31,0.22),rgba(255,203,31,0.04));border:1px solid rgba(255,203,31,0.4);text-align:center;line-height:72px;font-size:32px;">🔒</div>
         </td></tr></table>
 
         <div class="mono" style="font-size:11px;letter-spacing:2.5px;color:#FFCB1F;text-transform:uppercase;margin-bottom:16px;">Redefinição de senha</div>
@@ -135,7 +109,7 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
       <tr><td style="padding:30px 44px 18px;" align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
           <td align="center" class="shine" style="border-radius:12px;box-shadow:0 12px 32px rgba(255,203,31,0.28);">
-            <a class="btn-a px" href="{{link_reset}}" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Redefinir minha senha  &rarr;</a>
+            <a class="btn-a px" href="{{link_reset}}" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#0a0a0c;letter-spacing:-0.2px;border-radius:12px;">Redefinir minha senha  →</a>
           </td>
         </tr></table>
       </td></tr>
@@ -168,7 +142,7 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-left:3px solid rgba(255,255,255,0.18);background:linear-gradient(to right,rgba(255,255,255,0.03),transparent 70%);border-radius:0 12px 12px 0;">
       <tr><td style="padding:18px 22px;">
         <div class="px" style="font-size:13.5px;line-height:1.62;color:#8b8b95;">
-          <strong style="color:#d8d8dc;">Não foi você?</strong> Pode ignorar este e-mail com tranquilidade — sua senha atual continua valendo e ninguém tem acesso à sua conta.
+          <strong style="color:#d8d8dc;">Não foi você?</strong> Pode ignorar este e-mail com tranquilidade — sua senha atual continua valendo e ninguém tem acesso à sua conta. Se quiser reforçar a segurança, troque sua senha pelo painel.
         </div>
       </td></tr>
     </table>
@@ -190,8 +164,8 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
           <strong style="color:#8b8b95;">A equipe Grivo Bet nunca pede sua senha</strong> por e-mail, telefone ou mensagem. Este e-mail foi enviado porque alguém solicitou a redefinição de senha da sua conta. Apostar envolve risco. Aposte com responsabilidade. Proibido para menores de 18 anos.
         </p>
         <p class="mono" style="margin:0;font-size:11px;letter-spacing:0.5px;color:#5a5a63;">
-          18+ &middot; Jogo responsável &middot; CVV 188<br/>
-          <a href="https://grivo.bet" style="color:#8b8b95;">grivo.bet</a> &nbsp;&middot;&nbsp; <a href="#" style="color:#8b8b95;">Central de ajuda</a>
+          18+ · Jogo responsável · CVV 188<br/>
+          <a href="https://grivo.bet" style="color:#8b8b95;">grivo.bet</a> &nbsp;·&nbsp; <a href="#" style="color:#8b8b95;">Central de ajuda</a>
         </p>
       </td></tr>
     </table>
@@ -201,7 +175,8 @@ const EMAIL_RESET_TEMPLATE = `<!doctype html>
 </td></tr>
 </table>
 </body>
-</html>`;
+</html>
+`;
 
 function emailReset({ email, link }) {
   return EMAIL_RESET_TEMPLATE
