@@ -30,6 +30,10 @@ const LIVECHAT_API_KEY =
 const LIVECHAT_SRC =
   "https://d1svrfmyhkyg8q.cloudfront.net/livechat/prod/livechat.js";
 
+// O export do design traz o menu Suporte com este e-mail; trocamos pelo real.
+const EMAIL_DESIGN = "suporte@grivo.bet";
+const EMAIL_REAL = "contato@grivo.bet";
+
 const SRC = process.argv[2];
 const OUT = path.join(__dirname, "..", "index.html");
 
@@ -43,7 +47,7 @@ if (!fs.existsSync(SRC)) {
 }
 
 let html = fs.readFileSync(SRC, "utf8");
-const counts = { login: 0, termos: 0, privacidade: 0 };
+const counts = { login: 0, termos: 0, privacidade: 0, email: 0 };
 
 // --- Corrige os links dentro dos chunks gzip do(s) manifesto(s) ---
 html = html.replace(
@@ -68,6 +72,11 @@ html = html.replace(
       const t2 = t.replace(/(<a\b[^>]*?)href="#"([^>]*>\s*Pol[ií]tica de Privacidade)/i, '$1href="privacidade.html"$2');
       if (t2 !== t) counts.privacidade++;
       t = t2;
+
+      if (t.includes(EMAIL_DESIGN)) {
+        t = t.split(EMAIL_DESIGN).join(EMAIL_REAL);
+        counts.email++;
+      }
 
       if (t !== before) {
         e.data = zlib.gzipSync(Buffer.from(t, "utf8")).toString("base64");
@@ -109,6 +118,6 @@ html = html.slice(0, idx) + deferred + html.slice(idx);
 
 fs.writeFileSync(OUT, html);
 console.log("index.html gravado (" + html.length + " bytes)");
-console.log("Fixes -> login:", counts.login, "| termos:", counts.termos, "| privacidade:", counts.privacidade);
+console.log("Fixes -> login:", counts.login, "| termos:", counts.termos, "| privacidade:", counts.privacidade, "| email-suporte:", counts.email);
 if (counts.login === 0) console.warn("AVISO: nenhum href=#login encontrado (o design pode ter mudado o botao de login).");
 if (counts.termos === 0 || counts.privacidade === 0) console.warn("AVISO: link de Termos/Privacidade nao encontrado para corrigir.");
