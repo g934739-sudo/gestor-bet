@@ -34,6 +34,19 @@ const LIVECHAT_SRC =
 const EMAIL_DESIGN = "suporte@grivo.bet";
 const EMAIL_REAL = "contato@grivo.bet";
 
+// Google Analytics (gtag.js). Vai no <head> do TEMPLATE do bundler — o site
+// faz replaceWith do documento, entao uma tag no <head> externo seria descartada.
+const GA_ID = "G-KKZK1NVPWP";
+const GA_TAG =
+  '<!-- Google tag (gtag.js) -->\n' +
+  '<script async src="https://www.googletagmanager.com/gtag/js?id=' + GA_ID + '"></scr' + 'ipt>\n' +
+  '<script>\n' +
+  '  window.dataLayer = window.dataLayer || [];\n' +
+  '  function gtag(){dataLayer.push(arguments);}\n' +
+  "  gtag('js', new Date());\n" +
+  "  gtag('config', '" + GA_ID + "');\n" +
+  '</scr' + 'ipt>\n';
+
 const SRC = process.argv[2];
 const OUT = path.join(__dirname, "..", "index.html");
 
@@ -47,7 +60,7 @@ if (!fs.existsSync(SRC)) {
 }
 
 let html = fs.readFileSync(SRC, "utf8");
-const counts = { login: 0, termos: 0, privacidade: 0, email: 0 };
+const counts = { login: 0, termos: 0, privacidade: 0, email: 0, ga: 0 };
 
 // --- Corrige os links dentro dos chunks gzip do(s) manifesto(s) ---
 html = html.replace(
@@ -86,6 +99,24 @@ html = html.replace(
   }
 );
 
+// --- Google Analytics: injeta no <head> do template do bundler ---
+html = html.replace(
+  /(<script[^>]*type="__bundler\/template"[^>]*>)([\s\S]*?)(<\/script>)/,
+  (full, open, body, close) => {
+    let tpl;
+    try { tpl = JSON.parse(body.trim()); } catch (e) { return full; }
+    if (tpl.includes(GA_ID)) return full;
+    const m = tpl.match(/<head[^>]*>/i);
+    if (!m) return full;
+    const i = m.index + m[0].length;
+    tpl = tpl.slice(0, i) + "\n" + GA_TAG + tpl.slice(i);
+    counts.ga++;
+    // Escapa </script> -> <\/script> para nao fechar o <script type="...template">.
+    const json = JSON.stringify(tpl).split("</script>").join("<\\/script>");
+    return open + json + close;
+  }
+);
+
 // --- LiveChat deferido, antes do </body> ---
 const deferred =
   "<!-- LiveChat (deferido: a home e client-rendered e substitui o body via replaceWith;\n" +
@@ -118,6 +149,6 @@ html = html.slice(0, idx) + deferred + html.slice(idx);
 
 fs.writeFileSync(OUT, html);
 console.log("index.html gravado (" + html.length + " bytes)");
-console.log("Fixes -> login:", counts.login, "| termos:", counts.termos, "| privacidade:", counts.privacidade, "| email-suporte:", counts.email);
+console.log("Fixes -> login:", counts.login, "| termos:", counts.termos, "| privacidade:", counts.privacidade, "| email-suporte:", counts.email, "| GA:", counts.ga);
 if (counts.login === 0) console.warn("AVISO: nenhum href=#login encontrado (o design pode ter mudado o botao de login).");
 if (counts.termos === 0 || counts.privacidade === 0) console.warn("AVISO: link de Termos/Privacidade nao encontrado para corrigir.");
