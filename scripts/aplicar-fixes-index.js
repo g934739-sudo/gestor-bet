@@ -47,6 +47,18 @@ const GA_TAG =
   "  gtag('config', '" + GA_ID + "');\n" +
   '</scr' + 'ipt>\n';
 
+// Microsoft Clarity — tambem no <head> do template do bundler.
+const CLARITY_ID = "xbn16k3v1u";
+const CLARITY_TAG =
+  '<!-- Microsoft Clarity -->\n' +
+  '<script type="text/javascript">\n' +
+  '    (function(c,l,a,r,i,t,y){\n' +
+  '        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n' +
+  '        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;\n' +
+  '        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n' +
+  '    })(window, document, "clarity", "script", "' + CLARITY_ID + '");\n' +
+  '</scr' + 'ipt>\n';
+
 const SRC = process.argv[2];
 const OUT = path.join(__dirname, "..", "index.html");
 
@@ -99,18 +111,20 @@ html = html.replace(
   }
 );
 
-// --- Google Analytics: injeta no <head> do template do bundler ---
+// --- Analytics (Google Analytics + Microsoft Clarity): no <head> do template ---
 html = html.replace(
   /(<script[^>]*type="__bundler\/template"[^>]*>)([\s\S]*?)(<\/script>)/,
   (full, open, body, close) => {
     let tpl;
     try { tpl = JSON.parse(body.trim()); } catch (e) { return full; }
-    if (tpl.includes(GA_ID)) return full;
     const m = tpl.match(/<head[^>]*>/i);
     if (!m) return full;
+    let insert = "";
+    if (!tpl.includes(GA_ID)) { insert += GA_TAG; counts.ga++; }
+    if (!tpl.includes(CLARITY_ID)) { insert += CLARITY_TAG; }
+    if (!insert) return full;
     const i = m.index + m[0].length;
-    tpl = tpl.slice(0, i) + "\n" + GA_TAG + tpl.slice(i);
-    counts.ga++;
+    tpl = tpl.slice(0, i) + "\n" + insert + tpl.slice(i);
     // Escapa </script> -> <\/script> para nao fechar o <script type="...template">.
     const json = JSON.stringify(tpl).split("</script>").join("<\\/script>");
     return open + json + close;
