@@ -59,6 +59,21 @@ const CLARITY_TAG =
   '    })(window, document, "clarity", "script", "' + CLARITY_ID + '");\n' +
   '</scr' + 'ipt>\n';
 
+// Vercel Web Analytics + Speed Insights (implementacao HTML). Precisa estar
+// "Enabled" no painel da Vercel para os caminhos /_vercel/... existirem.
+const VERCEL_MARK = "/_vercel/insights/script.js";
+const VERCEL_TAG =
+  '<!-- Vercel Web Analytics -->\n' +
+  '<script>\n' +
+  '  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };\n' +
+  '</scr' + 'ipt>\n' +
+  '<script defer src="/_vercel/insights/script.js"></scr' + 'ipt>\n' +
+  '<!-- Vercel Speed Insights -->\n' +
+  '<script>\n' +
+  '  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };\n' +
+  '</scr' + 'ipt>\n' +
+  '<script defer src="/_vercel/speed-insights/script.js"></scr' + 'ipt>\n';
+
 const SRC = process.argv[2];
 const OUT = path.join(__dirname, "..", "index.html");
 
@@ -111,7 +126,7 @@ html = html.replace(
   }
 );
 
-// --- Analytics (Google Analytics + Microsoft Clarity): no <head> do template ---
+// --- Analytics (GA + Clarity + Vercel Web Analytics/Speed Insights): <head> do template ---
 html = html.replace(
   /(<script[^>]*type="__bundler\/template"[^>]*>)([\s\S]*?)(<\/script>)/,
   (full, open, body, close) => {
@@ -122,6 +137,7 @@ html = html.replace(
     let insert = "";
     if (!tpl.includes(GA_ID)) { insert += GA_TAG; counts.ga++; }
     if (!tpl.includes(CLARITY_ID)) { insert += CLARITY_TAG; }
+    if (!tpl.includes(VERCEL_MARK)) { insert += VERCEL_TAG; }
     if (!insert) return full;
     const i = m.index + m[0].length;
     tpl = tpl.slice(0, i) + "\n" + insert + tpl.slice(i);
