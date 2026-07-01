@@ -74,6 +74,12 @@ const VERCEL_TAG =
   '</scr' + 'ipt>\n' +
   '<script defer src="/_vercel/speed-insights/script.js"></scr' + 'ipt>\n';
 
+// Sentry (Loader Script) — monitoramento de erros no frontend.
+const SENTRY_MARK = "js.sentry-cdn.com/3c85e302cb0e1ad8ce80f8b44c99afc6";
+const SENTRY_TAG =
+  '<!-- Sentry -->\n' +
+  '<script src="https://js.sentry-cdn.com/3c85e302cb0e1ad8ce80f8b44c99afc6.min.js" crossorigin="anonymous"></scr' + 'ipt>\n';
+
 const SRC = process.argv[2];
 const OUT = path.join(__dirname, "..", "index.html");
 
@@ -138,6 +144,7 @@ html = html.replace(
     if (!tpl.includes(GA_ID)) { insert += GA_TAG; counts.ga++; }
     if (!tpl.includes(CLARITY_ID)) { insert += CLARITY_TAG; }
     if (!tpl.includes(VERCEL_MARK)) { insert += VERCEL_TAG; }
+    if (!tpl.includes(SENTRY_MARK)) { insert += SENTRY_TAG; }
     if (!insert) return full;
     const i = m.index + m[0].length;
     tpl = tpl.slice(0, i) + "\n" + insert + tpl.slice(i);
