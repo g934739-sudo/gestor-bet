@@ -194,8 +194,12 @@ function CheckoutForm() {
   const [pixQrBase64, setPixQrBase64] = useState(null);
   const [pixCodeReal, setPixCodeReal] = useState(null);
   const [pixError, setPixError] = useState(null);
+  const gaFiredRef = useRef(false);
 
   const plan = PLANS.find((p) => p.id === planId);
+
+  // Item de e-commerce (GA4) do plano atual.
+  const gaItems = () => plan ? [{ item_id: plan.id, item_name: "Plano " + plan.name, price: plan.total, quantity: 1 }] : undefined;
 
   // Pix timer
   useEffect(() => {
@@ -219,6 +223,20 @@ function CheckoutForm() {
     const id = setInterval(poll, 5000);
     return () => clearInterval(id);
   }, [submitted, paid, pixId, timer]);
+
+  // GA4: evento de conversao "purchase" quando o pagamento e confirmado (uma vez).
+  useEffect(() => {
+    if (!paid || gaFiredRef.current) return;
+    gaFiredRef.current = true;
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "purchase", {
+        transaction_id: pixId || undefined,
+        value: plan ? plan.total : undefined,
+        currency: "BRL",
+        items: gaItems(),
+      });
+    }
+  }, [paid]);
 
   const fieldValid = {
     name:         data.name.trim().split(/\s+/).length >= 2,
@@ -281,6 +299,10 @@ function CheckoutForm() {
     }
 
     setLoading(false);
+    // GA4: intencao de compra (PIX gerado) — util pro funil visita -> checkout -> compra.
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "begin_checkout", { value: plan ? plan.total : undefined, currency: "BRL", items: gaItems() });
+    }
     setSubmitted(true);
     window.scrollTo({ top:0, behavior:"smooth" });
   };
