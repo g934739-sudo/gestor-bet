@@ -30,7 +30,9 @@ async function buscarToken(token) {
   return Array.isArray(data) ? data[0] : null;
 }
 
-module.exports = async function handler(req, res) {
+const { withSentry } = require("./_sentry");
+
+async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   // GET — valida token sem consumi-lo (usado pelo frontend ao carregar a página)
@@ -89,3 +91,5 @@ module.exports = async function handler(req, res) {
 
   return res.status(405).end();
 };
+
+module.exports = withSentry(handler);

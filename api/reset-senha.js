@@ -184,7 +184,9 @@ function emailReset({ email, link }) {
     .replace(/\{\{link_reset\}\}/g, link);
 }
 
-module.exports = async function handler(req, res) {
+const { withSentry } = require("./_sentry");
+
+async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -235,3 +237,5 @@ module.exports = async function handler(req, res) {
   // Sempre retorna sucesso — não revelar se o e-mail existe
   return res.status(200).json({ ok: true });
 };
+
+module.exports = withSentry(handler);

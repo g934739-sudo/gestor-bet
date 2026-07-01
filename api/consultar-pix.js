@@ -25,7 +25,9 @@ function supa(method, qs, body, extraHeaders = {}) {
   });
 }
 
-module.exports = async function handler(req, res) {
+const { withSentry, captureAsync } = require("./_sentry");
+
+async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -67,9 +69,7 @@ module.exports = async function handler(req, res) {
         // estiver processando, esta chamada sai sem efeito (sem duplicar).
         console.log('[consultar-pix] Reconciliando pagamento órfão:', pid);
         waitUntil(
-          processPayment(pid).catch((err) =>
-            console.error('[consultar-pix] Reconciliação falhou:', err)
-          )
+          processPayment(pid).catch(async (err) => { console.error('[consultar-pix] Reconciliação falhou:', err); await captureAsync(err, { fn: 'consultar-pix.processPayment', id: pid }); })
         );
         status = 'processando';
       }
@@ -82,3 +82,5 @@ module.exports = async function handler(req, res) {
     return res.status(502).json({ error: 'Erro ao consultar status' });
   }
 };
+
+module.exports = withSentry(handler);

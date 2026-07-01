@@ -495,7 +495,9 @@ function emailDadosAcesso({ email, senha }) {
 }
 
 // ─── Handler principal ────────────────────────────────────────────────────────
-module.exports = async function handler(req, res) {
+const { withSentry, captureAsync } = require("./_sentry");
+
+async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const { id: rawId, status } = req.body || {};
@@ -512,9 +514,7 @@ module.exports = async function handler(req, res) {
   console.log('[webhook] Pagamento confirmado, processando async:', id);
 
   waitUntil(
-    processPayment(id).catch(err =>
-      console.error('[webhook] processPayment erro não tratado:', err)
-    )
+    processPayment(id).catch(async (err) => { console.error('[webhook] processPayment erro não tratado:', err); await captureAsync(err, { fn: 'webhook.processPayment', id }); })
   );
 };
 
@@ -685,6 +685,8 @@ async function processPayment(id) {
 
   console.log('[webhook] Processamento completo para:', email);
 }
+
+module.exports = withSentry(handler);
 
 // Reaproveitados pela rede de segurança em consultar-pix.js (reconciliação).
 // O webhook continua sendo o handler default para a sua própria rota.

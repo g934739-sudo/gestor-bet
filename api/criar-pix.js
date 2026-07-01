@@ -7,7 +7,9 @@ const PUSHINPAY_TOKEN = process.env.PUSHINPAY_TOKEN;
 const SUPABASE_URL    = process.env.SUPABASE_URL;
 const SUPABASE_KEY    = process.env.SUPABASE_SERVICE_KEY;
 
-module.exports = async function handler(req, res) {
+const { withSentry } = require("./_sentry");
+
+async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -95,3 +97,5 @@ module.exports = async function handler(req, res) {
     value:           pixData.value,
   });
 }
+
+module.exports = withSentry(handler);

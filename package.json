@@ -2,6 +2,7 @@
   "name": "gestor-bet",
   "private": true,
   "dependencies": {
+    "@sentry/node": "^8.0.0",
     "@vercel/functions": "^2.0.0"
   }
 }
