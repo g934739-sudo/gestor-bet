@@ -36,9 +36,12 @@ Não assuma defaults sem confirmar preço, domínio e escopo.
 1. **Nome e domínio** do projeto? (ex.: `grivo.bet`)
 2. **Nicho / posicionamento** e há restrição de compliance? (ex.: apostas → 18+, jogo responsável)
 3. **Planos e preços** (id, valor em centavos, duração em dias). Ex.: `semanal / 8700 / 7`.
-4. **Quais módulos se aplicam?** (todo projeto usa Infra + Analytics + Sentry; pagamento/e-mail/login só se vende algo online)
-5. **Contas já existentes?** (Vercel, Supabase, PushinPay, Resend, domínio registrado)
-6. **Vai anunciar no Meta?** Se sim, avise que o perfil/BM precisa aquecer 2–4 semanas — começar já.
+4. **Identidade** — tom de voz, cores, headline/posicionamento (ex.: "método > sorte").
+   Registre aqui **o que foi decidido** (o visual nasce no Claude Design, mas e-mails
+   e anúncios precisam da mesma identidade — este é o lugar único de referência).
+5. **Quais módulos se aplicam?** (todo projeto usa Infra + Analytics + Sentry; pagamento/e-mail/login só se vende algo online)
+6. **Contas já existentes?** (Vercel, Supabase, PushinPay, Resend, domínio registrado)
+7. **Vai anunciar no Meta?** Se sim, avise que o perfil/BM precisa aquecer 2–4 semanas — começar já.
 
 ---
 
@@ -130,6 +133,9 @@ projeto/
 - Registrar domínio, criar repo, conectar na Vercel (deploy automático no `git push` da `main`).
 - Copiar `vercel.json` (cleanUrls + rewrites + headers CORS em `/api/*`).
 - Instalar chat de suporte (LiveChat) com carregamento adiado.
+- **SEO/OG básico** em cada página: `<title>`, `<meta name="description">`, tags
+  Open Graph (`og:title`, `og:description`, `og:image`) e favicon. É o que faz o
+  link aparecer bonito (com imagem) quando compartilhado no WhatsApp/redes.
 
 **Reaproveitar do grivo:** `vercel.json`, `scripts/aplicar-fixes-index.js`.
 
@@ -193,6 +199,20 @@ Criar **antes** do módulo de pagamento.
 - Auth nativo do Supabase (Admin API para criar usuário + senha provisória).
 - **Renovação empilha:** se o plano ainda é válido, some a duração a partir da expiração atual (não de hoje).
 
+> **⚠ GUARDRAIL — RLS ligado (senão vaza dados dos clientes)**
+> O frontend usa a chave **publishable** (`sb_publishable_...`), que respeita o RLS.
+> Se o **Row Level Security** não estiver ligado nas tabelas, **qualquer pessoa lê
+> a tabela `usuarios` inteira** (e-mails de todos) só com a chave pública. Ligue RLS
+> em `usuarios` e `pagamentos` e crie políticas mínimas (cada usuário só vê a própria
+> linha; escrita só pelo backend com a service key).
+> **Também:** service key **nunca** no front; segredos só na Vercel; `.env` no `.gitignore`.
+>
+> **Como auditar** (sem login, deve voltar `[]` mesmo com tabela cheia):
+> ```
+> curl "$SUPA_URL/rest/v1/usuarios?select=email&limit=5" -H "apikey: $PUBLISHABLE_KEY"
+> ```
+> Se voltar linhas → RLS desligado → corrija antes de qualquer coisa.
+
 ---
 
 ## Módulo 04 — Analytics & Medição
@@ -229,6 +249,10 @@ Criar **antes** do módulo de pagamento.
 
 - LiveChat, página de **Termos**, **Privacidade**.
 - Se o nicho exigir: avisos **18+ / jogo responsável / CVV 188** no rodapé e e-mails.
+- **LGPD:** política de privacidade deve dizer quais dados coleta, por quê, e como
+  o cliente pede exclusão. Ter um contato para solicitações de dados.
+- **Reembolso:** política clara. No Brasil (CDC art. 49), compra online dá **direito
+  de arrependimento em 7 dias**. Deixar explícito nos Termos como funciona.
 
 ---
 
@@ -267,6 +291,36 @@ Nunca comitar no código.
 | Clarity · GA4 | Grátis | — |
 | LiveChat | Trial | ~US$20/agente/mês |
 | Domínio | ~R$40/ano | Renovação anual |
+
+---
+
+## 🚦 Gate de lançamento (teste de fumaça antes de abrir as portas)
+
+Não mande tráfego sem passar por TODOS. É a diferença entre "deployei" e "posso receber dinheiro".
+
+- [ ] **1 pagamento Pix real** (valor baixo) ponta a ponta → conta criada **e** os 2 e-mails chegaram.
+- [ ] **Reset de senha** testado de verdade (recebe e-mail, redefine, loga).
+- [ ] **Env vars conferidas em produção** (erro nº 1: funciona local, quebra no ar por variável faltando).
+- [ ] **Mobile** — abrir o site no celular; checkout e QR Code funcionam.
+- [ ] **Páginas legais** (Termos/Privacidade) linkadas e abrindo; **404** funcionando.
+- [ ] **RLS auditado** (ver guardrail do Modelo de dados) → tabelas não vazam sem login.
+- [ ] **Sentry recebendo** (forçar 1 erro e ver cair no Slack).
+
+---
+
+## 🆘 Runbook de incidente (quando quebrar em produção)
+
+Meia página de "se X, faça Y" — pra não travar às 23h.
+
+- **Deploy novo quebrou o site** → Vercel → projeto → Deployments → deploy anterior
+  que funcionava → **Instant Rollback**. Volta no ar em segundos.
+- **Commit ruim** → `git revert <hash>` + push (deploy automático corrige).
+- **Cliente pagou e não recebeu acesso** → a rede de segurança (`consultar-pix`)
+  reconcilia sozinha em ~30s; se não, checar Sentry pelo erro e o status na tabela
+  `pagamentos` (deve estar `pago`). Reprocessar é idempotente (claim atômico).
+- **PushinPay/Resend/Supabase fora do ar** → o erro aparece no Sentry; comunicar
+  suporte e aguardar o serviço voltar (não há fix de código).
+- **Sempre:** o Sentry é o primeiro lugar pra olhar — ele diz o quê, onde e quando.
 
 ---
 
