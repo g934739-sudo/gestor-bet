@@ -11,6 +11,23 @@
 
 ---
 
+## Como manter este playbook atualizado
+
+**Este arquivo (no repo do grivo) é a FONTE DE VERDADE única.** O artifact visual e
+as cópias em outros projetos (`CLAUDE.md`) são derivados — nunca o contrário.
+
+- **Toda melhoria entra aqui primeiro.** Aprendeu uma cilada nova, trocou uma
+  ferramenta, faltou um passo? Atualize este `PLAYBOOK.md`, comite, e regenere o
+  artifact visual (mesmo link).
+- **Aprendizado em outro projeto volta pro mestre.** Se algo novo surgir enquanto
+  roda um projeto derivado, traga a melhoria de volta para cá — senão a cópia
+  fica boa e o mestre envelhece.
+- **Cada projeto novo copia a versão mais recente** deste arquivo (como `CLAUDE.md`).
+- **Fluxo prático:** basta dizer ao Claude *"adiciona ao playbook: …"* em linguagem
+  normal — ele edita o `.md`, comita e atualiza o artifact numa tacada.
+
+---
+
 ## 0. Intake — pergunte ANTES de começar
 
 Colete estas respostas do usuário e preencha a tabela de **Variáveis do projeto**.
