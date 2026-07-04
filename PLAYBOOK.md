@@ -77,6 +77,53 @@ Regra de dependência dura:
 
 ---
 
+## Módulo 00 — Estrutura de pastas & setup do Claude Code
+
+Monte este esqueleto **antes de codar**. Regra de ouro: **na raiz fica só o que
+é servido publicamente + configs; o resto vai pra `docs/`.** (Host estático serve
+tudo o que está na raiz — arquivo de rascunho na raiz vira URL pública sem querer.)
+
+```
+projeto/
+├── CLAUDE.md            ← briefing curto DESTE projeto (auto-carregado pelo Claude)
+├── vercel.json          ← config de deploy
+├── package.json
+├── index.html · login.html · checkout.html · app.html · ...   ← páginas servidas
+├── api/                 ← funções serverless
+├── docs/                ← NÃO servido: PLAYBOOK, planejamento, rascunhos
+│   └── PLAYBOOK.md
+└── .claude/
+    ├── settings.json        ← permissões, hooks, modelo (compartilhado, versionado)
+    ├── settings.local.json  ← overrides pessoais (NÃO comitar)
+    ├── skills/              ← (opcional) habilidades auto-disparadas
+    └── commands/            ← (opcional) slash commands de fluxos repetidos
+```
+
+**O que criar (enxuto — o que dá retorno):**
+- **`CLAUDE.md`** (raiz) — briefing curto do projeto, criado durante a obra. Deve ter:
+  stack, como fazer deploy, os `⚠ GUARDRAIL` deste projeto, onde ficam env vars e
+  o modelo de dados. É o que me deixa rápido e seguro em toda sessão futura.
+- **`.claude/settings.json`** — permissões e configs do time (versionado).
+- **`docs/`** — tudo que é referência e não deve ir pro ar.
+
+> **⚠ GUARDRAIL — não jogue rascunho na raiz**
+> Qualquer `.html` de planejamento/rascunho na raiz fica **público** (`dominio/rascunho.html`).
+> Rascunhos, planejamento e este PLAYBOOK vão em `docs/`.
+
+**O que PULAR num projeto solo/pequeno (over-engineering):**
+- `.claude/agents/`, `.claude/hooks/`, `.claude/rules/` — estrutura de time grande.
+  Adicione só quando houver dor real que justifique.
+- Nota técnica: `.claude/rules/` **não é auto-carregado** nativamente — se um dia usar,
+  referencie os arquivos a partir do `CLAUDE.md`. (Muito infográfico mistura convenção
+  com feature nativa; o que é auto-carregado de fato é `CLAUDE.md`, `skills/`, `commands/`,
+  `agents/` e `.mcp.json`.)
+
+**Diferença CLAUDE.md × PLAYBOOK.md** (não confundir):
+- `PLAYBOOK.md` = como **construir** um projeto novo (este arquivo). Referência de obra.
+- `CLAUDE.md` = briefing de **manutenção** de um projeto pronto. Nasce durante a obra e fica.
+
+---
+
 ## Módulo 01 — Infraestrutura & Site
 
 **Ações**
