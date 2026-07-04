@@ -148,6 +148,29 @@ projeto/
 
 ---
 
+## Módulo 01.5 — Produto (a parte interna do SaaS)
+
+**A única parte NÃO copiável do playbook.** Todo o resto (infra, pagamento, e-mail,
+analytics) é igual em qualquer projeto — por isso vira receita. O **produto em si**
+(no grivo: estratégias, modo simulação, dashboard de banca) é **único de cada projeto**
+e se constrói sob medida, não por copiar-e-colar.
+
+**Como construir** (fluxo normal, não "seguir módulo"):
+- Brainstorm das features → design → build (de preferência com testes).
+- Vive em `app.html` (+ o que o produto exigir).
+
+**Onde encaixa na ordem:**
+- **Depois** do Módulo 00 (estrutura), **em paralelo** com o site de marketing (Módulo 01).
+- O **"portão" é login + pagamento**: pode construir o produto enquanto o portão amadurece;
+  no fim eles se conectam (pagou → libera → `app.html`).
+
+> **⚠ GUARDRAIL — o produto precisa checar acesso**
+> Não basta ter a página `app.html`; ela tem que **verificar login + plano ativo**
+> (`plano_expira_em` no futuro) antes de liberar o conteúdo. Senão qualquer um acessa
+> o produto sem pagar. O acesso é sempre validado no carregamento do app.
+
+---
+
 ## Módulo 02 — Pagamentos (Pix)
 
 **Ações**
