@@ -166,8 +166,24 @@ e se constrói sob medida, não por copiar-e-colar.
 
 > **⚠ GUARDRAIL — o produto precisa checar acesso**
 > Não basta ter a página `app.html`; ela tem que **verificar login + plano ativo**
-> (`plano_expira_em` no futuro) antes de liberar o conteúdo. Senão qualquer um acessa
+> (`plano_expira_em`) antes de liberar o conteúdo. Senão qualquer um acessa
 > o produto sem pagar. O acesso é sempre validado no carregamento do app.
+
+**Padrão de assinatura — login permanente + acesso com validade:**
+- **Login não expira.** A conta no Auth é permanente; o cliente sempre consegue *entrar*.
+- **O que expira é o ACESSO.** No load do `app.html`, checar `plano_expira_em`:
+  se `< agora` → redirecionar pra `checkout.html?expired=1` (renovar). O cliente
+  não perde a conta, perde o acesso ao conteúdo.
+- **Renovação é manual.** Pix é à vista (não é cartão recorrente) — não há cobrança
+  automática. O cliente paga de novo e o webhook **empilha** o período no `plano_expira_em`.
+
+> **⚠ 2 furos conhecidos desse padrão (endurecer quando valer):**
+> 1. **Fail-open:** se a checagem de expiração der erro, o código costuma deixar
+>    passar (pra não trancar pagante numa instabilidade). Aceitável, mas saiba que existe.
+> 2. **Checagem client-side:** como a ferramenta é toda no navegador, um usuário
+>    técnico pode burlar o redirect e usar sem assinatura. Não vaza dado de ninguém
+>    (o RLS protege), só "freeload" da ferramenta. Pra fechar 100%, servir a lógica
+>    valiosa **pelo servidor** atrás da checagem de plano — mudança maior, só se valer.
 
 ---
 
