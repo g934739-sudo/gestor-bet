@@ -236,6 +236,15 @@ function CheckoutForm() {
         items: gaItems(),
       });
     }
+    // Meta Pixel: conversao "Purchase" (mesmo momento, dispara uma vez).
+    if (typeof window !== "undefined" && typeof window.fbq === "function") {
+      window.fbq("track", "Purchase", {
+        value: plan ? plan.total : undefined,
+        currency: "BRL",
+        content_ids: plan ? [plan.id] : undefined,
+        content_type: "product",
+      });
+    }
   }, [paid]);
 
   const fieldValid = {
@@ -302,6 +311,10 @@ function CheckoutForm() {
     // GA4: intencao de compra (PIX gerado) — util pro funil visita -> checkout -> compra.
     if (typeof window !== "undefined" && typeof window.gtag === "function") {
       window.gtag("event", "begin_checkout", { value: plan ? plan.total : undefined, currency: "BRL", items: gaItems() });
+    }
+    // Meta Pixel: intencao de compra (PIX gerado).
+    if (typeof window !== "undefined" && typeof window.fbq === "function") {
+      window.fbq("track", "InitiateCheckout", { value: plan ? plan.total : undefined, currency: "BRL", content_ids: plan ? [plan.id] : undefined, content_type: "product" });
     }
     setSubmitted(true);
     window.scrollTo({ top:0, behavior:"smooth" });

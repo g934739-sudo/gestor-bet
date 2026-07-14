@@ -80,6 +80,27 @@ const SENTRY_TAG =
   '<!-- Sentry -->\n' +
   '<script src="https://js.sentry-cdn.com/3c85e302cb0e1ad8ce80f8b44c99afc6.min.js" crossorigin="anonymous"></scr' + 'ipt>\n';
 
+// Meta Pixel — tambem no <head> do template do bundler.
+const PIXEL_ID = "1052503187247305";
+const PIXEL_TAG =
+  '<!-- Meta Pixel Code -->\n' +
+  '<script>\n' +
+  '!function(f,b,e,v,n,t,s)\n' +
+  '{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n' +
+  'n.callMethod.apply(n,arguments):n.queue.push(arguments)};\n' +
+  "if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\n" +
+  'n.queue=[];t=b.createElement(e);t.async=!0;\n' +
+  't.src=v;s=b.getElementsByTagName(e)[0];\n' +
+  "s.parentNode.insertBefore(t,s)}(window, document,'script',\n" +
+  "'https://connect.facebook.net/en_US/fbevents.js');\n" +
+  "fbq('init', '" + PIXEL_ID + "');\n" +
+  "fbq('track', 'PageView');\n" +
+  '</scr' + 'ipt>\n' +
+  '<noscript><img height="1" width="1" style="display:none"\n' +
+  'src="https://www.facebook.com/tr?id=' + PIXEL_ID + '&ev=PageView&noscript=1"\n' +
+  '/></noscript>\n' +
+  '<!-- End Meta Pixel Code -->\n';
+
 const SRC = process.argv[2];
 const OUT = path.join(__dirname, "..", "index.html");
 
@@ -145,6 +166,7 @@ html = html.replace(
     if (!tpl.includes(CLARITY_ID)) { insert += CLARITY_TAG; }
     if (!tpl.includes(VERCEL_MARK)) { insert += VERCEL_TAG; }
     if (!tpl.includes(SENTRY_MARK)) { insert += SENTRY_TAG; }
+    if (!tpl.includes(PIXEL_ID)) { insert += PIXEL_TAG; }
     if (!insert) return full;
     const i = m.index + m[0].length;
     tpl = tpl.slice(0, i) + "\n" + insert + tpl.slice(i);
