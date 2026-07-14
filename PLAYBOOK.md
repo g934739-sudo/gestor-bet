@@ -217,6 +217,12 @@ e se constrói sob medida, não por copiar-e-colar.
 - Copiar `reset-senha.js` + `redefinir-senha.js`.
 - Verificar domínio no Resend (SPF/DKIM no DNS) 🕒 e ajustar remetente.
 - Env: `RESEND_API_KEY`.
+- **Lembrete de renovação (retenção)** — e-mail (e/ou WhatsApp) quando o
+  `plano_expira_em` está perto/no dia: *"seu acesso vence hoje, renove aqui"*.
+  Reduz churn — **crítico no plano semanal**, porque o Pix não é recorrente e o
+  cliente tem que pagar de novo a cada 7 dias. Precisa de um **cron** que varre
+  diariamente quem expira e dispara o e-mail via Resend (mesmo tipo de agendador
+  do monitor ao vivo: Vercel Cron no Pro, ou cron externo grátis).
 
 **Reaproveitar do grivo:** `api/_resend.js`, `api/reset-senha.js`, `api/redefinir-senha.js`, templates no `webhook-pushinpay.js`.
 
