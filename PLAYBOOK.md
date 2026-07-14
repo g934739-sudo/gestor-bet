@@ -283,7 +283,14 @@ Criar **antes** do módulo de pagamento.
 
 - ManyChat (palavras-chave + 1ª mensagem).
 - UTMs em WhatsApp/e-mail.
-- Meta Pixel (injetar no template quando a conta liberar).
+- **Meta Pixel** — injetar o código-base (`PageView`) no template do bundler +
+  eventos `InitiateCheckout` (PIX gerado) e `Purchase` (pagamento confirmado, com
+  `value` em reais + `currency: BRL`), espelhando o GA4. Reinjetar via `aplicar-fixes`.
+  Depois, **verificar o domínio no Gerenciador de Eventos** (necessário antes de anunciar).
+- **API de Conversões (CAPI)** 🕒 — rastreamento server-side: manda o `Purchase`
+  do **webhook** (backend) direto pro Meta, com `event_id` igual ao do Pixel pra
+  deduplicar. Mais robusto (resiste a bloqueador/iOS). Só vale **quando for rodar
+  anúncio**; precisa de token de acesso do Meta.
 - Meta Ads 🕒 — ângulo **método/gestão**, nunca promessa de ganho (reprova + ban).
 
 ---
