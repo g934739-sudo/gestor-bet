@@ -81,7 +81,7 @@ const SENTRY_TAG =
   '<script src="https://js.sentry-cdn.com/3c85e302cb0e1ad8ce80f8b44c99afc6.min.js" crossorigin="anonymous"></scr' + 'ipt>\n';
 
 // Meta Pixel — tambem no <head> do template do bundler.
-const PIXEL_ID = "1052503187247305";
+const PIXEL_ID = "1525916488459855";
 const PIXEL_TAG =
   '<!-- Meta Pixel Code -->\n' +
   '<script>\n' +
