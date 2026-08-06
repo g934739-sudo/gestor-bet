@@ -4,8 +4,8 @@
 
 const PLANS = {
   teste:   { valueCents: 190,   dias: 1,  nome: 'Teste'   },
-  semanal: { valueCents: 8700,  dias: 7,  nome: 'Semanal' },
-  mensal:  { valueCents: 14700, dias: 30, nome: 'Mensal'  },
+  semanal: { valueCents: 2700,  dias: 7,  nome: 'Semanal' },
+  mensal:  { valueCents: 4700,  dias: 30, nome: 'Mensal'  },
 };
 
 function getPlan(planId) {

@@ -6,7 +6,7 @@ o grivo em si.
 
 ## O que é
 SaaS de gestão de banca para apostadores (tema dark + dourado, posicionamento
-"método > sorte", +18/jogo responsável). Planos: **semanal R$87 / mensal R$147**,
+"método > sorte", +18/jogo responsável). Planos: **semanal R$27 / mensal R$47**,
 pagos via **Pix (PushinPay)**. Domínio: grivo.bet (Vercel).
 
 ## Stack

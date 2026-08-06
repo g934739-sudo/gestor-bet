@@ -4,8 +4,8 @@ const { useState, useEffect, useMemo, useRef } = React;
 
 // ─── PLAN DATA ────────────────────────────────────────────────────────────────
 const PLANS = [
-  { id:"semanal", name:"Semanal", total:87,  period:"semana", periodShort:"/sem", sub:"Cobrado semanalmente",  badge:null },
-  { id:"mensal",  name:"Mensal",  total:147, period:"mês",    periodShort:"/mês", sub:"Cobrado mensalmente · melhor custo", badge:"Mais escolhido" },
+  { id:"semanal", name:"Semanal", total:27,  period:"semana", periodShort:"/sem", sub:"Cobrado semanalmente",  badge:null },
+  { id:"mensal",  name:"Mensal",  total:47,  period:"mês",    periodShort:"/mês", sub:"Cobrado mensalmente · melhor custo", badge:"Mais escolhido" },
 ];
 
 const FEATURES = [
